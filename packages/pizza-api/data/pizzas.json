@@ -1,0 +1,202 @@
+[
+  {
+    "id": "1",
+    "name": "Margherita",
+    "description": "Classic Italian pizza with tomato sauce, fresh mozzarella, and basil leaves. A beloved traditional favorite.",
+    "price": 12,
+    "imageUrl": "pizza-pic-1.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "7"
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Pepperoni",
+    "description": "A staple of American pizza, topped with spicy pepperoni and mozzarella on a rich tomato base.",
+    "price": 14,
+    "imageUrl": "pizza-pic-2.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "3"
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Quattro Formaggi",
+    "description": "A luxurious blend of four cheeses: mozzarella, gorgonzola, parmesan, and fontina on a tomato base.",
+    "price": 15,
+    "imageUrl": "pizza-pic-3.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "12",
+      "18"
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Vegetariana",
+    "description": "A colorful vegetarian pizza with bell peppers, mushrooms, onions, olives, and artichoke hearts.",
+    "price": 13.5,
+    "imageUrl": "pizza-pic-4.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "15",
+      "5",
+      "6",
+      "9",
+      "8"
+    ]
+  },
+  {
+    "id": "5",
+    "name": "Bianca",
+    "description": "A cheese-forward white pizza without tomato sauce, featuring ricotta, mozzarella, parmesan, and garlic.",
+    "price": 13.5,
+    "imageUrl": "pizza-pic-5.jpg",
+    "toppings": [
+      "1",
+      "18",
+      "10"
+    ]
+  },
+  {
+    "id": "6",
+    "name": "Prosciutto e Rucola",
+    "description": "Italian classic with prosciutto crudo, fresh arugula, shaved parmesan and mozzarella.",
+    "price": 16,
+    "imageUrl": "pizza-pic-6.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "4",
+      "11",
+      "18"
+    ]
+  },
+  {
+    "id": "7",
+    "name": "Diavola",
+    "description": "Spicy Italian salami, chili flakes, and mozzarella make for a fiery, flavorful experience.",
+    "price": 14.5,
+    "imageUrl": "pizza-pic-7.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "19"
+    ]
+  },
+  {
+    "id": "8",
+    "name": "BBQ Chicken",
+    "description": "American-style pizza with BBQ sauce, grilled chicken, red onions, and mozzarella.",
+    "price": 15,
+    "imageUrl": "pizza-pic-8.jpg",
+    "toppings": [
+      "1",
+      "6"
+    ]
+  },
+  {
+    "id": "9",
+    "name": "Capricciosa",
+    "description": "A traditional Italian pie packed with ham, mushrooms, artichokes, and black olives.",
+    "price": 15,
+    "imageUrl": "pizza-pic-9.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "5",
+      "8",
+      "9"
+    ]
+  },
+  {
+    "id": "10",
+    "name": "Hawaiian",
+    "description": "Sweet and savory with ham, pineapple, and mozzarella, popular in North America.",
+    "price": 14,
+    "imageUrl": "pizza-pic-10.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "16"
+    ]
+  },
+  {
+    "id": "11",
+    "name": "Funghi",
+    "description": "Mushroom lovers rejoice! Tomato sauce, mozzarella, and a generous portion of cremini mushrooms.",
+    "price": 13,
+    "imageUrl": "pizza-pic-11.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "5"
+    ]
+  },
+  {
+    "id": "12",
+    "name": "Quattro Stagioni",
+    "description": "A seasonal classic divided into four sections: artichokes, mushrooms, ham, and olives.",
+    "price": 15.5,
+    "imageUrl": "pizza-pic-12.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "8",
+      "5",
+      "9"
+    ]
+  },
+  {
+    "id": "13",
+    "name": "Vegan Primavera",
+    "description": "Vegan-friendly pizza with vegan cheese, grilled zucchini, cherry tomatoes, and eggplant.",
+    "price": 14,
+    "imageUrl": "pizza-pic-13.jpg",
+    "toppings": [
+      "2",
+      "7"
+    ]
+  },
+  {
+    "id": "14",
+    "name": "Gluten-Free Margherita",
+    "description": "Classic Margherita on a gluten-free crust. Simple, authentic flavors for all.",
+    "price": 13.5,
+    "imageUrl": "pizza-pic-14.jpg",
+    "toppings": [
+      "2",
+      "1",
+      "7"
+    ]
+  },
+  {
+    "id": "15",
+    "name": "Buffalo Chicken",
+    "description": "American favorite with spicy buffalo sauce, grilled chicken, mozzarella, and a drizzle of ranch.",
+    "price": 15.5,
+    "imageUrl": "pizza-pic-15.jpg",
+    "toppings": [
+      "1"
+    ]
+  },
+  {
+    "id": "16",
+    "name": "Truffle & Mushroom",
+    "description": "Gourmet white pizza with mushrooms, mozzarella, truffle oil, and parmesan. Rich, earthy and luxurious.",
+    "price": 17,
+    "imageUrl": "pizza-pic-16.jpg",
+    "toppings": [
+      "1",
+      "5",
+      "20",
+      "18"
+    ]
+  }
+]

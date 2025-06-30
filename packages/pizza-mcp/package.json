@@ -1,0 +1,36 @@
+{
+  "name": "pizza-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./lib/local.js",
+  "scripts": {
+    "start": "tsx src/local.ts",
+    "start:server": "tsx src/server.ts",
+    "dev": "tsx watch src/local.ts",
+    "dev:server": "tsx watch src/server.ts",
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "docker:build": "docker build -t pizza-mcp .",
+    "docker:run": "docker run -p 3000:3000 -e PORT=3000 pizza-mcp"
+  },
+  "keywords": [],
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.0.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.11.24",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

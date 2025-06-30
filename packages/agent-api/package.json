@@ -1,0 +1,35 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for the serverless pizza agent sample",
+  "main": "dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean && npm run build",
+    "start:host": "func start",
+    "start": "concurrently npm:start:host npm:watch --raw --kill-others"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "@azure/identity": "^4.2.0",
+    "@azure/storage-blob": "^12.17.0",
+    "@langchain/azure-cosmosdb": "^0.2.2",
+    "@langchain/core": "^0.3.18",
+    "@langchain/langgraph": "^0.2.73",
+    "@langchain/mcp-adapters": "^0.4.5",
+    "@langchain/openai": "^0.5.10",
+    "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
+    "dotenv": "^16.4.5",
+    "langchain": "^0.3.6",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "azure-functions-core-tools": "^4.0.5611",
+    "typescript": "^5.4.4"
+  }
+}

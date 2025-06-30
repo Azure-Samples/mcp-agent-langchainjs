@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "resourceGroupName": {
+      "value": "${AZURE_RESOURCE_GROUP}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "principalId": {
+      "value": "${AZURE_PRINCIPAL_ID}"
+    },
+    "aiServicesLocation": {
+      "value": "${AZURE_AI_LOCATION=eastus2}"
+    },
+    "openAiApiVersion": {
+      "value": "${AZURE_OPENAI_API_VERSION=2024-02-01}"
+    },
+    "chatModelName": {
+      "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-4o-mini}"
+    },
+    "chatModelVersion": {
+      "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2024-07-18}"
+    },
+    "chatModelCapacity": {
+      "value": "${AZURE_OPENAI_CHAT_MODEL_CAPACITY=10}"
+    },
+    "embeddingsModelName": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL=text-embedding-ada-002}"
+    },
+    "embeddingsModelVersion": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL_VERSION=2}"
+    },
+    "embeddingsModelCapacity": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL_CAPACITY=20}"
+    },
+    "isContinuousIntegration": {
+      "value": "${CI=false}"
+    },
+    "pizzaMcpContainerAppExists": {
+      "value": "${SERVICE_PIZZA_MCP_RESOURCE_EXISTS=false}"
+    }
+  }
+}

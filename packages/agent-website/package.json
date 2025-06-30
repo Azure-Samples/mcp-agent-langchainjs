@@ -1,0 +1,25 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "Web app for the serverless AI Chat RAG sample",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 8000 --host",
+    "build": "vite build",
+    "watch": "vite build --watch --minify false",
+    "clean": "npx rimraf dist"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.2"
+  },
+  "files": [
+    "dist"
+  ]
+}

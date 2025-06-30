@@ -1,0 +1,7 @@
+{
+  "trailingSlash": "auto",
+  "navigationFallback": {
+    "rewrite": "index.html",
+    "exclude": ["/assets/*", "*.css"]
+  }
+}

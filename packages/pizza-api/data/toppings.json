@@ -1,0 +1,162 @@
+[
+  {
+    "id": "1",
+    "name": "Mozzarella",
+    "description": "Classic Italian cheese, mild and creamy, perfect for pizza melting.",
+    "price": 1.5,
+    "imageUrl": "topping-pic-1.jpg",
+    "category": "cheese"
+  },
+  {
+    "id": "2",
+    "name": "San Marzano Tomato Sauce",
+    "description": "Rich tomato sauce made from sweet San Marzano tomatoes.",
+    "price": 1,
+    "imageUrl": "topping-pic-2.jpg",
+    "category": "sauce"
+  },
+  {
+    "id": "3",
+    "name": "Pepperoni",
+    "description": "Spicy, cured sausage slices, an American pizza favorite.",
+    "price": 1.7,
+    "imageUrl": "topping-pic-3.jpg",
+    "category": "meat"
+  },
+  {
+    "id": "4",
+    "name": "Prosciutto di Parma",
+    "description": "Thin, salty, air-cured ham straight from Parma, Italy.",
+    "price": 2.5,
+    "imageUrl": "topping-pic-4.jpg",
+    "category": "meat"
+  },
+  {
+    "id": "5",
+    "name": "Mushrooms",
+    "description": "Sliced, fresh mushrooms for an earthy flavor.",
+    "price": 1.1,
+    "imageUrl": "topping-pic-5.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "6",
+    "name": "Red Onion",
+    "description": "Thinly sliced for a sweet and savory crunch.",
+    "price": 0.9,
+    "imageUrl": "topping-pic-6.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "7",
+    "name": "Fresh Basil",
+    "description": "Fragrant fresh basil leaves for an authentic Italian touch.",
+    "price": 0.8,
+    "imageUrl": "topping-pic-7.jpg",
+    "category": "herbs"
+  },
+  {
+    "id": "8",
+    "name": "Artichoke Hearts",
+    "description": "Marinated artichoke hearts, tangy and tender.",
+    "price": 1.6,
+    "imageUrl": "topping-pic-8.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "9",
+    "name": "Black Olives",
+    "description": "Pitted, salty black olives for rich Mediterranean flavor.",
+    "price": 1,
+    "imageUrl": "topping-pic-9.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "10",
+    "name": "Roasted Garlic",
+    "description": "Sweet, roasted garlic cloves to intensify flavor.",
+    "price": 0.7,
+    "imageUrl": "topping-pic-10.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "11",
+    "name": "Arugula",
+    "description": "Fresh peppery arugula leaves added after baking.",
+    "price": 1.1,
+    "imageUrl": "topping-pic-11.jpg",
+    "category": "herbs"
+  },
+  {
+    "id": "12",
+    "name": "Crumbled Gorgonzola",
+    "description": "Tangy, pungent Italian blue cheese crumbles.",
+    "price": 1.8,
+    "imageUrl": "topping-pic-12.jpg",
+    "category": "cheese"
+  },
+  {
+    "id": "13",
+    "name": "Italian Sausage",
+    "description": "Hearty chunks of fennel-seasoned pork sausage.",
+    "price": 1.9,
+    "imageUrl": "topping-pic-13.jpg",
+    "category": "meat"
+  },
+  {
+    "id": "14",
+    "name": "Anchovies",
+    "description": "Salty fillets of anchovy for a bold, umami kick.",
+    "price": 1.7,
+    "imageUrl": "topping-pic-14.jpg",
+    "category": "fish"
+  },
+  {
+    "id": "15",
+    "name": "Fire-Roasted Red Peppers",
+    "description": "Sweet, smoky strips of fire-roasted red bell peppers.",
+    "price": 1.2,
+    "imageUrl": "topping-pic-15.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "16",
+    "name": "Pineapple",
+    "description": "Sweet, juicy pineapple chunks for Hawaiian flair.",
+    "price": 1,
+    "imageUrl": "topping-pic-16.jpg",
+    "category": "fruit"
+  },
+  {
+    "id": "17",
+    "name": "Jalapeño Slices",
+    "description": "Fresh jalapeño rings for a spicy kick.",
+    "price": 0.8,
+    "imageUrl": "topping-pic-17.jpg",
+    "category": "vegetable"
+  },
+  {
+    "id": "18",
+    "name": "Parmigiano Reggiano",
+    "description": "Aged parmesan, nutty and sharp, grated over the top.",
+    "price": 1.6,
+    "imageUrl": "topping-pic-18.jpg",
+    "category": "cheese"
+  },
+  {
+    "id": "19",
+    "name": "Crushed Red Pepper Flakes",
+    "description": "Classic Italian spice for heat and color.",
+    "price": 0.3,
+    "imageUrl": "topping-pic-19.jpg",
+    "category": "spices"
+  },
+  {
+    "id": "20",
+    "name": "Truffle Oil",
+    "description": "Luxurious white truffle oil, drizzled for earthy aroma.",
+    "price": 2,
+    "imageUrl": "topping-pic-20.jpg",
+    "category": "sauce"
+  }
+]

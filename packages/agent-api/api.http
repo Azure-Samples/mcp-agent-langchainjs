@@ -1,0 +1,31 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7071
+
+### Chat with the bot
+POST {{api_host}}/api/chats/stream?userId=1
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "content": "What is there on the menu?",
+      "role": "user"
+    }
+  ],
+  "context": {
+    "sessionId": "123"
+  }
+}
+
+### Retrieve all chat sessions
+GET {{api_host}}/api/chats?userId=1
+
+### Retrieve a chat session
+GET {{api_host}}/api/chats/123?userId=1
+
+### Delete a chat session
+DELETE {{api_host}}/api/chats/123?userId=1

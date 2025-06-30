@@ -1,0 +1,119 @@
+{
+  "name": "mcp-agent-langchainjs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "concurrently \"npm:start:*\" --kill-others",
+    "start:webapp": "npm run dev --workspace=webapp",
+    "start:api": "npm run start --workspace=api",
+    "build": "npm run build --workspaces --if-present",
+    "build:webapp": "npm run build --workspace=webapp",
+    "build:api": "npm run build --workspace=api",
+    "clean": "npm run clean --workspaces --if-present",
+    "lint": "xo",
+    "lint:fix": "xo --fix",
+    "format": "prettier --list-different --write .",
+    "prepare": "simple-git-hooks || echo 'simple-git-hooks install skipped'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Azure-Samples/mcp-agent-langchainjs.git"
+  },
+  "homepage": "https://github.com/Azure-Samples/mcp-agent-langchainjs",
+  "bugs": {
+    "url": "https://github.com/Azure-Samples/mcp-agent-langchainjs/issues"
+  },
+  "keywords": [
+    "langchainjs",
+    "agent",
+    "serverless",
+    "typescript",
+    "azure",
+    "azure-functions",
+    "azure-static-web-apps",
+    "hamburger",
+    "mcp",
+    "model-context-protocol"
+  ],
+  "author": "Microsoft",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.0.3",
+    "rimraf": "^6.0.1",
+    "simple-git-hooks": "^2.9.0",
+    "typescript": "^5.3.3",
+    "xo": "^0.60.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,ts,md,yaml,yml,html,css}": "prettier --write",
+    "*.{js,ts}": "xo --fix"
+  },
+  "xo": {
+    "space": true,
+    "prettier": true,
+    "envs": [
+      "node"
+    ],
+    "rules": {
+      "@typescript-eslint/triple-slash-reference": "off",
+      "@typescript-eslint/naming-convention": "off",
+      "@typescript-eslint/consistent-type-definitions": "off",
+      "@typescript-eslint/member-ordering": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/consistent-type-imports": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/ban-types": "off",
+      "import/no-unassigned-import": "off",
+      "import/extensions": "off",
+      "n/prefer-global/process": "off",
+      "no-new-func": "off",
+      "unicorn/prefer-global-this": "off",
+      "unicorn/prefer-module": "off",
+      "unicorn/no-new-array": "off",
+      "unicorn/prevent-abbreviations": [
+        "error",
+        {
+          "allowList": {
+            "combineDocsChain": true,
+            "env": true,
+            "Db": true
+          }
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "bracketSpacing": true,
+    "overrides": [
+      {
+        "files": [
+          "*.json"
+        ],
+        "options": {
+          "parser": "json"
+        }
+      }
+    ]
+  }
+}

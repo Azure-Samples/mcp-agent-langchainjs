@@ -1,0 +1,25 @@
+{
+  "name": "pizza-website",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "concurrently npm:serve:* --raw --kill-others",
+    "start:mock": "concurrently npm:serve:mocks npm:serve:webapp --raw --kill-others",
+    "serve:api": "cd ../pizza-api && npm start",
+    "serve:mocks": "smoke -p 7071 -h 127.0.0.1 mocks",
+    "serve:webapp": "npm run dev -s",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "smoke": "^4.0.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}

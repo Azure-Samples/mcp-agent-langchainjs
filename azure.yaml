@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: mcp-agent-langchainjs
+metadata:
+  template: mcp-agent-langchainjs@1.0.0
+
+services:
+  pizza-api:
+    project: ./packages/pizza-api
+    language: ts
+    host: function
+
+  pizza-website:
+    project: ./packages/pizza-website
+    dist: dist
+    language: ts
+    host: staticwebapp
+    # Needed to get the PIZZA_API_URL env var set
+    hooks:
+      predeploy:
+        windows:
+          shell: pwsh
+          run: npm run build
+        posix:
+          shell: sh
+          run: npm run build
+
+  pizza-mcp:
+    project: ./packages/pizza-mcp
+    language: ts
+    host: containerapp
+
+  agent-api:
+    project: ./packages/agent-api
+    language: ts
+    host: function
+
+  agent-website:
+    project: ./packages/agent-website
+    dist: dist
+    language: ts
+    host: staticwebapp
+    # Needed to get the AGENT_API_URL env var set
+    hooks:
+      predeploy:
+        windows:
+          shell: pwsh
+          run: npm run build
+        posix:
+          shell: sh
+          run: npm run build
+
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: azd env get-values > .env
+    posix:
+      shell: sh
+      run: azd env get-values > .env
