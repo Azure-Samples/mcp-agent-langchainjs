@@ -1,5 +1,5 @@
 {
-  "name": "pizza-mcp",
+  "name": "burger-mcp",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -11,8 +11,8 @@
     "dev:server": "tsx watch src/server.ts",
     "build": "tsc",
     "clean": "rimraf lib",
-    "docker:build": "docker build -t pizza-mcp .",
-    "docker:run": "docker run -p 3000:3000 -e PORT=3000 pizza-mcp"
+    "docker:build": "docker build -t burger-mcp .",
+    "docker:run": "docker run -p 3000:3000 -e PORT=3000 burger-mcp"
   },
   "keywords": [],
   "author": "Microsoft",

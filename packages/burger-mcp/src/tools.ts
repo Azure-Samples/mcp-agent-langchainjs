@@ -1,22 +1,22 @@
 import { z } from "zod";
-import { pizzaApiUrl } from "./config.js";
+import { burgerApiUrl } from "./config.js";
 
 export const tools = [
   {
-    name: "get_pizzas",
-    description: "Get a list of all pizzas in the menu",
+    name: "get_burgers",
+    description: "Get a list of all burgers in the menu",
     handler: async () => {
-      return fetchPizzaApi("/api/pizzas");
+      return fetchBurgerApi("/api/burgers");
     },
   },
   {
-    name: "get_pizza_by_id",
-    description: "Get a specific pizza by its ID",
+    name: "get_burger_by_id",
+    description: "Get a specific burger by its ID",
     schema: z.object({
-      id: z.string().describe("ID of the pizza to retrieve"),
+      id: z.string().describe("ID of the burger to retrieve"),
     }),
     handler: async (args: z.ZodRawShape) => {
-      return fetchPizzaApi(`/api/pizzas/${args.id}`);
+      return fetchBurgerApi(`/api/burgers/${args.id}`);
     },
   },
   {
@@ -29,7 +29,7 @@ export const tools = [
         .describe("Category of toppings to filter by (can be empty)"),
     }),
     handler: async (args: z.ZodRawShape) => {
-      return fetchPizzaApi(`/api/toppings?category=${args.category ?? ""}`);
+      return fetchBurgerApi(`/api/toppings?category=${args.category ?? ""}`);
     },
   },
   {
@@ -39,14 +39,14 @@ export const tools = [
       id: z.string().describe("ID of the topping to retrieve"),
     }),
     handler: async (args: z.ZodRawShape) => {
-      return fetchPizzaApi(`/api/toppings/${args.id}`);
+      return fetchBurgerApi(`/api/toppings/${args.id}`);
     },
   },
   {
     name: "get_topping_categories",
     description: "Get a list of all topping categories",
     handler: async (_args: z.ZodRawShape) => {
-      return fetchPizzaApi("/api/toppings/categories");
+      return fetchBurgerApi("/api/toppings/categories");
     },
   },
   {
@@ -64,7 +64,7 @@ export const tools = [
       if (args.last) params.append("last", args.last);
       const query = params.toString();
       const url = query ? `/api/orders?${query}` : "/api/orders";
-      return fetchPizzaApi(url);
+      return fetchBurgerApi(url);
     },
   },
   {
@@ -74,19 +74,19 @@ export const tools = [
       id: z.string().describe("ID of the order to retrieve"),
     }),
     handler: async (args: z.ZodRawShape) => {
-      return fetchPizzaApi(`/api/orders/${args.id}`);
+      return fetchBurgerApi(`/api/orders/${args.id}`);
     },
   },
   {
     name: "place_order",
-    description: "Place a new order with pizzas (requires userId)",
+    description: "Place a new order with burgers (requires userId)",
     schema: z.object({
       userId: z.string().describe("ID of the user placing the order"),
       items: z
         .array(
           z.object({
-            pizzaId: z.string().describe("ID of the pizza"),
-            quantity: z.number().min(1).describe("Quantity of the pizza"),
+            burgerId: z.string().describe("ID of the burger"),
+            quantity: z.number().min(1).describe("Quantity of the burger"),
             extraToppingIds: z
               .array(z.string())
               .describe("List of extra topping IDs"),
@@ -96,7 +96,7 @@ export const tools = [
         .describe("List of items in the order"),
     }),
     handler: async (args: z.ZodRawShape) => {
-      return fetchPizzaApi("/api/orders", {
+      return fetchBurgerApi("/api/orders", {
         method: "POST",
         body: JSON.stringify(args),
       });
@@ -111,7 +111,7 @@ export const tools = [
       userId: z.string().describe("ID of the user that placed the order"),
     }),
     handler: async (args: z.ZodRawShape) => {
-      return fetchPizzaApi(`/api/orders/${args.id}?userId=${args.userId}`, {
+      return fetchBurgerApi(`/api/orders/${args.id}?userId=${args.userId}`, {
         method: "DELETE",
       });
     },
@@ -125,7 +125,7 @@ export const tools = [
     handler: async (args: z.ZodRawShape) => {
       const imageUrl = new URL(
         `/api/images/${args.filepath}`,
-        pizzaApiUrl
+        burgerApiUrl
       ).toString();
       return JSON.stringify({ imageUrl });
     },
@@ -133,11 +133,11 @@ export const tools = [
 ];
 
 // Wraps standard fetch to include the base URL and handle errors
-async function fetchPizzaApi(
+async function fetchBurgerApi(
   url: string,
   options: RequestInit = {}
 ): Promise<string> {
-  const fullUrl = new URL(url, pizzaApiUrl).toString();
+  const fullUrl = new URL(url, burgerApiUrl).toString();
   console.error(`Fetching ${fullUrl}`);
   try {
     const response = await fetch(fullUrl, {

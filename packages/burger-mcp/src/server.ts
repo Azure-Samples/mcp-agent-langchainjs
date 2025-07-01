@@ -4,14 +4,14 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import express, { Request, Response } from "express";
-import { pizzaApiUrl } from "./config.js";
+import { burgerApiUrl } from "./config.js";
 import { getMcpServer } from "./mcp.js";
 
 const app = express();
 app.use(express.json());
 
 app.get("/", (_req: Request, res: Response) => {
-  res.send({ status: 'up', message: `Pizza MCP server running (Using pizza API URL: ${pizzaApiUrl})` });
+  res.send({ status: 'up', message: `Burger MCP server running (Using burger API URL: ${burgerApiUrl})` });
 });
 
 // Store transports by session ID
@@ -158,7 +158,7 @@ app.post("/messages", async (req: Request, res: Response) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(
-    `Pizza MCP server listening on port ${PORT} (Using pizza API URL: ${pizzaApiUrl})`
+    `Burger MCP server listening on port ${PORT} (Using burger API URL: ${burgerApiUrl})`
   );
 });
 

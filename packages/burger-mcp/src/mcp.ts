@@ -4,7 +4,7 @@ import { tools } from "./tools.js";
 
 export function getMcpServer() {
   const server = new McpServer({
-    name: "pizza-mcp",
+    name: "burger-mcp",
     version: "1.0.0",
   });
   for (const tool of tools) {

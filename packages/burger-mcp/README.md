@@ -1,6 +1,6 @@
 <div align="center">
 
-# Azure Container Apps Pizza MCP server
+# Azure Container Apps Burger MCP server
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Microsoft/open-hack-build-25?hide_repo_select=true&ref=main&quickstart=true)
 ![Node version](https://img.shields.io/badge/Node.js->=22-3c873a?style=flat-square)
@@ -11,7 +11,7 @@
 
 ## Overview
 
-This is the Pizza MCP server, exposing the Pizza API as a Model Context Protocol (MCP) server. The MCP server allows LLMs to interact with the pizza ordering process through MCP tools.
+This is the Burger MCP server, exposing the Burger API as a Model Context Protocol (MCP) server. The MCP server allows LLMs to interact with the burger ordering process through MCP tools.
 
 This server supports the following transport types:
 - **SSE**
@@ -22,24 +22,24 @@ The remote server is deployed with [Azure Container Apps](https://learn.microsof
 
 ## MCP tools
 
-The Pizza MCP server provides the following tools:
+The Burger MCP server provides the following tools:
 
 | Tool Name | Description |
 |-----------|-------------|
-| get_pizzas | Get a list of all pizzas in the menu |
-| get_pizza_by_id | Get a specific pizza by its ID |
+| get_burgers | Get a list of all burgers in the menu |
+| get_burger_by_id | Get a specific burger by its ID |
 | get_toppings | Get a list of all toppings in the menu |
 | get_topping_by_id | Get a specific topping by its ID |
 | get_topping_categories | Get a list of all topping categories |
 | get_orders | Get a list of all orders in the system |
 | get_order_by_id | Get a specific order by its ID |
-| place_order | Place a new order with pizzas (requires `userId`) |
+| place_order | Place a new order with burgers (requires `userId`) |
 | delete_order_by_id | Cancel an order if it has not yet been started (status must be `pending`, requires `userId`) |
 | get_image | Retrieve the full URL of an image file |
 
 ## Test with MCP inspector
 
-First, you need to start the Pizza API and Pizza MCP server locally.
+First, you need to start the Burger API and Burger MCP server locally.
 
 1. In a terminal window, start MCP Inspector:
     ```bash
