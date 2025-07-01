@@ -14,7 +14,7 @@ const toppingsMap = new Map(
 );
 
 const role = `## Role
-You're an expert prompt engineer with a deep understanding of Dall-E 3 capabilities and a renowned food photographer. You have a passion for creating visually stunning images that capture the essence of food and culinary art. You know how to create prompts that generate high-quality and realistic pictures with rich details of food and ingredients.`;
+You're an expert prompt engineer with a deep understanding of AI image generation capabilities and a renowned food photographer. You have a passion for creating visually stunning images that capture the essence of food and culinary art. You know how to create prompts that generate high-quality and realistic pictures with rich details of food and ingredients.`;
 
 // ----------------------------------------------------------------------------
 // Generate burger images
@@ -34,7 +34,7 @@ for (const burger of burgersData) {
     _.$`${role}
 
   ## Task
-  You have to create a prompt for Dall-E 3 to generate a realistic photograph of the burger specified below, as if it was taken by a professional food photographer to illustrate a restaurant menu.
+  You have to create a prompt for Dall-E 3 or gpt-image-1 to generate a realistic photograph of the burger specified below, as if it was taken by a professional food photographer to illustrate a restaurant menu. Do not add any text or logo in the image.
 
   ## Burger
   - Name: ${name}
@@ -42,7 +42,7 @@ for (const burger of burgersData) {
   - Toppings: ${toppings.join(", ")}
 
   ## Output
-  Write only the prompt for Dall-E 3, without any additional text or explanation.`;
+  Write only the prompt, without any additional text or explanation.`;
   });
 
   const { image } = await generateImage(burgerPrompt, {
@@ -70,14 +70,14 @@ for (const topping of toppingsData) {
     _.$`${role}
 
   ## Task
-  You have to create a prompt for Dall-E 3 to generate a realistic photograph of the burger topping specified below, as if it was taken by a professional food photographer to illustrate a restaurant menu. Feature the ingredient alone, not on a burger.
+  You have to create a prompt for Dall-E 3 or gpt-image-1 to generate a realistic photograph of the burger topping specified below, as if it was taken by a professional food photographer to illustrate a restaurant menu. Feature the ingredient alone, not on a burger. Do not add any text or logo in the image.
 
   ## Topping
   - Name: ${name}
   - Description: ${description}
 
   ## Output
-  Write only the prompt for Dall-E 3, without any additional text or explanation.`;
+  Write only the prompt, without any additional text or explanation.`;
   });
 
   const { image } = await generateImage(toppingPrompt, {

@@ -4,7 +4,7 @@
     "name": "Iceberg Lettuce",
     "description": "Crisp, refreshing shredded iceberg lettuce.",
     "price": 0.5,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-1.jpg",
     "category": "vegetable"
   },
   {
@@ -12,7 +12,7 @@
     "name": "Tomato Slices",
     "description": "Thick, juicy slices of ripe tomato.",
     "price": 0.7,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-2.jpg",
     "category": "vegetable"
   },
   {
@@ -20,7 +20,7 @@
     "name": "Red Onion",
     "description": "Fresh, thinly sliced red onions for a sharp bite.",
     "price": 0.4,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-3.jpg",
     "category": "vegetable"
   },
   {
@@ -28,7 +28,7 @@
     "name": "Pickles",
     "description": "Tangy dill pickle slices for extra crunch.",
     "price": 0.4,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-4.jpg",
     "category": "vegetable"
   },
   {
@@ -36,7 +36,7 @@
     "name": "Grilled Mushrooms",
     "description": "Savory mushrooms grilled to perfection.",
     "price": 0.8,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-5.jpg",
     "category": "vegetable"
   },
   {
@@ -44,7 +44,7 @@
     "name": "Jalapeños",
     "description": "Sliced spicy jalapeños for a fiery kick.",
     "price": 0.5,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-6.jpg",
     "category": "vegetable"
   },
   {
@@ -52,7 +52,7 @@
     "name": "Bacon",
     "description": "Crispy smoked bacon strips.",
     "price": 1.2,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-7.jpg",
     "category": "meat"
   },
   {
@@ -60,7 +60,7 @@
     "name": "Beef Patty",
     "description": "Juicy grilled beef patty.",
     "price": 2.5,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-8.jpg",
     "category": "meat"
   },
   {
@@ -68,15 +68,15 @@
     "name": "Chicken Breast",
     "description": "Chargrilled tender chicken breast.",
     "price": 2.3,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-9.jpg",
     "category": "meat"
   },
   {
     "id": "10",
     "name": "Fried Egg",
     "description": "Sunny side-up egg with a runny yolk.",
-    "price": 1.0,
-    "imageUrl": "",
+    "price": 1,
+    "imageUrl": "topping-pic-10.jpg",
     "category": "extras"
   },
   {
@@ -84,7 +84,7 @@
     "name": "Cheddar Cheese",
     "description": "Melted sharp cheddar cheese slice.",
     "price": 0.7,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-11.jpg",
     "category": "cheese"
   },
   {
@@ -92,7 +92,7 @@
     "name": "Swiss Cheese",
     "description": "Mild and nutty Swiss cheese slice.",
     "price": 0.8,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-12.jpg",
     "category": "cheese"
   },
   {
@@ -100,15 +100,15 @@
     "name": "American Cheese",
     "description": "Classic creamy American cheese slice.",
     "price": 0.6,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-13.jpg",
     "category": "cheese"
   },
   {
     "id": "14",
     "name": "Blue Cheese Crumbles",
     "description": "Rich and tangy blue cheese crumbles.",
-    "price": 1.0,
-    "imageUrl": "",
+    "price": 1,
+    "imageUrl": "topping-pic-14.jpg",
     "category": "cheese"
   },
   {
@@ -116,7 +116,7 @@
     "name": "Ketchup",
     "description": "Sweet and tangy tomato ketchup.",
     "price": 0.2,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-15.jpg",
     "category": "sauce"
   },
   {
@@ -124,7 +124,7 @@
     "name": "Mayonnaise",
     "description": "Creamy mayonnaise spread.",
     "price": 0.2,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-16.jpg",
     "category": "sauce"
   },
   {
@@ -132,7 +132,7 @@
     "name": "Mustard",
     "description": "Classic yellow mustard.",
     "price": 0.2,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-17.jpg",
     "category": "sauce"
   },
   {
@@ -140,7 +140,7 @@
     "name": "BBQ Sauce",
     "description": "Smoky and sweet barbecue sauce.",
     "price": 0.3,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-18.jpg",
     "category": "sauce"
   },
   {
@@ -148,7 +148,7 @@
     "name": "Chipotle Mayo",
     "description": "Spicy and creamy chipotle-infused mayonnaise.",
     "price": 0.4,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-19.jpg",
     "category": "sauce"
   },
   {
@@ -156,7 +156,7 @@
     "name": "Fried Onions",
     "description": "Crispy fried onion strings for extra crunch.",
     "price": 0.6,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-20.jpg",
     "category": "extras"
   },
   {
@@ -164,7 +164,7 @@
     "name": "Avocado",
     "description": "Fresh slices of creamy avocado.",
     "price": 1.1,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-21.jpg",
     "category": "extras"
   },
   {
@@ -172,7 +172,7 @@
     "name": "Pineapple",
     "description": "Juicy grilled pineapple slices.",
     "price": 0.9,
-    "imageUrl": "",
+    "imageUrl": "topping-pic-22.jpg",
     "category": "extras"
   }
 ]
