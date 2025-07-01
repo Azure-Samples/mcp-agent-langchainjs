@@ -5,17 +5,22 @@ metadata:
   template: mcp-agent-langchainjs@1.0.0
 
 services:
-  pizza-api:
-    project: ./packages/pizza-api
+  burger-api:
+    project: ./packages/burger-api
     language: ts
     host: function
 
-  pizza-website:
-    project: ./packages/pizza-website
+  burger-mcp:
+    project: ./packages/burger-mcp
+    language: ts
+    host: containerapp
+
+  burger-website:
+    project: ./packages/burger-website
     dist: dist
     language: ts
     host: staticwebapp
-    # Needed to get the PIZZA_API_URL env var set
+    # Needed to get the BURGER_API_URL env var set
     hooks:
       predeploy:
         windows:
@@ -24,11 +29,6 @@ services:
         posix:
           shell: sh
           run: npm run build
-
-  pizza-mcp:
-    project: ./packages/pizza-mcp
-    language: ts
-    host: containerapp
 
   agent-api:
     project: ./packages/agent-api
