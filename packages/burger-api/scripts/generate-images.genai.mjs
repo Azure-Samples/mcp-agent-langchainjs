@@ -3,7 +3,7 @@
 // long to run, as it will generate about 40 images.
 //
 // Note that you need to set GENAISCRIPT_IMAGE_MODEL env variable to either
-// "openai:dall-e-3" or "azure:dall-e-3" to run this script.
+// "openai:gpt-image-1" or "azure:gpt-image-1" to run this script.
 
 import burgersData from '../data/burgers.json' with { type: "json" };
 import toppingsData from '../data/toppings.json' with { type: "json" };
