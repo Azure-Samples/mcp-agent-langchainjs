@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "name": "Classic American Cheeseburger",
+    "description": "Juicy Angus beef patty topped with melted American cheese, crisp lettuce, tomato, red onion, and house special sauce on a toasted sesame bun.",
+    "price": 10.99,
+    "imageUrl": "",
+    "toppings": ["13", "1", "2", "3"]
+  },
+  {
+    "id": "2",
+    "name": "Smoky BBQ Bacon Burger",
+    "description": "Flame-grilled beef patty covered in smoky barbecue sauce, crispy bacon, cheddar cheese, onion rings, and sliced pickles on a brioche bun.",
+    "price": 12.49,
+    "imageUrl": "",
+    "toppings": ["18", "7", "11", "20", "4"]
+  },
+  {
+    "id": "3",
+    "name": "Spicy Jalapeño Fiesta Burger",
+    "description": "Beef patty with pepper jack cheese, jalapeños, pickled red onions, chipotle mayo, and fresh avocado, served on a corn-dusted bun.",
+    "price": 11.99,
+    "imageUrl": "",
+    "toppings": ["6", "3", "19", "21"]
+  },
+  {
+    "id": "4",
+    "name": "Mushroom Swiss Gourmet",
+    "description": "Savory beef patty topped with sautéed mushrooms, Swiss cheese, caramelized onions, and garlic aioli on a potato roll.",
+    "price": 12.29,
+    "imageUrl": "",
+    "toppings": ["5", "12"]
+  },
+  {
+    "id": "5",
+    "name": "Southern Fried Chicken Burger",
+    "description": "Crispy buttermilk fried chicken breast, tangy coleslaw, spicy mayo, and dill pickles stacked on a soft bun.",
+    "price": 11.49,
+    "imageUrl": "",
+    "toppings": ["4"]
+  },
+  {
+    "id": "6",
+    "name": "Cali Veggie Supreme",
+    "description": "Grilled veggie patty with melted provolone, fresh sprouts, tomato, red onion, cucumber, and herb aioli on a multigrain bun. (Vegetarian)",
+    "price": 10.79,
+    "imageUrl": "",
+    "toppings": ["2", "3"]
+  },
+  {
+    "id": "7",
+    "name": "Spiced Chickpea Vegan Burger",
+    "description": "Crispy spiced chickpea patty topped with vegan tzatziki, arugula, sliced tomato, pickled cucumbers, and red onion on a vegan bun. (Vegan)",
+    "price": 10.99,
+    "imageUrl": "",
+    "toppings": ["2", "4", "3"]
+  },
+  {
+    "id": "8",
+    "name": "Tokyo Teriyaki Fusion Burger",
+    "description": "Seared beef patty glazed with teriyaki sauce, grilled pineapple, wasabi mayo, crisp lettuce, and sesame seeds on a toasted bun.",
+    "price": 12.59,
+    "imageUrl": "",
+    "toppings": ["22", "1"]
+  },
+  {
+    "id": "9",
+    "name": "Mediterranean Lamb Burger",
+    "description": "Juicy lamb patty with feta cheese, tzatziki, grilled eggplant, arugula, and tomato on a ciabatta roll.",
+    "price": 13.49,
+    "imageUrl": "",
+    "toppings": ["2"]
+  },
+  {
+    "id": "10",
+    "name": "Gluten-Free Avocado Turkey Burger",
+    "description": "Grilled turkey patty topped with sliced avocado, pepper jack cheese, lettuce, tomato, and honey mustard, served on a gluten-free bun. (Gluten-Free)",
+    "price": 11.99,
+    "imageUrl": "",
+    "toppings": ["21", "1", "2"]
+  }
+]

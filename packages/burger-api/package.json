@@ -24,10 +24,11 @@
     "@azure/functions": "^4.7.0",
     "@azure/identity": "^4.8.0",
     "@azure/storage-blob": "^12.27.0",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.0.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@genaiscript/runtime": "^2.2.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",

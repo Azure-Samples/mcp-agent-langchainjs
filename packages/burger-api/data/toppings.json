@@ -1,0 +1,178 @@
+[
+  {
+    "id": "1",
+    "name": "Iceberg Lettuce",
+    "description": "Crisp, refreshing shredded iceberg lettuce.",
+    "price": 0.5,
+    "imageUrl": "",
+    "category": "vegetable"
+  },
+  {
+    "id": "2",
+    "name": "Tomato Slices",
+    "description": "Thick, juicy slices of ripe tomato.",
+    "price": 0.7,
+    "imageUrl": "",
+    "category": "vegetable"
+  },
+  {
+    "id": "3",
+    "name": "Red Onion",
+    "description": "Fresh, thinly sliced red onions for a sharp bite.",
+    "price": 0.4,
+    "imageUrl": "",
+    "category": "vegetable"
+  },
+  {
+    "id": "4",
+    "name": "Pickles",
+    "description": "Tangy dill pickle slices for extra crunch.",
+    "price": 0.4,
+    "imageUrl": "",
+    "category": "vegetable"
+  },
+  {
+    "id": "5",
+    "name": "Grilled Mushrooms",
+    "description": "Savory mushrooms grilled to perfection.",
+    "price": 0.8,
+    "imageUrl": "",
+    "category": "vegetable"
+  },
+  {
+    "id": "6",
+    "name": "Jalapeños",
+    "description": "Sliced spicy jalapeños for a fiery kick.",
+    "price": 0.5,
+    "imageUrl": "",
+    "category": "vegetable"
+  },
+  {
+    "id": "7",
+    "name": "Bacon",
+    "description": "Crispy smoked bacon strips.",
+    "price": 1.2,
+    "imageUrl": "",
+    "category": "meat"
+  },
+  {
+    "id": "8",
+    "name": "Beef Patty",
+    "description": "Juicy grilled beef patty.",
+    "price": 2.5,
+    "imageUrl": "",
+    "category": "meat"
+  },
+  {
+    "id": "9",
+    "name": "Chicken Breast",
+    "description": "Chargrilled tender chicken breast.",
+    "price": 2.3,
+    "imageUrl": "",
+    "category": "meat"
+  },
+  {
+    "id": "10",
+    "name": "Fried Egg",
+    "description": "Sunny side-up egg with a runny yolk.",
+    "price": 1.0,
+    "imageUrl": "",
+    "category": "extras"
+  },
+  {
+    "id": "11",
+    "name": "Cheddar Cheese",
+    "description": "Melted sharp cheddar cheese slice.",
+    "price": 0.7,
+    "imageUrl": "",
+    "category": "cheese"
+  },
+  {
+    "id": "12",
+    "name": "Swiss Cheese",
+    "description": "Mild and nutty Swiss cheese slice.",
+    "price": 0.8,
+    "imageUrl": "",
+    "category": "cheese"
+  },
+  {
+    "id": "13",
+    "name": "American Cheese",
+    "description": "Classic creamy American cheese slice.",
+    "price": 0.6,
+    "imageUrl": "",
+    "category": "cheese"
+  },
+  {
+    "id": "14",
+    "name": "Blue Cheese Crumbles",
+    "description": "Rich and tangy blue cheese crumbles.",
+    "price": 1.0,
+    "imageUrl": "",
+    "category": "cheese"
+  },
+  {
+    "id": "15",
+    "name": "Ketchup",
+    "description": "Sweet and tangy tomato ketchup.",
+    "price": 0.2,
+    "imageUrl": "",
+    "category": "sauce"
+  },
+  {
+    "id": "16",
+    "name": "Mayonnaise",
+    "description": "Creamy mayonnaise spread.",
+    "price": 0.2,
+    "imageUrl": "",
+    "category": "sauce"
+  },
+  {
+    "id": "17",
+    "name": "Mustard",
+    "description": "Classic yellow mustard.",
+    "price": 0.2,
+    "imageUrl": "",
+    "category": "sauce"
+  },
+  {
+    "id": "18",
+    "name": "BBQ Sauce",
+    "description": "Smoky and sweet barbecue sauce.",
+    "price": 0.3,
+    "imageUrl": "",
+    "category": "sauce"
+  },
+  {
+    "id": "19",
+    "name": "Chipotle Mayo",
+    "description": "Spicy and creamy chipotle-infused mayonnaise.",
+    "price": 0.4,
+    "imageUrl": "",
+    "category": "sauce"
+  },
+  {
+    "id": "20",
+    "name": "Fried Onions",
+    "description": "Crispy fried onion strings for extra crunch.",
+    "price": 0.6,
+    "imageUrl": "",
+    "category": "extras"
+  },
+  {
+    "id": "21",
+    "name": "Avocado",
+    "description": "Fresh slices of creamy avocado.",
+    "price": 1.1,
+    "imageUrl": "",
+    "category": "extras"
+  },
+  {
+    "id": "22",
+    "name": "Pineapple",
+    "description": "Juicy grilled pineapple slices.",
+    "price": 0.9,
+    "imageUrl": "",
+    "category": "extras"
+  }
+]
