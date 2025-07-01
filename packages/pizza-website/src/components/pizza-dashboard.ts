@@ -4,8 +4,8 @@ import { repeat } from "lit/directives/repeat.js";
 import { customElement, state } from "lit/decorators.js";
 import { fetchOrders } from "../orders.service.js";
 import type { PizzaOrder } from "../orders.service.js";
-import sliceSvg from "../../assets/slice.svg?raw";
-import pizzaSvg from "../../assets/pizza.svg?raw";
+import burgerOutlineSvg from "../../assets/burger-outline.svg?raw";
+import burgerSvg from "../../assets/burger.svg?raw";
 
 export const apiBaseUrl: string = import.meta.env.VITE_PIZZA_API_URL || "";
 
