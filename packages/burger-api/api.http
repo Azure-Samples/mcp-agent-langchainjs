@@ -1,0 +1,103 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7071
+
+### Get all burgers
+GET {{api_host}}/api/burgers
+
+### Get a single burger by ID
+GET {{api_host}}/api/burgers/1
+
+### Get all toppings
+GET {{api_host}}/api/toppings
+
+### Get toppings by category
+GET {{api_host}}/api/toppings?category=cheese
+
+### Get all topping categories
+GET {{api_host}}/api/toppings/categories
+
+### Get a single topping by ID
+GET {{api_host}}/api/toppings/1
+
+### Get all orders
+GET {{api_host}}/api/orders
+
+### Get orders filtered by userId
+GET {{api_host}}/api/orders?userId=user123
+
+### Get orders filtered by status (pending or ready)
+GET {{api_host}}/api/orders?status=pending,ready
+
+### Get orders from the last 2 hours
+GET {{api_host}}/api/orders?last=2h
+
+### Get orders for userId and status in last 60 minutes
+GET {{api_host}}/api/orders?userId=user123&status=completed&last=60m
+
+### Get a single order by ID
+# Replace the ID with an actual order ID from your system
+GET {{api_host}}/api/orders/12345
+
+### Create a new order with burgers
+POST {{api_host}}/api/orders
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "items": [
+    {
+      "burgerId": "1",
+      "quantity": 1
+    },
+    {
+      "burgerId": "2",
+      "quantity": 2
+    }
+  ]
+}
+
+### Create a new order with burgers and extra toppings
+POST {{api_host}}/api/orders
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "items": [
+    {
+      "burgerId": "1",
+      "quantity": 1,
+      "extraToppingIds": ["3", "4"]
+    },
+    {
+      "burgerId": "2",
+      "quantity": 2,
+      "extraToppingIds": ["5"]
+    }
+  ]
+}
+
+### Delete/cancel an order
+DELETE {{api_host}}/api/orders/12345?userId=user123
+
+### Get a burger image
+GET {{api_host}}/api/images/burger-pic-1.jpg
+
+### Get a topping image
+GET {{api_host}}/api/images/topping-pic-1.jpg
+
+####################################################################
+# Utility endpoints
+####################################################################
+
+### Get server status
+GET {{api_host}}/api/
+
+### Get OpenAPI specification (YAML)
+GET {{api_host}}/api/openapi
+
+### Get OpenAPI specification (JSON)
+GET {{api_host}}/api/openapi?format=json
