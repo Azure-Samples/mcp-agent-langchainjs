@@ -3,7 +3,7 @@
     "createdAt": "2025-05-15T09:05:06.552Z",
     "items": [
       {
-        "pizzaId": "1",
+        "burgerId": "1",
         "quantity": 1,
         "extraToppingIds": []
       }
@@ -12,13 +12,14 @@
     "totalPrice": 12,
     "status": "completed",
     "id": "1747299906552",
+    "readyAt": "2025-05-15T09:07:30.003Z",
     "completedAt": "2025-05-15T09:07:40.003Z"
   },
   {
     "createdAt": "2025-05-15T09:06:06.552Z",
     "items": [
       {
-        "pizzaId": "4",
+        "burgerId": "4",
         "quantity": 1,
         "extraToppingIds": []
       }
@@ -26,19 +27,18 @@
     "estimatedCompletionAt": "2025-05-15T09:09:06.552Z",
     "totalPrice": 12,
     "status": "in-preparation",
-    "id": "1747299906559",
-    "completedAt": "2025-05-15T09:07:40.003Z"
+    "id": "1747299906559"
   },
   {
     "createdAt": "2025-05-15T09:10:39.813Z",
     "items": [
       {
-        "pizzaId": "1",
+        "burgerId": "1",
         "quantity": 1,
         "extraToppingIds": []
       },
       {
-        "pizzaId": "2",
+        "burgerId": "2",
         "quantity": 1,
         "extraToppingIds": []
       }
@@ -47,13 +47,13 @@
     "totalPrice": 26,
     "status": "ready",
     "id": "1747300239814",
-    "completedAt": "2025-05-15T09:12:00.003Z"
+    "readyAt": "2025-05-15T09:12:00.003Z"
   },
   {
     "createdAt": "2025-05-15T09:44:17.478Z",
     "items": [
       {
-        "pizzaId": "2",
+        "burgerId": "2",
         "quantity": 1,
         "extraToppingIds": []
       }
@@ -67,17 +67,17 @@
     "createdAt": "2025-05-15T09:10:39.813Z",
     "items": [
       {
-        "pizzaId": "1",
+        "burgerId": "1",
         "quantity": 1,
         "extraToppingIds": []
       },
       {
-        "pizzaId": "2",
+        "burgerId": "2",
         "quantity": 1,
         "extraToppingIds": []
       },
       {
-        "pizzaId": "3",
+        "burgerId": "3",
         "quantity": 1,
         "extraToppingIds": []
       }
@@ -86,6 +86,7 @@
     "totalPrice": 39,
     "status": "ready",
     "id": "1747350239813",
+    "readyAt": "2025-05-15T09:12:00.003Z",
     "completedAt": "2025-05-15T09:12:00.003Z"
   }
 ]

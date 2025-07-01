@@ -3,22 +3,22 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement, state } from "lit/decorators.js";
 import { fetchOrders } from "../orders.service.js";
-import type { PizzaOrder } from "../orders.service.js";
+import type { BurgerOrder } from "../orders.service.js";
 import burgerOutlineSvg from "../../assets/burger-outline.svg?raw";
 import burgerSvg from "../../assets/burger.svg?raw";
 
-export const apiBaseUrl: string = import.meta.env.VITE_PIZZA_API_URL || "";
+export const apiBaseUrl: string = import.meta.env.VITE_BURGER_API_URL || "";
 
-@customElement("pizza-dashboard")
-export class PizzaDashboard extends LitElement {
+@customElement("burger-dashboard")
+export class BurgerDashboard extends LitElement {
   @state() protected hasError = false;
-  @state() protected inProgressOrders: PizzaOrder[] = [];
-  @state() protected completedOrders: PizzaOrder[] = [];
+  @state() protected inProgressOrders: BurgerOrder[] = [];
+  @state() protected completedOrders: BurgerOrder[] = [];
   @state() protected refreshTimer: number | undefined = undefined;
 
-  private prevInProgressOrders: PizzaOrder[] = [];
-  private prevCompletedOrders: PizzaOrder[] = [];
-  private leavingOrders: Map<string, PizzaOrder> = new Map();
+  private prevInProgressOrders: BurgerOrder[] = [];
+  private prevCompletedOrders: BurgerOrder[] = [];
+  private leavingOrders: Map<string, BurgerOrder> = new Map();
 
   connectedCallback() {
     super.connectedCallback();
@@ -85,8 +85,8 @@ export class PizzaDashboard extends LitElement {
   }
 
   private handleOrderAnimations(
-    currentOrders: PizzaOrder[],
-    prevOrders: PizzaOrder[]
+    currentOrders: BurgerOrder[],
+    prevOrders: BurgerOrder[]
   ) {
     const currentIds = new Set(currentOrders.map((o) => o.id));
     // Animate new orders (fade-in)
@@ -116,7 +116,7 @@ export class PizzaDashboard extends LitElement {
     });
   }
 
-  protected getOrderDisplayStatus(order: PizzaOrder): string {
+  protected getOrderDisplayStatus(order: BurgerOrder): string {
     if (order.status === "pending") return "new";
     if (order.status === "in-preparation") return "in preparation";
     if (order.status === "ready") return "ready";
@@ -124,7 +124,7 @@ export class PizzaDashboard extends LitElement {
     return order.status.replace(/-/g, " ");
   }
 
-  protected getOrderBoxClass(order: PizzaOrder): string {
+  protected getOrderBoxClass(order: BurgerOrder): string {
     if (order.status === "pending") return "order-box status-new";
     if (order.status === "in-preparation") return "order-box status-inprep";
     if (order.status === "ready") return "order-box status-ready";
@@ -132,7 +132,7 @@ export class PizzaDashboard extends LitElement {
     return "order-box";
   }
 
-  protected getOrderPizzaCount(order: PizzaOrder): number {
+  protected getOrderBurgerCount(order: BurgerOrder): number {
     return order.items.reduce((sum, item) => sum + item.quantity, 0);
   }
 
@@ -140,7 +140,7 @@ export class PizzaDashboard extends LitElement {
     Error while loading orders. Please retry later.
   </p>`;
 
-  protected renderOrder = (order: PizzaOrder, isLeaving = false) => {
+  protected renderOrder = (order: BurgerOrder, isLeaving = false) => {
     const animClass = isLeaving ? "fade-out" : "";
     return html`
       <div
@@ -157,9 +157,9 @@ export class PizzaDashboard extends LitElement {
               ${this.getOrderDisplayStatus(order)}
             </div>
           </div>
-          <div class="order-pizza-count">
-            ${this.getOrderPizzaCount(order)}
-            <span class="pizza">${unsafeSVG(pizzaSvg)}</span>
+          <div class="order-burger-count">
+            ${this.getOrderBurgerCount(order)}
+            <span class="burger">${unsafeSVG(burgerSvg)}</span>
           </div>
         </div>
       </div>
@@ -205,8 +205,8 @@ export class PizzaDashboard extends LitElement {
       <div class="container">
         <div class="dashboard-header">
           <h1>
-            Contoso Pizza Orders
-            <span class="slice">${unsafeSVG(sliceSvg)}</span>
+            Contoso Burgers Orders
+            <span class="slice">${unsafeSVG(burgerOutlineSvg)}</span>
           </h1>
           <span class="order-counts">
             <span class="order-count new">
@@ -274,8 +274,8 @@ export class PizzaDashboard extends LitElement {
   static styles = [
     css`
       :host {
-        --piz-alt: hsl(from var(--piz-primary) calc(h + 25) s l);
-        --piz-primary-bg: hsl(from var(--piz-primary) h s calc(l * 0.25));
+        --burger-alt: hsl(from var(--burger-primary) calc(h + 25) s l);
+        --burger-primary-bg: hsl(from var(--burger-primary) h s calc(l * 0.25));
 
         width: 100%;
         height: 100%;
@@ -306,7 +306,7 @@ export class PizzaDashboard extends LitElement {
         margin-bottom: 2rem;
 
         h1 {
-          background: var(--piz-primary);
+          background: var(--burger-primary);
           border-radius: 1.5rem;
           padding: 0.5rem 1.5rem;
           box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
@@ -332,7 +332,7 @@ export class PizzaDashboard extends LitElement {
         filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.5));
       }
       .order-count {
-        background: var(--piz-primary);
+        background: var(--burger-primary);
         color: #fff;
         font-weight: 700;
         border-radius: 1.5rem;
@@ -351,14 +351,14 @@ export class PizzaDashboard extends LitElement {
           font-size: 2rem;
         }
         &.new {
-          background: hsl(from var(--piz-primary) calc(h + 200) s l);
+          background: hsl(from var(--burger-primary) calc(h + 200) s l);
         }
         &.in-prep {
-          background: hsl(from var(--piz-primary) calc(h + 20) s calc(l * 0.9));
+          background: hsl(from var(--burger-primary) calc(h + 20) s calc(l * 0.9));
         }
         &.ready {
           background: hsl(
-            from var(--piz-primary) calc(h + 120) s calc(l * 0.7)
+            from var(--burger-primary) calc(h + 120) s calc(l * 0.7)
           );
         }
       }
@@ -375,9 +375,9 @@ export class PizzaDashboard extends LitElement {
         flex: 1 1 0;
         width: 100%;
         display: flex;
-        background: var(--piz-primary-bg);
+        background: var(--burger-primary-bg);
         border-radius: 1.5rem;
-        border: 4px solid var(--piz-primary);
+        border: 4px solid var(--burger-primary);
 
         &::after {
           content: "";
@@ -390,7 +390,7 @@ export class PizzaDashboard extends LitElement {
           background: linear-gradient(
             to bottom,
             transparent,
-            var(--piz-primary-bg) 66%
+            var(--burger-primary-bg) 66%
           );
           border-radius: 0 0 1.5rem 1.5rem;
           z-index: 2;
@@ -411,7 +411,7 @@ export class PizzaDashboard extends LitElement {
           grid-column: 1 / -1;
           font-size: 2.5rem;
           margin: 0;
-          color: var(--piz-alt);
+          color: var(--burger-alt);
           text-transform: uppercase;
         }
       }
@@ -433,13 +433,13 @@ export class PizzaDashboard extends LitElement {
         transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
       }
       .status-new .order-status {
-        background: hsl(from var(--piz-primary) calc(h + 200) s l);
+        background: hsl(from var(--burger-primary) calc(h + 200) s l);
       }
       .status-inprep .order-status {
-        background: hsl(from var(--piz-primary) calc(h + 20) s calc(l * 0.9));
+        background: hsl(from var(--burger-primary) calc(h + 20) s calc(l * 0.9));
       }
       .status-ready .order-status {
-        background: hsl(from var(--piz-primary) calc(h + 120) s calc(l * 0.7));
+        background: hsl(from var(--burger-primary) calc(h + 120) s calc(l * 0.7));
       }
       .status-completed {
         opacity: 0.5;
@@ -449,7 +449,7 @@ export class PizzaDashboard extends LitElement {
       }
       .order-id {
         flex: 1;
-        color: var(--piz-alt);
+        color: var(--burger-alt);
         font-weight: 700;
         font-size: 1.1em;
         text-align: left;
@@ -470,7 +470,7 @@ export class PizzaDashboard extends LitElement {
         white-space: nowrap;
         width: 100%;
       }
-      .order-pizza-count {
+      .order-burger-count {
         flex: 0.75;
         color: #444;
         display: flex;
@@ -479,7 +479,7 @@ export class PizzaDashboard extends LitElement {
         font-weight: 700;
         font-size: 1.1em;
       }
-      .pizza {
+      .burger {
         width: 2.5rem;
         height: 2.5rem;
         display: inline-block;
@@ -540,6 +540,6 @@ export class PizzaDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "pizza-dashboard": PizzaDashboard;
+    "burger-dashboard": BurgerDashboard;
   }
 }

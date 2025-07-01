@@ -1,14 +1,15 @@
-export interface PizzaOrder {
+export interface BurgerOrder {
   id: string;
   createdAt: string;
   items: Array<{
-    pizzaId: string;
+    burgerId: string;
     quantity: number;
     extraToppingIds?: string[];
   }>;
   estimatedCompletionAt: string;
   totalPrice: number;
   status: string;
+  readyAt?: string;
   completedAt?: string;
 }
 
@@ -20,7 +21,7 @@ export async function fetchOrders({
   apiBaseUrl: string;
   status?: string;
   lastMinutes?: number;
-}): Promise<PizzaOrder[] | undefined> {
+}): Promise<BurgerOrder[] | undefined> {
   try {
     const params = new URLSearchParams();
     if (status) params.append('status', status);
