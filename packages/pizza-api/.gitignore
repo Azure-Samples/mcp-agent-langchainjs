@@ -1,9 +1,0 @@
-.azure/
-.azurite/
-node_modules/
-dist/
-local.settings.json
-.DS_Store
-Thumbs.db
-TODO
-.env*
