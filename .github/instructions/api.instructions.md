@@ -1,9 +1,9 @@
 ---
-applyTo: "packages/pizza-api/**"
+applyTo: 'packages/*-api/**'
 ---
 
 ## Guidance for Code Generation
-- Project root is `src/pizza-api`
+
 - The API is built using Azure Functions using `@azure/functions@4` package.
 - Generate TypeScript code for Node.js
 - Model interfaces are in located `src/data`
