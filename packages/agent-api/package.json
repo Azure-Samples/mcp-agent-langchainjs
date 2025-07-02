@@ -1,7 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "Azure Functions API for the serverless pizza agent sample",
+  "description": "Azure Functions API for the serverless burger agent sample",
   "main": "dist/src/functions/*.js",
   "scripts": {
     "build": "tsc",

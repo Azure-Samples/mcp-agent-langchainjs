@@ -5,6 +5,13 @@
 
 @api_host = http://localhost:7071
 
+### Get access token, should return 401
+GET {{api_host}}/api/me/access-token
+
+### Get access token
+GET {{api_host}}/api/me/access-token
+x-ms-client-principal: eyJ1c2VySWQiOiJfX3Rlc3RfdXNlcl9fIn0=
+
 ### Chat with the bot
 POST {{api_host}}/api/chats/stream?userId=1
 Content-Type: application/json
