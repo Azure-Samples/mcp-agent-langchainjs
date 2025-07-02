@@ -1,4 +1,6 @@
-# Chat webapp
+# Burger AI Chat webapp
+
+This is a burger ordering web application with an AI chat assistant. The app allows customers to browse burger menus, ask questions about toppings, and place orders through a conversational interface.
 
 This project uses [Vite](https://vitejs.dev/) as a frontend build tool, and [Lit](https://lit.dev/) as a web components library.
 

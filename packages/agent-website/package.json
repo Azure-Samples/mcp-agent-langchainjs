@@ -1,7 +1,7 @@
 {
   "name": "webapp",
   "version": "1.0.0",
-  "description": "Web app for the serverless AI Chat RAG sample",
+  "description": "Burger ordering web app with AI chat assistant",
   "private": true,
   "type": "module",
   "scripts": {

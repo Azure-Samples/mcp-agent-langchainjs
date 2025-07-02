@@ -40,18 +40,18 @@ export const chatDefaultOptions: ChatComponentOptions = {
   apiUrl: '',
   enablePromptSuggestions: true,
   promptSuggestions: [
-    'What\'s on the menu?',
-    'Are there any vegan options?',
-    'Order a pizza for me',
+    'What burgers do you have on the menu?',
+    'What toppings are available?',
+    'Order a vegan burger for me',
   ],
   messages: [],
   strings: {
-    promptSuggestionsTitle: 'Ask anything or try an example',
+    promptSuggestionsTitle: 'Ask about our burgers or try an example',
     citationsTitle: 'Citations:',
     followUpQuestionsTitle: 'Follow-up questions:',
-    chatInputPlaceholder: 'Ask me anything...',
+    chatInputPlaceholder: 'Ask about our burgers, toppings, or place an order...',
     chatInputButtonLabel: 'Send question',
-    assistant: 'Support Assistant',
+    assistant: 'Burger Assistant',
     user: 'You',
     errorMessage: 'We are currently experiencing an issue.',
     newChatButton: 'New chat',
@@ -256,6 +256,7 @@ export class ChatComponent extends LitElement {
       <div class="message-body">
         <div class="debug">
           <azc-debug .message=${message}></azc-debug>
+        </div>
         <div class="content">${message.html}</div>
         ${message.citations.length > 0
           ? html`
