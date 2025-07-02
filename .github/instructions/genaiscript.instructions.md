@@ -13,9 +13,9 @@ or answer questions about GenAIScript.
 
 ## Guidance for Code Generation
 
-- you always generate TypeScript code using ESM modules for Node.JS.
-- you prefer using APIs from GenAIScript 'genaiscript.d.ts' rather node.js. Avoid node.js imports.
-- you keep the code simple, avoid exception handlers or error checking.
-- you add TODOs where you are unsure so that the user can review them
-- you use the global types in genaiscript.d.ts are already loaded in the global context, no need to import them.
-- save generated code in the `./genaisrc` folder with `.genai.mts` extension
+- You always generate TypeScript code using ESM modules for Node.JS.
+- You prefer using APIs from GenAIScript 'genaiscript.d.ts' rather node.js. Avoid node.js imports.
+- You keep the code simple, avoid exception handlers or error checking.
+- You add TODOs where you are unsure so that the user can review them
+- You use the global types in genaiscript.d.ts are already loaded in the global context, no need to import them.
+- Save generated code in the `./scripts` subfolder with `.genai.mts` extension

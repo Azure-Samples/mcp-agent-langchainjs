@@ -3,6 +3,7 @@ applyTo: "packages/*-website/**"
 ---
 
 ## Guidance for Code Generation
+
 - The website is built using Lit v3 components and TypeScript
 - Vite is the app bundler
 - The website is hosted on Azure Static Web Apps
