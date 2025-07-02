@@ -17,21 +17,13 @@ export function getAzureOpenAiTokenProvider() {
   return getBearerTokenProvider(getCredentials(), azureOpenAiScope);
 }
 
-export function getUserInfo(request: HttpRequest) {
-  try {
-    const token = Buffer.from(request.headers.get('x-ms-client-principal') ?? '', 'base64').toString('ascii');
-    return (token && JSON.parse(token)) || undefined;
-  } catch (error) {
-    return undefined;
-  }
-}
-
 export function getUserId(request: HttpRequest, body?: any): string | undefined {
   let userId: string | undefined;
 
   // Get the user ID from Azure easy auth if it's available
   try {
-    const infos = getUserInfo(request);
+    const token = Buffer.from(request.headers.get('x-ms-client-principal') ?? '', 'base64').toString('ascii');
+    const infos = token && JSON.parse(token);
     userId = infos?.userId;
   } catch {}
 

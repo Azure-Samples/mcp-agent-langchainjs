@@ -44,15 +44,10 @@ export class UserDbService {
     }
   }
 
-  async getUserByHash(hash: string): Promise<any | undefined> {
+  async getUserById(id: string): Promise<any | undefined> {
     if (!this.isCosmosDbInitialized) return undefined;
     try {
-      const querySpec = {
-        query: 'SELECT TOP 1 * FROM c WHERE c.hash = @hash',
-        parameters: [{ name: '@hash', value: hash }]
-      };
-      const { resources } = await this.usersContainer!.items.query(querySpec).fetchAll();
-      const resource = resources[0];
+      const resource = await this.usersContainer!.item(id).read();
       return resource;
     } catch (error: any) {
       if (error.code === 404) return undefined;
@@ -60,11 +55,10 @@ export class UserDbService {
     }
   }
 
-  async createUser(hash: string, accessToken: string): Promise<any> {
+  async createUser(id: string): Promise<any> {
     if (!this.isCosmosDbInitialized) throw new Error('Cosmos DB not initialized');
-    const user = { 
-      hash, 
-      accessToken,
+    const user = {
+      id,
       createdAt: new Date().toISOString()
     };
     const { resource } = await this.usersContainer!.items.create(user);
