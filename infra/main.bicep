@@ -532,7 +532,7 @@ module burgerMcpContainerApp 'br/public:avm/ptn/azd/container-app-upsert:0.1.2' 
 // ---------------------------------------------------------------------------
 // System roles assignation
 
-module storageRolePizzaApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+module storageRoleBurgerApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup
   name: 'storage-role-burger-api'
   params: {
