@@ -54,16 +54,23 @@
         max-width: 1024px;
         margin: 0 auto;
       }
+      .spacer {
+        flex: 100 1 0;
+      }
     </style>
   </head>
   <body>
     <nav>
       <img src="/favicon.png" alt="" />
       Contoso Burgers AI Agent
+      <div class="spacer"></div>
+      <azc-auth type="status"></azc-auth>
     </nav>
     <main>
-      <azc-history id="chatHistory"></azc-history>
-      <azc-chat id="chat"></azc-chat>
+      <azc-auth>
+        <azc-history id="chatHistory"></azc-history>
+        <azc-chat id="chat"></azc-chat>
+      </azc-auth>
     </main>
     <script type="module" src="/src/index.ts"></script>
     <script>

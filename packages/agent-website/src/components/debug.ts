@@ -3,7 +3,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ParsedMessage } from '../message-parser';
-import deleteSvg from '../../assets/delete.svg?raw';
+import deleteSvg from '../../assets/icons/delete.svg?raw';
 
 @customElement('azc-debug')
 export class DebugComponent extends LitElement {

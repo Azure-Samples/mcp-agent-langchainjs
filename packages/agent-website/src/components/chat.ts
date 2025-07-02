@@ -7,9 +7,9 @@ import { AIChatCompletionDelta, AIChatMessage } from '@microsoft/ai-chat-protoco
 import { DebugComponent } from './debug.js';
 import { type ChatRequestOptions, getCitationUrl, getCompletion } from '../api.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
-import sendSvg from '../../assets/send.svg?raw';
-import questionSvg from '../../assets/question.svg?raw';
-import newChatSvg from '../../assets/new-chat.svg?raw';
+import sendSvg from '../../assets/icons/send.svg?raw';
+import questionSvg from '../../assets/icons/question.svg?raw';
+import newChatSvg from '../../assets/icons/new-chat.svg?raw';
 
 export type ChatComponentState = {
   hasError: boolean;

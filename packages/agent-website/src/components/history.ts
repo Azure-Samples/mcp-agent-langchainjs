@@ -2,8 +2,8 @@ import { LitElement, css, html, nothing } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state } from 'lit/decorators.js';
-import panelSvg from '../../assets/panel.svg?raw';
-import deleteSvg from '../../assets/delete.svg?raw';
+import panelSvg from '../../assets/icons/panel.svg?raw';
+import deleteSvg from '../../assets/icons/delete.svg?raw';
 
 export type ChatSession = {
   id: string;
