@@ -26,7 +26,7 @@ export class BlobService {
     try {
       const storageUrl = process.env.AZURE_STORAGE_URL;
       const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME || 'blobs';
-      
+
       if (!storageUrl) {
         console.warn('Azure Storage URL not found in environment variables. Using local filesystem fallback.');
         this.useLocalFallback = true;
@@ -35,10 +35,10 @@ export class BlobService {
 
       // Use DefaultAzureCredential for managed identity
       const credential = new DefaultAzureCredential();
-      
+
       this.blobServiceClient = new BlobServiceClient(storageUrl, credential);
       this.containerClient = this.blobServiceClient.getContainerClient(containerName);
-      
+
       // Check if container exists
       const exists = await this.containerClient.exists();
       if (!exists) {
@@ -48,7 +48,7 @@ export class BlobService {
 
       this.isInitialized = true;
       console.log('Successfully connected to Azure Blob Storage');
-      
+
       // Check if images are already uploaded and upload them if needed
       await this.ensureImagesUploaded();
     } catch (error) {
@@ -66,7 +66,7 @@ export class BlobService {
 
     try {
       // Check if first image exists
-      const firstImageName = 'pizza-pic-1.jpg';
+      const firstImageName = 'burger-pic-1.jpg';
       const blobClient = this.containerClient.getBlobClient(firstImageName);
       const imageExists = await blobClient.exists();
 
@@ -92,28 +92,28 @@ export class BlobService {
     try {
       // Path to the images directory
       const imagesDir = path.join(process.cwd(), 'data', 'images');
-      
+
       // Get all jpg files in the directory
       const imageFiles = (await fs.readdir(imagesDir)).filter(file => file.endsWith('.jpg'));
-      
+
       console.log(`Found ${imageFiles.length} images to upload`);
-      
+
       // Upload each image
       for (const imageFile of imageFiles) {
         const filePath = path.join(imagesDir, imageFile);
         const fileContent = await fs.readFile(filePath);
-        
+
         const blockBlobClient = this.containerClient.getBlockBlobClient(imageFile);
-        
+
         await blockBlobClient.upload(fileContent, fileContent.length, {
           blobHTTPHeaders: {
             blobContentType: 'image/jpeg'
           }
         });
-        
+
         console.log(`Uploaded ${imageFile}`);
       }
-      
+
       console.log('All images uploaded successfully');
     } catch (error) {
       console.error('Error uploading images:', error);
@@ -139,7 +139,7 @@ export class BlobService {
 
     try {
       const blobClient = this.containerClient.getBlobClient(blobName);
-      
+
       // Check if blob exists
       const exists = await blobClient.exists();
       if (!exists) {
@@ -148,7 +148,7 @@ export class BlobService {
       }
 
       const downloadResponse = await blobClient.download();
-      
+
       if (!downloadResponse.readableStreamBody) {
         return undefined;
       }
@@ -157,15 +157,15 @@ export class BlobService {
       return new Promise<Buffer>((resolve, reject) => {
         const chunks: Buffer[] = [];
         const stream = downloadResponse.readableStreamBody!;
-        
+
         stream.on('data', (data) => {
           chunks.push(Buffer.from(data));
         });
-        
+
         stream.on('end', () => {
           resolve(Buffer.concat(chunks));
         });
-        
+
         stream.on('error', reject);
       });
     } catch (error) {
@@ -196,13 +196,13 @@ export class BlobService {
   private async getLocalFile(fileName: string): Promise<Buffer | undefined> {
     try {
       const filePath = path.join(process.cwd(), 'data', 'images', fileName);
-      
+
       // Check if file exists
       if (!(await this.pathExists(filePath))) {
         console.warn(`Local file '${fileName}' not found at path: ${filePath}`);
         return undefined;
       }
-      
+
       // Read file
       const fileContent = await fs.readFile(filePath);
       console.log(`Loaded local file: ${fileName}`);
@@ -220,7 +220,7 @@ export class BlobService {
    */
   public getContentType(blobName: string): string {
     const extension = blobName.split('.').pop()?.toLowerCase();
-    
+
     switch (extension) {
       case 'jpg':
       case 'jpeg':

@@ -14,7 +14,7 @@ Each endpoint should have its own function file, and use the following naming co
 - `src/functions/<resource-name>-<http-verb>.ts`
 
 ## Menu items
-Each menu item has a unique ID, a category, a name, a description, a price and for pizzas a list of toppings.
+Each menu item has a unique ID, a category, a name, a description, a price and for burgers a list of toppings.
 
 ## Order status
 - `pending`: Order has been created but not yet started
