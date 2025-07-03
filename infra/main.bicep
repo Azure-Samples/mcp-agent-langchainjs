@@ -57,7 +57,6 @@ param openAiApiVersion string // Set in main.parameters.json
 param chatModelName string // Set in main.parameters.json
 param chatModelVersion string // Set in main.parameters.json
 param chatModelCapacity int // Set in main.parameters.json
-param embeddingsModelName string // Set in main.parameters.json
 
 // Location is not relevant here as it's only for the built-in api
 // which is not used here. Static Web App is a global service otherwise

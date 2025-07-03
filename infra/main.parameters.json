@@ -9,7 +9,7 @@
       "value": "${AZURE_RESOURCE_GROUP}"
     },
     "location": {
-      "value": "${AZURE_LOCATION=eastus2}"
+      "value": "${AZURE_LOCATION}"
     },
     "principalId": {
       "value": "${AZURE_PRINCIPAL_ID}"
@@ -18,13 +18,13 @@
       "value": "${AZURE_AI_LOCATION=eastus2}"
     },
     "openAiApiVersion": {
-      "value": "${AZURE_OPENAI_API_VERSION=2024-02-01}"
+      "value": "${AZURE_OPENAI_API_VERSION=2025-04-01-preview}"
     },
     "chatModelName": {
       "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-4.1-mini}"
     },
     "chatModelVersion": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2024-07-18}"
+      "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2025-04-14}"
     },
     "chatModelCapacity": {
       "value": "${AZURE_OPENAI_CHAT_MODEL_CAPACITY=50}"
