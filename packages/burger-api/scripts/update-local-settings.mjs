@@ -23,39 +23,19 @@ let settings = {
   AzureWebJobsStorage: 'UseDevelopmentStorage=true',
 };
 const settingsFilePath = path.join(__dirname, '../local.settings.json');
-const servicesFilePath = path.join(__dirname, '../../../infra/services.json');
 
-let services = {};
-if (existsSync(servicesFilePath)) {
-  services = JSON.parse(readFileSync(servicesFilePath, 'utf8'));
-}
+console.log('Setting Blob Storage service values...');
+settings = {
+  ...settings,
+  AZURE_STORAGE_URL: process.env.AZURE_STORAGE_URL,
+  AZURE_STORAGE_CONTAINER_NAME: process.env.AZURE_STORAGE_CONTAINER_NAME,
+};
 
-if (services.useOpenAi) {
-  console.log('Setting OpenAI service values...');
-  settings = {
-    ...settings,
-    AZURE_OPENAI_ENDPOINT: process.env.AZURE_OPENAI_ENDPOINT,
-    AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME,
-    AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME: process.env.AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME,
-  };
-}
-
-if (services.useBlobStorage) {
-  console.log('Setting Blob Storage service values...');
-  settings = {
-    ...settings,
-    AZURE_STORAGE_URL: process.env.AZURE_STORAGE_URL,
-    AZURE_STORAGE_CONTAINER_NAME: process.env.AZURE_STORAGE_CONTAINER_NAME,
-  };
-}
-
-if (services.useCosmosDb) {
-  console.log('Setting Cosmos DB service values...');
-  settings = {
-    ...settings,
-    AZURE_COSMOSDB_NOSQL_ENDPOINT: process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT,
-  };
-}
+console.log('Setting Cosmos DB service values...');
+settings = {
+  ...settings,
+  AZURE_COSMOSDB_NOSQL_ENDPOINT: process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT,
+};
 
 writeFileSync(
   settingsFilePath,
