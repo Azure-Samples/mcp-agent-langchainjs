@@ -1,5 +1,5 @@
 {
-  "name": "webapp",
+  "name": "agent-webapp",
   "version": "1.0.0",
   "description": "Burger ordering web app with AI chat assistant",
   "private": true,

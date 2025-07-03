@@ -1,7 +1,7 @@
 {
   "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
   "configurations": {
-    "registration-website": {
+    "registration-webapp": {
       "appLocation": ".",
       "run": "npm run serve",
       "appDevserverUrl": "http://localhost:5173",

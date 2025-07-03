@@ -15,8 +15,8 @@ services:
     language: ts
     host: containerapp
 
-  burger-website:
-    project: ./packages/burger-website
+  burger-webapp:
+    project: ./packages/burger-webapp
     dist: dist
     language: ts
     host: staticwebapp
@@ -35,8 +35,8 @@ services:
     language: ts
     host: function
 
-  agent-website:
-    project: ./packages/agent-website
+  agent-webapp:
+    project: ./packages/agent-webapp
     dist: dist
     language: ts
     host: staticwebapp

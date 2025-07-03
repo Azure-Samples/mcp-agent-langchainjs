@@ -1,12 +1,12 @@
 ---
-applyTo: "packages/*-website/**"
+applyTo: "packages/*-webapp/**"
 ---
 
 ## Guidance for Code Generation
 
-- The website is built using Lit v3 components and TypeScript
+- The webapp is built using Lit v3 components and TypeScript
 - Vite is the app bundler
-- The website is hosted on Azure Static Web Apps
+- The webapp is hosted on Azure Static Web Apps
 - Do not add extra dependencies to the project without asking first
 - Use `npm` as package manager
 - Each component should have its own file

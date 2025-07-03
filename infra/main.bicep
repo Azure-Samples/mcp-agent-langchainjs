@@ -28,9 +28,9 @@ param location string
 param resourceGroupName string = ''
 param burgerApiServiceName string = 'burger-api'
 param burgerMcpServiceName string = 'burger-mcp'
-param burgerWebappName string = 'burger-website'
+param burgerWebappName string = 'burger-webapp'
 param agentApiServiceName string = 'agent-api'
-param agentWebappName string = 'agent-website'
+param agentWebappName string = 'agent-webapp'
 param blobContainerName string = 'blobs'
 
 @description('Location for the OpenAI resource group')
