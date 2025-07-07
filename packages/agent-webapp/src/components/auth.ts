@@ -163,6 +163,16 @@ export class AuthComponent extends LitElement {
       ${unsafeSVG(logoutSvg)}
     </button>`;
 
+  protected override updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+
+    if (this._userDetails) {
+      this.classList.add('authenticated');
+    } else {
+      this.classList.remove('authenticated');
+    }
+  }
+
   protected override render() {
     switch (this.type) {
       case 'status':

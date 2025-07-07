@@ -322,6 +322,7 @@ export class HistoryComponent extends LitElement {
       box-shadow: 0 var(--space-xs) var(--space-xs) var(--panel-bg);
     }
     .chats-panel {
+      position: relative;
       width: var(--panel-width);
       height: 100%;
       background: var(--panel-bg);

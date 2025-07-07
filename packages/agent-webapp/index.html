@@ -6,58 +6,7 @@
     <meta name="description" content="Contoso Burgers AI Agent" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>Contoso Burgers AI Agent</title>
-    <style>
-      :root {
-        --azc-primary: #de471d;
-        --azc-bg: #eee;
-        --azc-border-radius: 16px;
-      }
-      html,
-      body {
-        font-size: 16px;
-        margin: 0;
-        background: var(--azc-bg);
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-      }
-      nav {
-        display: flex;
-        flex: 0 1 auto;
-        background: #333;
-        color: #fff;
-        padding: 16px;
-        font-family:
-          'Segoe UI',
-          -apple-system,
-          BlinkMacSystemFont,
-          Roboto,
-          'Helvetica Neue',
-          sans-serif;
-        font-size: 1.25rem;
-        align-items: center;
-
-        & img {
-          height: 32px;
-          margin-right: 0.5em;
-        }
-      }
-      main {
-        container-type: size;
-        flex: 1;
-        position: relative;
-        display: flex;
-      }
-      azc-chat {
-        flex: 1;
-        max-width: 1024px;
-        margin: 0 auto;
-      }
-      .spacer {
-        flex: 100 1 0;
-      }
-    </style>
+    <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
     <nav>
@@ -74,6 +23,7 @@
     </main>
     <script type="module" src="/src/index.ts"></script>
     <script>
+      // TODO: use userId from API
       // Generate a unique ID and store it in local storage
       const userId = localStorage.getItem('userId') || crypto.randomUUID();
       localStorage.setItem('userId', userId);

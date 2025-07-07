@@ -1,0 +1,71 @@
+:root {
+  --azc-primary: #de471d;
+  --azc-bg: #eee;
+  --azc-border-radius: 16px;
+}
+
+html,
+body {
+  font-size: 16px;
+  margin: 0;
+  background: var(--azc-bg);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+nav {
+  display: flex;
+  flex: 0 1 auto;
+  background: #333;
+  color: #fff;
+  padding: 16px;
+  font-family:
+    'Segoe UI',
+    -apple-system,
+    BlinkMacSystemFont,
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+
+  & img {
+    height: 38px;
+    margin-right: 0.5em;
+    margin-top: -6px;
+    margin-bottom: -6px;
+  }
+}
+
+main {
+  flex: 1;
+  display: flex;
+  container-type: size;
+  position: relative;
+
+  & > azc-auth {
+    flex: auto;
+
+    &.authenticated {
+      display: flex;
+    }
+  }
+}
+
+.spacer {
+  flex: 100 1 0;
+}
+
+azc-chat {
+  flex: 1;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+azc-auth[type='status'] {
+  font-size: 16px;
+}
+
