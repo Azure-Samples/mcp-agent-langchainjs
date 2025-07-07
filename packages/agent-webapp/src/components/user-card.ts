@@ -3,13 +3,13 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { customElement, state } from "lit/decorators.js";
 import { getUserInfo } from "../auth.service.js";
 import copySvg from "../../assets/icons/copy.svg?raw";
-import sliceSvg from "../../assets/icons/slice.svg?raw";
+import burgerOutlineSvg from "../../assets/icons/burger-outline.svg?raw";
 
 export const apiBaseUrl: string =
   import.meta.env.VITE_REGISTRATION_API_URL || "";
 
-@customElement("register-user")
-export class RegisterUser extends LitElement {
+@customElement("azc-user-card")
+export class UserCard extends LitElement {
   @state() protected userId: string = "";
   @state() protected isLoading = false;
   @state() protected hasError = false;
@@ -54,9 +54,9 @@ export class RegisterUser extends LitElement {
 
   protected renderRegistrationCard = () => html`
     <div class="card card-shine">
-      <span class="slice">${unsafeSVG(sliceSvg)}</span>
+      <span class="slice">${unsafeSVG(burgerOutlineSvg)}</span>
       <div class="card-content">
-        <h1>Contoso Pizza Membership</h1>
+        <h1>Contoso Burgers Membership</h1>
         <p>Card attributed to:</p>
         <div><pre>${this.username}</pre></div>
         <p>Unique user ID:</p>
@@ -246,6 +246,6 @@ export class RegisterUser extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "register-user": RegisterUser;
+    "azc-user-card": UserCard;
   }
 }
