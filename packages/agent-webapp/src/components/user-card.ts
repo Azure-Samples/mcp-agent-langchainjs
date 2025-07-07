@@ -43,13 +43,8 @@ export class UserCard extends LitElement {
     }
   };
 
-  protected renderLogin = () => html`
-    <h1>Contoso Pizza Membership Registration</h1>
-    <reg-auth></reg-auth>
-  `;
-
   protected renderError = () => html`<p class="error">
-    Error during registration. Please retry later.
+    Error during while loading your membership details. Please retry later.
   </p>`;
 
   protected renderRegistrationCard = () => html`
@@ -105,8 +100,6 @@ export class UserCard extends LitElement {
     return this.isLoading
       ? this.renderLoading()
       : !this.username
-      ? this.renderLogin()
-      : this.hasError
       ? this.renderError()
       : this.renderRegistrationCard();
   }
