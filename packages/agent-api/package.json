@@ -8,7 +8,7 @@
     "watch": "tsc -w",
     "clean": "rimraf dist",
     "prestart": "npm run clean && npm run build",
-    "start:host": "func start",
+    "start:host": "func start --port 7072",
     "start": "concurrently npm:start:host npm:watch --raw --kill-others"
   },
   "author": "Microsoft",
