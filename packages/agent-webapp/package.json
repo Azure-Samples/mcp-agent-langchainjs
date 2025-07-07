@@ -5,7 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 8000 --host",
+    "start": "swa start",
+    "dev": "concurrently \"npm:dev:*\" --kill-others",
+    "dev:vite": "vite --port 5174 --host",
+    "dev:api": "cd ../agent-api && npm run start",
     "build": "vite build",
     "watch": "vite build --watch --minify false",
     "clean": "npx rimraf dist"

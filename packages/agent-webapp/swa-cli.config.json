@@ -3,9 +3,9 @@
   "configurations": {
     "registration-webapp": {
       "appLocation": ".",
-      "run": "npm run serve",
-      "appDevserverUrl": "http://localhost:5173",
-      "apiDevserverUrl": "http://localhost:7071",
+      "run": "npm run dev",
+      "appDevserverUrl": "http://localhost:5174",
+      "apiDevserverUrl": "http://localhost:7072",
       "appBuildCommand": "npm run build",
       "outputLocation": "dist"
     }
