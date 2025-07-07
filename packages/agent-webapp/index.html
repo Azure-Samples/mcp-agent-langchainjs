@@ -13,6 +13,9 @@
       <img src="/favicon.png" alt="" />
       Contoso Burgers AI Agent
       <div class="spacer"></div>
+      <azc-auth type="guard">
+        <a href="">Member card</a>
+      </azc-auth>
       <azc-auth type="status"></azc-auth>
     </nav>
     <main>
@@ -22,23 +25,9 @@
       </azc-auth>
     </main>
     <script type="module" src="/src/index.ts"></script>
-    <script>
-      // TODO: use userId from API
-      // Generate a unique ID and store it in local storage
-      const userId = localStorage.getItem('userId') || crypto.randomUUID();
-      localStorage.setItem('userId', userId);
-
-      window.chatHistory.userId = userId;
-      window.chatHistory.addEventListener('loadSession', (e) => {
-        const { id, messages } = e.detail;
-        window.chat.sessionId = id;
-        window.chat.messages = messages;
-      });
-
-      window.chat.userId = userId;
-      window.chat.addEventListener('messagesUpdated', () => {
-        window.chatHistory.refresh();
-      });
+    <script type="module">
+      import { initUserSession } from '/src/index.ts';
+      await initUserSession();
     </script>
   </body>
 </html>

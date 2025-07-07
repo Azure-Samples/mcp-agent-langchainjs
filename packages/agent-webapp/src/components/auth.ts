@@ -79,7 +79,7 @@ export const authDefaultOptions: AuthComponentOptions = {
   ],
 };
 
-export type AuthButtonType = 'status' | 'login' | 'logout';
+export type AuthButtonType = 'status' | 'login' | 'logout' | 'guard';
 
 @customElement('azc-auth')
 export class AuthComponent extends LitElement {
@@ -131,6 +131,8 @@ export class AuthComponent extends LitElement {
         : nothing}
     </section>`;
 
+  protected renderGuard = () => (Boolean(this.loaded) ? html`<slot></slot>` : nothing);
+
   protected renderLogin = () =>
     !this.loaded
       ? html`<slot name="loader"></slot>`
@@ -177,6 +179,8 @@ export class AuthComponent extends LitElement {
     switch (this.type) {
       case 'status':
         return this.renderStatus();
+      case 'guard':
+        return this.renderGuard();
       case 'logout':
         return this.renderLogout();
       default:

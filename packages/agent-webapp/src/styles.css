@@ -65,7 +65,8 @@ azc-chat {
   margin: 0 auto;
 }
 
-azc-auth[type='status'] {
+azc-auth[type] {
   font-size: 16px;
+  margin-left: 1em;
 }
 

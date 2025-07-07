@@ -10,22 +10,22 @@ export const apiBaseUrl: string =
 
 @customElement("register-user")
 export class RegisterUser extends LitElement {
-  @state() protected accessToken: string = "";
+  @state() protected userId: string = "";
   @state() protected isLoading = false;
   @state() protected hasError = false;
   @state() protected username: string = "";
 
   constructor() {
     super();
-    this.getAccessToken();
+    this.getUserId();
   }
 
   protected renderLoading = () => html`<p>Loading...</p>`;
 
   protected copyUserIdToClipboard = async () => {
-    if (this.accessToken) {
+    if (this.userId) {
       try {
-        await navigator.clipboard.writeText(this.accessToken);
+        await navigator.clipboard.writeText(this.userId);
         // Select the user-id text
         const pre = this.renderRoot.querySelector(".user-id");
         if (pre) {
@@ -61,7 +61,7 @@ export class RegisterUser extends LitElement {
         <div><pre>${this.username}</pre></div>
         <p>Unique user ID:</p>
         <div class="user-id-row">
-          <pre class="user-id">${this.accessToken}</pre>
+          <pre class="user-id">${this.userId}</pre>
           <button
             class="copy-button"
             @click="${this.copyUserIdToClipboard}"
@@ -79,7 +79,7 @@ export class RegisterUser extends LitElement {
     </div>
   `;
 
-  protected getAccessToken = async () => {
+  protected getUserId = async () => {
     this.isLoading = true;
     this.hasError = false;
     try {
@@ -87,14 +87,14 @@ export class RegisterUser extends LitElement {
       if (!authDetails) return;
       this.username = authDetails.userDetails;
 
-      const response = await fetch(`${apiBaseUrl}/api/me/access-token`);
+      const response = await fetch(`${apiBaseUrl}/me`);
       if (!response.ok) {
-        throw new Error("An error occurred while fetching the access token");
+        throw new Error("An error occurred while fetching the user ID");
       }
       const data = await response.json();
-      this.accessToken = data.accessToken;
+      this.userId = data.userId;
     } catch (error) {
-      console.error("Error fetching access token:", error);
+      console.error("Error fetching user ID:", error);
       this.hasError = true;
     } finally {
       this.isLoading = false;
@@ -111,7 +111,7 @@ export class RegisterUser extends LitElement {
       : this.renderRegistrationCard();
   }
 
-  static styles = css`
+  static override styles = css`
     :host {
       max-width: 1280px;
       margin: 0 auto;

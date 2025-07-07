@@ -26,7 +26,3 @@ export async function* getCompletion(options: ChatRequestOptions) {
     });
   }
 }
-
-export function getCitationUrl(citation: string): string {
-  return `${apiBaseUrl}/api/documents/${citation}`;
-}

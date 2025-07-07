@@ -5,7 +5,7 @@ import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { AIChatCompletionDelta, AIChatMessage } from '@microsoft/ai-chat-protocol';
 import { DebugComponent } from './debug.js';
-import { type ChatRequestOptions, getCitationUrl, getCompletion } from '../api.js';
+import { type ChatRequestOptions, getCompletion } from '../api.service.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/icons/send.svg?raw';
 import questionSvg from '../../assets/icons/question.svg?raw';
@@ -258,14 +258,6 @@ export class ChatComponent extends LitElement {
           <azc-debug .message=${message}></azc-debug>
         </div>
         <div class="content">${message.html}</div>
-        ${message.citations.length > 0
-          ? html`
-              <div class="citations">
-                <div class="citations-title">${this.options.strings.citationsTitle}</div>
-                ${map(message.citations, this.renderCitation)}
-              </div>
-            `
-          : nothing}
       </div>
       <div class="message-role">
         ${message.role === 'user' ? this.options.strings.user : this.options.strings.assistant}
@@ -281,18 +273,6 @@ export class ChatComponent extends LitElement {
       </div>
     </div>
   `;
-
-  protected renderCitation = (citation: string, index: number) =>
-    html`<button
-      class="citation"
-      @click=${() => {
-        this.onCitationClicked(citation);
-      }}
-    >
-      ${index + 1}. ${citation}
-    </button>`;
-
-  protected renderCitationReference = (_citation: string, index: number) => html`<sup>[${index}]</sup>`;
 
   protected renderFollowupQuestions = (questions: string[]) =>
     questions.length > 0
@@ -354,7 +334,7 @@ export class ChatComponent extends LitElement {
   `;
 
   protected override render() {
-    const parsedMessages = this.messages.map((message) => parseMessageIntoHtml(message, this.renderCitationReference));
+    const parsedMessages = this.messages.map((message) => parseMessageIntoHtml(message));
     return html`
       <section class="chat-container">
         ${this.options.enablePromptSuggestions &&
