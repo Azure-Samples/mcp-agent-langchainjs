@@ -245,7 +245,7 @@ export class AuthComponent extends LitElement {
     }
     .auth-status {
       display: flex;
-      gap: var(--space-md);
+      gap: var(--space-xs);
       align-items: center;
     }
     .container {
