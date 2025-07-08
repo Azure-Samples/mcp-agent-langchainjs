@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "concurrently \"npm:start:*\" --kill-others --ready=\"server running|started\" --success-command=\"echo '🚀 Tous les services sont démarrés et prêts!'\"",
+    "start": "concurrently \"npm:start:*\" --kill-others --ready=\"server running|started\" --success-command=\"npm run -s ready\"",
     "start:burger": "npm run start --workspace=burger-webapp",
     "start:mcp": "npm run start --workspace=burger-mcp",
     "start:agent": "npm run dev --workspace=agent-webapp",
-    "ready": "",
+    "ready": "echo '🚀 All services ready 🚀\n\n- Agent webapp  : http://localhost:4280\n- Burger webapp : http://localhost:5173\n- Burger MCP    : http://localhost:3000/mcp\n'",
     "build": "npm run build --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
     "lint": "xo",
