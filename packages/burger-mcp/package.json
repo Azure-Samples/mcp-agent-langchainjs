@@ -1,6 +1,7 @@
 {
   "name": "burger-mcp",
   "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server for Contoso Burgers API",
   "private": true,
   "type": "module",
   "exports": "./lib/local.js",
@@ -25,10 +26,10 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/node": "^20.11.24",
+    "@types/node": "^20",
     "rimraf": "^6.0.1",
-    "tsx": "^4.19.3",
-    "typescript": "^5.3.3"
+    "tsx": "^4",
+    "typescript": "^5"
   },
   "engines": {
     "node": ">=22.0.0"

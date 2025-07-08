@@ -1,15 +1,18 @@
 {
-  "name": "api",
+  "name": "agent-api",
   "version": "1.0.0",
-  "description": "Azure Functions API for the serverless burger agent sample",
-  "main": "dist/src/functions/*.js",
+  "description": "Azure Functions API for Contoso Burgers AI Agent",
+  "private": true,
+  "main": "./dist/src/functions/*.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist",
     "prestart": "npm run clean && npm run build",
     "start:host": "func start --port 7072",
-    "start": "concurrently npm:start:host npm:watch --raw --kill-others"
+    "start": "concurrently npm:start:* npm:watch --raw --kill-others",
+    "update:local-settings": "node ./scripts/update-local-settings.mjs",
+    "postinstall": "npm run update:local-settings"
   },
   "author": "Microsoft",
   "license": "MIT",
@@ -28,8 +31,8 @@
     "uuid": "^11.0.3"
   },
   "devDependencies": {
-    "@types/node": "^20.x",
-    "azure-functions-core-tools": "^4.0.5611",
-    "typescript": "^5.4.4"
+    "@types/node": "^20",
+    "azure-functions-core-tools": "^4",
+    "typescript": "^5"
   }
 }

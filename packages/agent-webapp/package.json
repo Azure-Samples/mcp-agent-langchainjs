@@ -1,7 +1,7 @@
 {
   "name": "agent-webapp",
   "version": "1.0.0",
-  "description": "Burger ordering web app with AI chat assistant",
+  "description": "Contoso Burgers AI Agent web application",
   "private": true,
   "type": "module",
   "scripts": {

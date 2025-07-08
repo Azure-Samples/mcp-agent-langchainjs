@@ -1,6 +1,7 @@
 {
   "name": "burger-api",
   "version": "1.0.0",
+  "description": "Azure Functions API for Contoso Burgers",
   "private": true,
   "main": "./dist/src/functions/*.js",
   "scripts": {

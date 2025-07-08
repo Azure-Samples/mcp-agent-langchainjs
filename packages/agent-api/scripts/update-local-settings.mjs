@@ -24,11 +24,13 @@ let settings = {
 };
 const settingsFilePath = path.join(__dirname, '../local.settings.json');
 
-console.log('Setting Blob Storage service values...');
+console.log('Setting Azure AI service values...');
 settings = {
   ...settings,
-  AZURE_STORAGE_URL: process.env.AZURE_STORAGE_URL,
-  AZURE_STORAGE_CONTAINER_NAME: process.env.AZURE_STORAGE_CONTAINER_NAME,
+  AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION,
+  AZURE_OPENAI_INSTANCE_NAME: process.env.AZURE_OPENAI_INSTANCE_NAME,
+  AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME,
+  AZURE_OPENAI_ENDPOINT: process.env.AZURE_OPENAI_ENDPOINT,
 };
 
 console.log('Setting Cosmos DB service values...');

@@ -1,7 +1,8 @@
 {
   "name": "burger-webapp",
+  "description": "Web dashboard for displaying Contoso Burgers orders",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "concurrently npm:serve:* --raw --kill-others",
@@ -17,9 +18,9 @@
     "lit": "^3.3.0"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2",
+    "concurrently": "^9",
     "smoke": "^4.0.0",
-    "typescript": "~5.8.3",
+    "typescript": "^5",
     "vite": "^7.0.0"
   }
 }
