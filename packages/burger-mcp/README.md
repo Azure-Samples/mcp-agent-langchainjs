@@ -14,9 +14,9 @@
 This is the Burger MCP server, exposing the Burger API as a Model Context Protocol (MCP) server. The MCP server allows LLMs to interact with the burger ordering process through MCP tools.
 
 This server supports the following transport types:
-- **SSE**
 - **Streamable HTTP**
-- **Stdio** (currently only supported when starting the server locally with `npm start`)
+- **SSE** (legacy protocol, for backward compatibility)
+- **Stdio** (currently only supported when starting the server locally with `npm start:local`)
 
 The remote server is deployed with [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview).
 
@@ -46,12 +46,12 @@ First, you need to start the Burger API and Burger MCP server locally.
     npx -y @modelcontextprotocol/inspector
     ```
 2. Ctrl+click to load the MCP Inspector web app from the URL displayed by the app (e.g. http://127.0.0.1:6274)
-3. In the MCP Inspector, set the transport type to **SSE** and 
-3. Put `http://localhost:3000/sse` in the URL field and click on the **Connect** button.
+3. In the MCP Inspector, set the transport type to **Streamable HTTP** and 
+3. Put `http://localhost:3000/mcp` in the URL field and click on the **Connect** button.
 4. In the **Tools** tab, select **List Tools**. Click on a tool and select **Run Tool**.
 
 > [!NOTE]
-> This application also provides a streamable HTTP endpoint if you use `/mcp` instead of `/sse` in the URL field. 
+> This application also provides an SSE endpoint if you use `/sse` instead of `/mcp` in the URL field. 
 
 ## Development
 
@@ -71,7 +71,7 @@ If you prefer to run the project locally, follow [these instructions](../../READ
 You can run the following command to run the application server:
 
 ```bash
-npm start:server
+npm start
 ```
 
 Alternatively, you can also use Docker to run the application:
@@ -81,4 +81,4 @@ npm run docker:build
 npm run docker:run
 ```
 
-This will start the application in a Docker container. The MCP server is then available at `http://localhost:3000/sse` or `http://localhost:3000/mcp` for the SSE and streamable HTTP endpoints, respectively.
+This will start the application in a Docker container. The MCP server is then available at `http://localhost:3000/mcp` or `http://localhost:3000/sse` for the streamable HTTP and SSE endpoints, respectively.

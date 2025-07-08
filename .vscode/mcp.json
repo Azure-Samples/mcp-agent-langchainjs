@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "burger-mcp": {
+      "type": "stdio",
+      "command": "npm",
+      "args": [
+        "run",
+        "start:local",
+        "--workspace=burger-mcp"
+      ]
+    }
+  }
+}
