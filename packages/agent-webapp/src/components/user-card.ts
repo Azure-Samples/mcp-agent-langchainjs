@@ -1,9 +1,10 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { customElement, state } from "lit/decorators.js";
 import { getUserInfo } from "../auth.service.js";
 import copySvg from "../../assets/icons/copy.svg?raw";
 import burgerOutlineSvg from "../../assets/icons/burger-outline.svg?raw";
+import cardSvg from "../../assets/icons/card.svg?raw";
 
 export const apiBaseUrl: string =
   import.meta.env.VITE_REGISTRATION_API_URL || "";
@@ -14,10 +15,48 @@ export class UserCard extends LitElement {
   @state() protected isLoading = false;
   @state() protected hasError = false;
   @state() protected username: string = "";
+  @state() protected isOpen = false;
 
   constructor() {
     super();
     this.getUserId();
+  }
+
+  openModal() {
+    this.isOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeModal() {
+    this.isOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  protected handleNavClick = () => {
+    this.openModal();
+  };
+
+  protected handleOverlayClick = (e: Event) => {
+    if (e.target === e.currentTarget) {
+      this.closeModal();
+    }
+  };
+
+  protected handleEscapeKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      this.closeModal();
+    }
+  };
+
+  override connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('keydown', this.handleEscapeKey);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('keydown', this.handleEscapeKey);
+    document.body.style.overflow = '';
   }
 
   protected renderLoading = () => html`<p>Loading...</p>`;
@@ -49,9 +88,10 @@ export class UserCard extends LitElement {
 
   protected renderRegistrationCard = () => html`
     <div class="card card-shine">
-      <span class="slice">${unsafeSVG(burgerOutlineSvg)}</span>
+      <span class="burger">${unsafeSVG(burgerOutlineSvg)}</span>
       <div class="card-content">
-        <h1>Contoso Burgers Membership</h1>
+        <h1>Contoso Burgers</h1>
+        <h2>Membership Card</h2>
         <p>Card attributed to:</p>
         <div><pre>${this.username}</pre></div>
         <p>Unique user ID:</p>
@@ -96,59 +136,150 @@ export class UserCard extends LitElement {
     }
   };
 
+  protected renderNavLink = () => html`
+    <button @click="${this.handleNavClick}" class="member-card-link">
+      <span class="card-icon">${unsafeSVG(cardSvg)}</span>
+      Member card
+    </button>
+  `;
+
+  protected renderModal = () => html`
+    <div class="modal-overlay" @click="${this.handleOverlayClick}">
+      <div class="modal-content">
+        <button class="close-button" @click="${this.closeModal}" aria-label="Close modal">×</button>
+        ${this.isLoading
+          ? this.renderLoading()
+          : !this.username
+          ? this.renderError()
+          : this.renderRegistrationCard()}
+      </div>
+    </div>
+  `;
+
   protected override render() {
-    return this.isLoading
-      ? this.renderLoading()
-      : !this.username
-      ? this.renderError()
-      : this.renderRegistrationCard();
+    return html`
+      ${this.renderNavLink()}
+      ${this.isOpen ? this.renderModal() : nothing}
+    `;
   }
 
   static override styles = css`
     :host {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 2rem;
-      text-align: center;
+      --reg-primary: linear-gradient(135deg, #de471d 0%, #ff6b3d 100%);
+      --reg-border-radius: 16px;
     }
+
+    .member-card-link {
+      background: none;
+      border: none;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    .member-card-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+      display: inline-block;
+      fill: currentColor;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      background: var(--reg-primary);
+      border-radius: var(--reg-border-radius, 16px);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      color: #fff;
+      transition: background 0.2s;
+    }
+
+    .close-button:hover {
+      background: rgba(255, 255, 255, .4);
+    }
+
     svg {
       fill: currentColor;
       width: 100%;
     }
     h1 {
-      font-family: "Sofia Sans Condensed", sans-serif;
-      font-size: 2.5em;
+      font-size: 2em;
       color: #fff;
+      margin: 0;
+      font-weight: 600;
+      text-transform: uppercase;
     }
-    h1, p, pre, .warning {
+    h1, h2 {
+      font-family: "Sofia Sans Condensed", sans-serif;
+    }
+    h1, h2, pre, .warning {
       text-shadow: 0 1px 0px rgba(0, 0, 0, 0.5);
     }
     .card {
       position: relative;
-      background-color: var(--reg-primary);
+      background: var(--reg-primary);
       border-radius: var(--reg-border-radius);
       padding: 2rem;
-      margin-bottom: 2rem;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2),
         -1px -1px 1px rgba(255, 255, 255, 0.3),
         2px 4px 8px rgba(0, 0, 0, 0.4);
       font-family: "Sofia Sans Condensed", sans-serif;
       text-align: left;
-      overflow: hidden;
       width: 100%;
       box-sizing: border-box;
       color: #fff;
       font-size: 1.2rem;
 
-      h1 {
-        font-size: 2.5rem;
-        margin: 0;
-        font-weight: 600;
-        text-transform: uppercase;
-      }
       h2 {
+        font-size: 1em;
         margin: 0;
         font-weight: 600;
+        font-style: italic;
+        text-transform: uppercase;
       }
       pre {
         font-size: 1.5rem;
@@ -164,7 +295,6 @@ export class UserCard extends LitElement {
     .card-shine {
       --shine-deg: 45deg;
       position: relative;
-      overflow: hidden;
       background-repeat: no-repeat;
       background-position: 0% 0, 0 0;
       background-image: linear-gradient(
@@ -182,7 +312,7 @@ export class UserCard extends LitElement {
     .card-shine:hover {
       background-position: 90% 0, 0 0;
     }
-    .slice {
+    .burger {
       z-index: 1;
       width: 10rem;
       height: 10rem;
@@ -191,7 +321,7 @@ export class UserCard extends LitElement {
       opacity: 0.4;
       position: absolute;
       right: -1rem;
-      top: 2rem;
+      top: 3.5rem;
       pointer-events: none;
     }
     .user-id-row {
