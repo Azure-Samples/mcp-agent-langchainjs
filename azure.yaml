@@ -12,6 +12,10 @@ services:
 
   burger-mcp:
     project: ./packages/burger-mcp
+    docker:
+      path: ./Dockerfile
+      # We build the Dockerfile from the root of the project as we're in an NPM workspace
+      context: ../..
     language: ts
     host: containerapp
 
@@ -40,15 +44,6 @@ services:
     dist: dist
     language: ts
     host: staticwebapp
-    # Needed to get the AGENT_API_URL env var set
-    hooks:
-      predeploy:
-        windows:
-          shell: pwsh
-          run: npm run build
-        posix:
-          shell: sh
-          run: npm run build
 
 hooks:
   postprovision:
