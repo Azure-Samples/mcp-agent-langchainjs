@@ -131,7 +131,7 @@ export class AuthComponent extends LitElement {
         : nothing}
     </section>`;
 
-  protected renderGuard = () => (Boolean(this.loaded) ? html`<slot></slot>` : nothing);
+  protected renderGuard = () => (Boolean(this.loaded && this._userDetails) ? html`<slot></slot>` : nothing);
 
   protected renderLogin = () =>
     !this.loaded
