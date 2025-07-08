@@ -7,7 +7,7 @@ import {
 import { UserDbService } from "../user-db-service.js";
 import { getUserId } from "../security.js";
 
-app.http("user", {
+app.http("me-get", {
   methods: ["GET"],
   authLevel: "anonymous",
   route: "me",
@@ -37,7 +37,7 @@ app.http("user", {
         jsonBody: { id: user.id },
       };
     } catch (error) {
-      context.error("Error in user-get handler", error);
+      context.error("Error in me-get handler", error);
       return {
         status: 500,
         jsonBody: { error: "Internal Server Error" },
