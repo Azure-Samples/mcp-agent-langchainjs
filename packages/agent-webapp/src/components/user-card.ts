@@ -6,9 +6,6 @@ import copySvg from "../../assets/icons/copy.svg?raw";
 import burgerOutlineSvg from "../../assets/icons/burger-outline.svg?raw";
 import cardSvg from "../../assets/icons/card.svg?raw";
 
-export const apiBaseUrl: string =
-  import.meta.env.VITE_REGISTRATION_API_URL || "";
-
 @customElement("azc-user-card")
 export class UserCard extends LitElement {
   @state() protected userId: string = "";
@@ -122,7 +119,7 @@ export class UserCard extends LitElement {
       if (!authDetails) return;
       this.username = authDetails.userDetails;
 
-      const response = await fetch(`${apiBaseUrl}/me`);
+      const response = await fetch(`/api/me`);
       if (!response.ok) {
         throw new Error("An error occurred while fetching the user ID");
       }
@@ -165,8 +162,8 @@ export class UserCard extends LitElement {
 
   static override styles = css`
     :host {
-      --reg-primary: linear-gradient(135deg, #de471d 0%, #ff6b3d 100%);
-      --reg-border-radius: 16px;
+      --azc-primary: linear-gradient(135deg, #de471d 0%, #ff6b3d 100%);
+      --azc-border-radius: 16px;
     }
 
     .member-card-link {
@@ -214,8 +211,8 @@ export class UserCard extends LitElement {
       max-width: 600px;
       width: 100%;
       max-height: 90vh;
-      background: var(--reg-primary);
-      border-radius: var(--reg-border-radius, 16px);
+      background: var(--azc-primary);
+      border-radius: var(--azc-border-radius, 16px);
     }
 
     .close-button {
@@ -261,8 +258,8 @@ export class UserCard extends LitElement {
     }
     .card {
       position: relative;
-      background: var(--reg-primary);
-      border-radius: var(--reg-border-radius);
+      background: var(--azc-primary);
+      border-radius: var(--azc-border-radius);
       padding: 2rem;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2),
         -1px -1px 1px rgba(255, 255, 255, 0.3),
@@ -323,6 +320,7 @@ export class UserCard extends LitElement {
       right: -1rem;
       top: 3.5rem;
       pointer-events: none;
+      clip-path: inset(0 1rem 0 0);
     }
     .user-id-row {
       display: flex;
@@ -331,7 +329,7 @@ export class UserCard extends LitElement {
       gap: 0.5rem;
       border: 1px solid #ffffff;
       padding: 1rem;
-      border-radius: calc(var(--reg-border-radius) / 2);
+      border-radius: calc(var(--azc-border-radius) / 2);
       margin: 0.5rem 0;
     }
     .copy-button {
