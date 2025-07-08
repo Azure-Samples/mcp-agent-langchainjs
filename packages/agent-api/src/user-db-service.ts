@@ -11,6 +11,8 @@ export class UserDbService {
   private database: Database | undefined = undefined;
   private usersContainer: Container | undefined = undefined;
   private isCosmosDbInitialized = false;
+  private inMemoryStorage: Map<string, any> = new Map();
+  private useInMemoryStorage = false;
 
   static async getInstance(): Promise<UserDbService> {
     if (!UserDbService.instance) {
@@ -24,7 +26,8 @@ export class UserDbService {
     try {
       const endpoint = process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT;
       if (!endpoint) {
-        console.warn('Cosmos DB endpoint not found in environment variables.');
+        console.warn('Cosmos DB endpoint not found in environment variables. Falling back to in-memory storage.');
+        this.useInMemoryStorage = true;
         return;
       }
       const credential = new DefaultAzureCredential();
@@ -45,6 +48,10 @@ export class UserDbService {
   }
 
   async getUserById(id: string): Promise<any | undefined> {
+    if (this.useInMemoryStorage) {
+      return this.inMemoryStorage.get(id);
+    }
+
     if (!this.isCosmosDbInitialized) return undefined;
     try {
       const resource = await this.usersContainer!.item(id).read();
@@ -56,11 +63,17 @@ export class UserDbService {
   }
 
   async createUser(id: string): Promise<any> {
-    if (!this.isCosmosDbInitialized) throw new Error('Cosmos DB not initialized');
     const user = {
       id,
       createdAt: new Date().toISOString()
     };
+
+    if (this.useInMemoryStorage) {
+      this.inMemoryStorage.set(id, user);
+      return user;
+    }
+
+    if (!this.isCosmosDbInitialized) throw new Error('Cosmos DB not initialized');
     const { resource } = await this.usersContainer!.items.create(user);
     return resource;
   }
