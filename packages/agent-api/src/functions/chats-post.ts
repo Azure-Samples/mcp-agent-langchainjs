@@ -5,7 +5,7 @@ import { AzureChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { RunnableWithMessageHistory } from '@langchain/core/runnables';
-import { ChatPromptTemplate, PromptTemplate } from '@langchain/core/prompts';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { createToolCallingAgent } from "langchain/agents";
 import { AgentExecutor } from "langchain/agents";
 import { loadMcpTools } from "@langchain/mcp-adapters";
@@ -13,7 +13,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { v4 as uuidv4 } from 'uuid';
 import 'dotenv/config';
 import { badRequest, data, serviceUnavailable } from '../http-response.js';
-import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from '../security.js';
+import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from '../auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { ChainValues } from '@langchain/core/utils/types.js';
 
@@ -36,6 +36,7 @@ Make sure the last question ends with ">>".
 - If you get any errors when trying to use a tool that does not seem related to missing parameters, try again
 - If you cannot get the information needed to answer the user's question or perform the specified action, inform the user that you are unable to do so. Never make up information.
 - The get_burger tool can help you get informations about the burgers
+- Creating or cancelling an order requires the userId, which is provided in the request context
 `;
 
 const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes.`;
@@ -112,8 +113,9 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 
     const prompt = ChatPromptTemplate.fromMessages([
       ["system", agentSystemPrompt],
+      ["human", "userId: {userId}"],
       ["placeholder", "{chat_history}"],
-      ["human", "{input}"],
+      ["human", "{question}"],
       ["placeholder", "{agent_scratchpad}"],
     ]);
 
@@ -132,14 +134,14 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     // Handle chat history
     const agentChainWithHistory = new RunnableWithMessageHistory({
       runnable: agentExecutor,
-      inputMessagesKey: 'input',
+      inputMessagesKey: 'question',
       historyMessagesKey: 'chat_history',
       getMessageHistory: async () => chatHistory,
     });
     // Retriever to search for the documents in the database
     const question = messages.at(-1)!.content;
     const responseStream = await agentChainWithHistory.stream(
-      { input: question },
+      { userId, question },
       { configurable: { sessionId } },
     );
     const jsonStream = Readable.from(createJsonStream(responseStream, sessionId));
@@ -148,11 +150,11 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const { title } = await chatHistory.getContext();
     if (!title) {
       const response = await ChatPromptTemplate.fromMessages([
-        ['system', titleSystemPrompt],
-        ['human', '{input}'],
-      ])
+          ['system', titleSystemPrompt],
+          ['human', '{question}'],
+        ])
         .pipe(model)
-        .invoke({ input: question });
+        .invoke({ question });
       context.log(`Title for session: ${response.content as string}`);
       chatHistory.setContext({ title: response.content });
     }

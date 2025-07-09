@@ -3,7 +3,7 @@ import { HttpRequest, HttpResponseInit, InvocationContext, app } from '@azure/fu
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import 'dotenv/config';
 import { badRequest, ok, notFound } from '../http-response.js';
-import { getCredentials, getUserId } from '../security.js';
+import { getCredentials, getUserId } from '../auth.js';
 
 async function getChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const azureCosmosDbEndpoint = process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT;

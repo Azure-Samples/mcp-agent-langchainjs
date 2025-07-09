@@ -5,7 +5,7 @@ import {
   type InvocationContext,
 } from "@azure/functions";
 import { UserDbService } from "../user-db-service.js";
-import { getUserId } from "../security.js";
+import { getUserId } from "../auth.js";
 
 app.http("me-get", {
   methods: ["GET"],
