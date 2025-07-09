@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "ms-azuretools.vscode-bicep",
+    "ms-azuretools.vscode-azurefunctions",
+    "ms-azuretools.vscode-azurestaticwebapps",
+    "ms-azuretools.vscode-containers",
+    "genaiscript.genaiscript-vscode",
+    "editorconfig.editorconfig",
+    "runem.lit-plugin",
+    "esbenp.prettier-vscode",
+    "humao.rest-client"
+  ]
+}
