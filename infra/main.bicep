@@ -181,7 +181,7 @@ module burgerApiFunctionSettings './core/site-app-settings.bicep' = {
   }
 }
 
-module agentApiFunction 'br/public:avm/res/web/site:0.13.0' = {
+module agentApiFunction 'br/public:avm/res/web/site:0.16.0' = {
   name: 'agent-api'
   scope: resourceGroup
   params: {
@@ -190,7 +190,14 @@ module agentApiFunction 'br/public:avm/res/web/site:0.13.0' = {
     kind: 'functionapp,linux'
     name: agentApiResourceName
     serverFarmResourceId: agentApiAppServicePlan.outputs.resourceId
-    appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+    configs: [
+      {
+        name: 'appsettings'
+        applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+        storageAccountResourceId: storage.outputs.resourceId
+        storageAccountUseIdentityAuthentication: true
+      }
+    ]
     managedIdentities: { systemAssigned: true }
     siteConfig: {
       minTlsVersion: '1.2'
@@ -216,10 +223,10 @@ module agentApiFunction 'br/public:avm/res/web/site:0.13.0' = {
         alwaysReady: [
           {
             name: 'http'
-            instanceCount: '1'
+            instanceCount: 1
           }
         ]
-        maximumInstanceCount: 1000
+        maximumInstanceCount: 100
         instanceMemoryMB: 2048
       }
       runtime: {
@@ -227,8 +234,6 @@ module agentApiFunction 'br/public:avm/res/web/site:0.13.0' = {
         version: '20'
       }
     }
-    storageAccountResourceId: storage.outputs.resourceId
-    storageAccountUseIdentityAuthentication: true
   }
 }
 
@@ -302,7 +307,7 @@ module agentWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
   }
 }
 
-module storage 'br/public:avm/res/storage/storage-account:0.19.0' = {
+module storage 'br/public:avm/res/storage/storage-account:0.25.0' = {
   name: 'storage'
   scope: resourceGroup
   params: {
@@ -341,7 +346,7 @@ module storage 'br/public:avm/res/storage/storage-account:0.19.0' = {
   }
 }
 
-module monitoring 'br/public:avm/ptn/azd/monitoring:0.1.1' = {
+module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.0' = {
   name: 'monitoring'
   scope: resourceGroup
   params: {
@@ -353,7 +358,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.1.1' = {
   }
 }
 
-module openAi 'br/public:avm/res/cognitive-services/account:0.10.2' = {
+module openAi 'br/public:avm/res/cognitive-services/account:0.11.0' = {
   name: 'openai'
   scope: resourceGroup
   params: {
@@ -385,7 +390,7 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.10.2' = {
         roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
       }
       {
-        principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId
+        principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId!
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
       }
@@ -393,6 +398,7 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.10.2' = {
   }
 }
 
+// TODO: update to use the latest version of the module
 module cosmosDb 'br/public:avm/res/document-db/database-account:0.12.0' = {
   name: 'cosmosDb'
   scope: resourceGroup
@@ -468,8 +474,8 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.12.0' = {
     ]
     sqlRoleAssignmentsPrincipalIds: [
       principalId
-      burgerApiFunction.outputs.systemAssignedMIPrincipalId
-      agentApiFunction.outputs.systemAssignedMIPrincipalId
+      burgerApiFunction.outputs.?systemAssignedMIPrincipalId
+      agentApiFunction.outputs.?systemAssignedMIPrincipalId
     ]
   }
 }
@@ -536,7 +542,7 @@ module storageRoleBurgerApi 'br/public:avm/ptn/authorization/resource-role-assig
   scope: resourceGroup
   name: 'storage-role-burger-api'
   params: {
-    principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId
+    principalId: burgerApiFunction.outputs.?systemAssignedMIPrincipalId!
     roleName: 'Storage Blob Data Contributor'
     roleDefinitionId: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
     resourceId: storage.outputs.resourceId
@@ -547,7 +553,7 @@ module storageRoleRegistrationApi 'br/public:avm/ptn/authorization/resource-role
   scope: resourceGroup
   name: 'storage-role-agent-api'
   params: {
-    principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId
+    principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId!
     roleName: 'Storage Blob Data Contributor'
     roleDefinitionId: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
     resourceId: storage.outputs.resourceId
