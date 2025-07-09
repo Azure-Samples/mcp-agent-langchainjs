@@ -3,7 +3,7 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 COPY ./packages/burger-mcp ./packages/burger-mcp
-RUN npm ci --workspace=burger-mcp --cache /tmp/empty-cache
+RUN npm ci --cache /tmp/empty-cache
 RUN npm run build --workspace=burger-mcp
 
 # Production stage
