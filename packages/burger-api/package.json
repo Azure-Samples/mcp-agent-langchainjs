@@ -29,15 +29,10 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@genaiscript/runtime": "^2.2.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
-    "concurrently": "^9",
-    "rimraf": "^6.0.1",
-    "sharp": "^0.34.1",
-    "typescript": "^5",
-    "zod": "^3.24.2"
+    "typescript": "^5"
   }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "burger-data",
+  "version": "1.0.0",
+  "description": "GenAI scripts to generate menu data for Contoso Burgers",
+  "private": true,
+  "scripts": {
+    "generate:burgers": "npx -y genaiscript@latest run generate-burgers",
+    "generate:images": "npx -y genaiscript@latest run generate-images",
+    "clean": "rimraf data",
+    "copy": "cp -R data/* ../burger-api/data"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "devDependencies": {
+    "@genaiscript/runtime": "^2",
+    "genaiscript": "^2",
+    "sharp": "^0.34.1"
+  }
+}
