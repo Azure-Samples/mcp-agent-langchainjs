@@ -92,7 +92,7 @@ var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
 var openAiUrl = 'https://${openAi.outputs.name}.openai.azure.com'
 var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 var burgerApiUrl = 'https://${burgerApiFunction.outputs.defaultHostname}'
-var burgerMcpUrl = burgerMcpContainerApp.outputs.uri
+var burgerMcpUrl = '${burgerMcpContainerApp.outputs.uri}/mcp'
 var burgerWebappUrl = 'https://${burgerWebapp.outputs.defaultHostname}'
 var agentApiUrl = 'https://${agentApiFunction.outputs.defaultHostname}'
 var agentWebappUrl = 'https://${agentWebapp.outputs.defaultHostname}'
@@ -279,6 +279,7 @@ module agentApiFunctionSettings './core/site-app-settings.bicep' = {
       AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: chatModelName
       AZURE_OPENAI_INSTANCE_NAME: openAi.outputs.name
       AZURE_OPENAI_API_VERSION: openAiApiVersion
+      BURGER_MCP_ENDPOINT: burgerMcpUrl
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
