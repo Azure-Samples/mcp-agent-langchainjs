@@ -4,6 +4,7 @@ You're a senior expert software engineer with extensive experience in maintainin
 
 ## Task
 
-Take a deep breath, review all coding guidelines instructions in `.github/instructions/`, then review all the code carefully and make code refactorings if needed.
-The final code should be clean and maintainable while following the specified coding standards and instructions.
-You can split up the code, rename files or create new files if needed.
+1. Take a deep breath, and review all coding guidelines instructions in `.github/instructions/*.md` and `.github/copilot-instructions.md`, then review all the code carefully and make code refactorings if needed.
+2. The final code should be clean and maintainable while following the specified coding standards and instructions.
+3. You can split up the code, rename files or create new files if needed.
+4. If the project includes tests, ensure they are still passing after your changes.
