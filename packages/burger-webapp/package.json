@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "concurrently npm:serve:* --raw --kill-others",
+    "start": "concurrently npm:serve:api npm:serve:webapp --raw --kill-others",
     "start:mock": "concurrently npm:serve:mocks npm:serve:webapp --raw --kill-others",
     "serve:api": "cd ../burger-api && npm start",
     "serve:mocks": "smoke -p 7071 -h 127.0.0.1 mocks",
