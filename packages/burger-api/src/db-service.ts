@@ -10,7 +10,7 @@ import toppingsData from '../data/toppings.json';
 import dotenv from "dotenv";
 
 // Env file is located in the root of the repository
-dotenv.config({ path: path.join(__dirname, "../../../.env") });
+dotenv.config({ path: path.join(process.cwd(), "../../.env") });
 
 // Helper to strip properties starting with underscore from an object
 function stripUnderscoreProps<T extends object>(obj: T): T {

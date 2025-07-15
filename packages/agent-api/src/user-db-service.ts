@@ -3,7 +3,7 @@ import { DefaultAzureCredential } from '@azure/identity';
 import path from 'node:path';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: path.join(__dirname, '../../../.env') });
+dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 export class UserDbService {
   private static instance: UserDbService;
