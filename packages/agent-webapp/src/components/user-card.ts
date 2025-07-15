@@ -56,7 +56,7 @@ export class UserCard extends LitElement {
     document.body.style.overflow = '';
   }
 
-  protected renderLoading = () => html`<p>Loading...</p>`;
+  protected renderLoading = () => html`<p class="message">Loading...</p>`;
 
   protected copyUserIdToClipboard = async () => {
     if (this.userId) {
@@ -79,8 +79,8 @@ export class UserCard extends LitElement {
     }
   };
 
-  protected renderError = () => html`<p class="error">
-    Error during while loading your membership details. Please retry later.
+  protected renderError = () => html`<p class="message error">
+    An error during while loading your membership details. Please retry later.
   </p>`;
 
   protected renderRegistrationCard = () => html`
@@ -165,7 +165,6 @@ export class UserCard extends LitElement {
       --azc-primary: linear-gradient(135deg, #de471d 0%, #ff6b3d 100%);
       --azc-border-radius: 16px;
     }
-
     .member-card-link {
       background: none;
       border: none;
@@ -181,16 +180,13 @@ export class UserCard extends LitElement {
       font-family: inherit;
       font-size: inherit;
     }
-
     .member-card-link:hover {
       background: rgba(255, 255, 255, 0.1);
     }
-
     .card-icon {
       display: inline-block;
       fill: currentColor;
     }
-
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -205,7 +201,6 @@ export class UserCard extends LitElement {
       padding: 2rem;
       box-sizing: border-box;
     }
-
     .modal-content {
       position: relative;
       max-width: 640px;
@@ -214,7 +209,6 @@ export class UserCard extends LitElement {
       background: var(--azc-primary);
       border-radius: var(--azc-border-radius, 16px);
     }
-
     .close-button {
       position: absolute;
       top: 1rem;
@@ -234,11 +228,9 @@ export class UserCard extends LitElement {
       color: #fff;
       transition: background 0.2s;
     }
-
     .close-button:hover {
       background: rgba(255, 255, 255, .4);
     }
-
     svg {
       fill: currentColor;
       width: 100%;
@@ -351,6 +343,9 @@ export class UserCard extends LitElement {
       display: inline-block;
       vertical-align: middle;
       color: #fff;
+    }
+    .message {
+      padding: 1em;
     }
     .visually-hidden {
       position: absolute;
