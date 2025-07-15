@@ -1,7 +1,7 @@
-import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
 import process from 'node:process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
 import yaml from 'js-yaml';
 import dotenv from 'dotenv';
 
@@ -12,7 +12,7 @@ app.http('openapi-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'openapi',
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+  async handler(request: HttpRequest, context: InvocationContext) {
     context.log('Processing request to get OpenAPI specification...');
 
     try {
@@ -40,8 +40,8 @@ app.http('openapi-get', {
             },
             status: 200,
           };
-        } catch (err) {
-          context.error('YAML to JSON conversion failed:', err);
+        } catch (error) {
+          context.error('YAML to JSON conversion failed:', error);
           return {
             jsonBody: { error: 'YAML to JSON conversion failed.' },
             status: 500,

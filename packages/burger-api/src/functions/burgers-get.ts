@@ -1,6 +1,6 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../db-service';
-import { Burger } from '../burger';
+import { DbService } from '../db-service.js';
+import { Burger } from '../burger.js';
 
 function transformBurgerImageUrl(burger: Burger, request: HttpRequest): Burger {
   const url = new URL(request.url);
@@ -16,7 +16,7 @@ app.http('burgers-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'burgers',
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+  async handler(request: HttpRequest, context: InvocationContext) {
     context.log('Processing request to get all burgers...');
 
     const dataService = await DbService.getInstance();
@@ -36,8 +36,8 @@ app.http('burger-get-by-id', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'burgers/{id}',
-  handler: async (request: HttpRequest, _context: InvocationContext) => {
-    const id = request.params.id;
+  async handler(request: HttpRequest, _context: InvocationContext) {
+    const { id } = request.params;
     const dataService = await DbService.getInstance();
     const burger = await dataService.getBurger(id);
 

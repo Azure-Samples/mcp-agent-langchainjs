@@ -1,22 +1,22 @@
 import process from 'node:process';
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../db-service';
-import { OrderStatus, type OrderItem } from '../order';
+import { DbService } from '../db-service.js';
+import { OrderStatus, type OrderItem } from '../order.js';
 
 interface CreateOrderRequest {
   userId: string;
-  items: {
+  items: Array<{
     burgerId: string;
     quantity: number;
     extraToppingIds?: string[];
-  }[];
+  }>;
 }
 
 app.http('orders-post', {
   methods: ['POST'],
   authLevel: 'anonymous',
   route: 'orders',
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+  async handler(request: HttpRequest, context: InvocationContext) {
     context.log('Processing order creation request...');
 
     try {
@@ -104,6 +104,7 @@ app.http('orders-post', {
                 jsonBody: { error: `Topping with ID ${toppingId} not found` },
               };
             }
+
             extraToppingsPrice += topping.price;
           }
         }
@@ -127,12 +128,13 @@ app.http('orders-post', {
         minMinutes += burgerCount - 2;
         maxMinutes += burgerCount - 2;
       }
+
       // Random estimated time between min and max
       const estimatedMinutes = Math.floor(Math.random() * (maxMinutes - minMinutes + 1)) + minMinutes;
-      const estimatedCompletionAt = new Date(now.getTime() + estimatedMinutes * 60000);
+      const estimatedCompletionAt = new Date(now.getTime() + estimatedMinutes * 60_000);
 
       // Create the order
-      const orderId = `order-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const orderId = `order-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       const order = await dataService.createOrder({
         id: orderId,
         userId: requestBody.userId,

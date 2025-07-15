@@ -1,15 +1,15 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { BlobService } from '../blob-service';
+import { BlobService } from '../blob-service.js';
 
 app.http('images-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'images/{*filepath}',
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+  async handler(request: HttpRequest, context: InvocationContext) {
     context.log('Processing image retrieval request...');
     context.log('Request path:', request.params.filepath);
 
-    const filepath = request.params.filepath;
+    const { filepath } = request.params;
 
     if (!filepath) {
       return {

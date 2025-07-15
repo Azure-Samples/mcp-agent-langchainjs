@@ -1,26 +1,26 @@
 import path from 'node:path';
-import { ToppingCategory } from './topping';
-import { Burger } from './burger';
-import { Topping } from './topping';
-import { Order, OrderStatus } from './order';
 import { Container, CosmosClient, Database } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
+import dotenv from 'dotenv';
 import burgersData from '../data/burgers.json';
 import toppingsData from '../data/toppings.json';
-import dotenv from 'dotenv';
+import { ToppingCategory, Topping } from './topping.js';
+import { Burger } from './burger.js';
+import { Order, OrderStatus } from './order.js';
 
 // Env file is located in the root of the repository
 dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 // Helper to strip properties starting with underscore from an object
-function stripUnderscoreProps<T extends object>(obj: T): T {
-  if (!obj || typeof obj !== 'object') return obj;
-  const result: { [key: string]: any } = {};
-  for (const key of Object.keys(obj)) {
+function stripUnderscoreProperties<T extends Record<string, unknown>>(object: T): T {
+  if (!object || typeof object !== 'object') return object;
+  const result: Record<string, any> = {};
+  for (const key of Object.keys(object)) {
     if (!key.startsWith('_')) {
-      result[key] = (obj as any)[key];
+      result[key] = (object as any)[key];
     }
   }
+
   return result as T;
 }
 
@@ -33,10 +33,12 @@ function stripUserId<T extends Order | Order[] | undefined>(orderOrOrders: T): T
       return rest as Order;
     }) as T;
   }
+
   if (orderOrOrders && typeof orderOrOrders === 'object') {
-    const { userId, ...rest } = orderOrOrders as Order;
+    const { userId, ...rest } = orderOrOrders;
     return rest as T;
   }
+
   return orderOrOrders;
 }
 
@@ -62,6 +64,7 @@ export class DbService {
       await DbService.instance.initializeCosmosDb();
       DbService.instance.initializeLocalData();
     }
+
     return DbService.instance;
   }
 
@@ -180,12 +183,13 @@ export class DbService {
           query: 'SELECT * FROM c',
         };
         const { resources } = await this.burgersContainer!.items.query(querySpec).fetchAll();
-        return (resources as Burger[]).map(stripUnderscoreProps);
+        return (resources as Burger[]).map(stripUnderscoreProperties);
       } catch (error) {
         console.error('Error fetching burgers from Cosmos DB:', error);
         return [...this.localBurgers];
       }
     }
+
     return [...this.localBurgers];
   }
 
@@ -193,12 +197,13 @@ export class DbService {
     if (this.isCosmosDbInitialized) {
       try {
         const { resource } = await this.burgersContainer!.item(id, id).read();
-        return resource ? stripUnderscoreProps(resource as Burger) : undefined;
+        return resource ? stripUnderscoreProperties(resource as Burger) : undefined;
       } catch (error) {
         console.error(`Error fetching burger ${id} from Cosmos DB:`, error);
         return this.localBurgers.find((burger) => burger.id === id);
       }
     }
+
     return this.localBurgers.find((burger) => burger.id === id);
   }
 
@@ -210,12 +215,13 @@ export class DbService {
           query: 'SELECT * FROM c',
         };
         const { resources } = await this.toppingsContainer!.items.query(querySpec).fetchAll();
-        return (resources as Topping[]).map(stripUnderscoreProps);
+        return (resources as Topping[]).map(stripUnderscoreProperties);
       } catch (error) {
         console.error('Error fetching toppings from Cosmos DB:', error);
         return [...this.localToppings];
       }
     }
+
     return [...this.localToppings];
   }
 
@@ -223,12 +229,13 @@ export class DbService {
     if (this.isCosmosDbInitialized) {
       try {
         const { resource } = await this.toppingsContainer!.item(id, id).read();
-        return resource ? stripUnderscoreProps(resource as Topping) : undefined;
+        return resource ? stripUnderscoreProperties(resource as Topping) : undefined;
       } catch (error) {
         console.error(`Error fetching topping ${id} from Cosmos DB:`, error);
         return this.localToppings.find((topping) => topping.id === id);
       }
     }
+
     return this.localToppings.find((topping) => topping.id === id);
   }
 
@@ -257,14 +264,16 @@ export class DbService {
             query: 'SELECT * FROM c',
           };
         }
+
         const { resources } = await this.ordersContainer!.items.query(querySpec).fetchAll();
-        return stripUserId((resources as Order[]).map(stripUnderscoreProps));
+        return stripUserId((resources as Order[]).map(stripUnderscoreProperties));
       } catch (error) {
         console.error('Error fetching orders from Cosmos DB:', error);
         const orders = userId ? this.localOrders.filter((order) => order.userId === userId) : this.localOrders;
         return stripUserId(orders);
       }
     }
+
     const orders = userId ? this.localOrders.filter((order) => order.userId === userId) : this.localOrders;
     return stripUserId(orders);
   }
@@ -275,10 +284,11 @@ export class DbService {
         const { resource } = await this.ordersContainer!.item(id, id).read();
         if (!resource) return undefined;
 
-        const order = stripUnderscoreProps(resource as Order);
+        const order = stripUnderscoreProperties(resource as Order);
         if (userId && order.userId !== userId) {
           return undefined;
         }
+
         return stripUserId(order);
       } catch (error) {
         console.error(`Error fetching order ${id} from Cosmos DB:`, error);
@@ -287,14 +297,17 @@ export class DbService {
         if (userId && order.userId !== userId) {
           return undefined;
         }
+
         return stripUserId(order);
       }
     }
+
     const order = this.localOrders.find((order) => order.id === id);
     if (!order) return undefined;
     if (userId && order.userId !== userId) {
       return undefined;
     }
+
     return stripUserId(order);
   }
 
@@ -302,13 +315,14 @@ export class DbService {
     if (this.isCosmosDbInitialized) {
       try {
         const { resource } = await this.ordersContainer!.items.create(order);
-        return stripUserId(stripUnderscoreProps(resource as Order));
+        return stripUserId(stripUnderscoreProperties(resource as Order));
       } catch (error) {
         console.error('Error creating order in Cosmos DB:', error);
         this.localOrders.push(order);
         return stripUserId(order);
       }
     }
+
     this.localOrders.push(order);
     return stripUserId(order);
   }
@@ -325,7 +339,7 @@ export class DbService {
 
         const updatedOrder = { ...existingOrder, status };
         const { resource } = await this.ordersContainer!.item(id, id).replace(updatedOrder);
-        return stripUserId(stripUnderscoreProps(resource as Order));
+        return stripUserId(stripUnderscoreProperties(resource as Order));
       } catch (error) {
         console.error(`Error updating order ${id} in Cosmos DB:`, error);
         const orderIndex = this.localOrders.findIndex((order) => order.id === id);
@@ -340,6 +354,7 @@ export class DbService {
         return stripUserId(this.localOrders[orderIndex]);
       }
     }
+
     const orderIndex = this.localOrders.findIndex((order) => order.id === id);
     if (orderIndex === -1) return undefined;
 
@@ -378,6 +393,7 @@ export class DbService {
         return true;
       }
     }
+
     const orderIndex = this.localOrders.findIndex((order) => order.id === id);
     if (orderIndex === -1) return false;
 
@@ -398,7 +414,7 @@ export class DbService {
 
         const updatedOrder = { ...existingOrder, ...updates };
         const { resource } = await this.ordersContainer!.item(id, id).replace(updatedOrder);
-        return stripUserId(stripUnderscoreProps(resource as Order));
+        return stripUserId(stripUnderscoreProperties(resource as Order));
       } catch (error) {
         console.error(`Error updating order ${id} in Cosmos DB:`, error);
         const orderIndex = this.localOrders.findIndex((order) => order.id === id);
@@ -408,6 +424,7 @@ export class DbService {
         return stripUserId(this.localOrders[orderIndex]);
       }
     }
+
     const orderIndex = this.localOrders.findIndex((order) => order.id === id);
     if (orderIndex === -1) return undefined;
 
@@ -456,7 +473,7 @@ export class DbService {
 
     try {
       const { resource } = await this.usersContainer.item(id, id).read();
-      return !!resource;
+      return Boolean(resource);
     } catch (error) {
       console.error('Error checking user existence:', error);
       return false;

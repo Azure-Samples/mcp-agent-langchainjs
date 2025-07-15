@@ -19,6 +19,7 @@ export class BlobService {
       BlobService.instance = new BlobService();
       await BlobService.instance.initialize();
     }
+
     return BlobService.instance;
   }
 
@@ -70,11 +71,11 @@ export class BlobService {
       const blobClient = this.containerClient.getBlobClient(firstImageName);
       const imageExists = await blobClient.exists();
 
-      if (!imageExists) {
+      if (imageExists) {
+        console.log('Images already exist in blob storage');
+      } else {
         console.log('First image not found in blob storage. Uploading all images...');
         await this.uploadAllImages();
-      } else {
-        console.log('Images already exist in blob storage');
       }
     } catch (error) {
       console.error('Error checking image existence:', error);
@@ -91,16 +92,16 @@ export class BlobService {
 
     try {
       // Path to the images directory
-      const imagesDir = path.join(process.cwd(), 'data', 'images');
+      const imagesDirectory = path.join(process.cwd(), 'data', 'images');
 
       // Get all jpg files in the directory
-      const imageFiles = (await fs.readdir(imagesDir)).filter((file) => file.endsWith('.jpg'));
+      const imageFiles = (await fs.readdir(imagesDirectory)).filter((file) => file.endsWith('.jpg'));
 
       console.log(`Found ${imageFiles.length} images to upload`);
 
       // Upload each image
       for (const imageFile of imageFiles) {
-        const filePath = path.join(imagesDir, imageFile);
+        const filePath = path.join(imagesDirectory, imageFile);
         const fileContent = await fs.readFile(filePath);
 
         const blockBlobClient = this.containerClient.getBlockBlobClient(imageFile);
@@ -128,7 +129,7 @@ export class BlobService {
   public async getBlob(blobName: string): Promise<Buffer | undefined> {
     // Check if we should use local fallback
     if (this.useLocalFallback) {
-      return await this.getLocalFile(blobName);
+      return this.getLocalFile(blobName);
     }
 
     // Use Azure Blob Storage when available
@@ -223,18 +224,29 @@ export class BlobService {
 
     switch (extension) {
       case 'jpg':
-      case 'jpeg':
+      case 'jpeg': {
         return 'image/jpeg';
-      case 'png':
+      }
+
+      case 'png': {
         return 'image/png';
-      case 'gif':
+      }
+
+      case 'gif': {
         return 'image/gif';
-      case 'webp':
+      }
+
+      case 'webp': {
         return 'image/webp';
-      case 'svg':
+      }
+
+      case 'svg': {
         return 'image/svg+xml';
-      default:
+      }
+
+      default: {
         return 'application/octet-stream';
+      }
     }
   }
 }

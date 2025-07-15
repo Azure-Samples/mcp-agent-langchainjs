@@ -1,12 +1,12 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../db-service';
-import { OrderStatus } from '../order';
+import { DbService } from '../db-service.js';
+import { OrderStatus } from '../order.js';
 
 app.http('status-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
-  route: '{ignored:maxlength(0)?}', // empty route, just using an empty string isn't working
-  handler: async (_request: HttpRequest, context: InvocationContext) => {
+  route: '{ignored:maxlength(0)?}', // Empty route, just using an empty string isn't working
+  async handler(_request: HttpRequest, context: InvocationContext) {
     context.log('Processing request to get server status...');
 
     try {

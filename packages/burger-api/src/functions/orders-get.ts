@@ -1,32 +1,34 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../db-service';
+import { DbService } from '../db-service.js';
 
 // Get all orders endpoint
 app.http('orders-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'orders',
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+  async handler(request: HttpRequest, context: InvocationContext) {
     context.log('Processing request to get all orders...');
 
     // Parse filters from query
     const userId = request.query.get('userId') ?? undefined;
-    const statusParam = request.query.get('status');
-    const lastParam = request.query.get('last');
-    let statuses: string[] | undefined = undefined;
-    if (statusParam) {
-      statuses = statusParam.split(',').map((s) => s.trim().toLowerCase());
+    const statusParameter = request.query.get('status');
+    const lastParameter = request.query.get('last');
+    let statuses: string[] | undefined;
+    if (statusParameter) {
+      statuses = statusParameter.split(',').map((s) => s.trim().toLowerCase());
     }
-    let lastMs: number | undefined = undefined;
-    if (lastParam) {
-      const match = lastParam.match(/^(\d+)([mh])$/i);
+
+    let lastMs: number | undefined;
+    if (lastParameter) {
+      const match = /^(\d+)([mh])$/i.exec(lastParameter);
       if (match) {
-        const value = parseInt(match[1], 10);
+        const value = Number.parseInt(match[1], 10);
         const unit = match[2].toLowerCase();
         if (unit === 'm') lastMs = value * 60 * 1000;
         if (unit === 'h') lastMs = value * 60 * 60 * 1000;
       }
     }
+
     const dataService = await DbService.getInstance();
     const allOrders = await dataService.getOrders(userId);
 
@@ -54,8 +56,8 @@ app.http('orders-get-by-id', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'orders/{orderId}',
-  handler: async (request: HttpRequest, _context: InvocationContext) => {
-    const orderId = request.params.orderId;
+  async handler(request: HttpRequest, _context: InvocationContext) {
+    const { orderId } = request.params;
 
     if (!orderId) {
       return {

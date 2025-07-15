@@ -1,6 +1,6 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
-import { DbService } from '../db-service';
-import { ToppingCategory, Topping } from '../topping';
+import { DbService } from '../db-service.js';
+import { ToppingCategory, Topping } from '../topping.js';
 
 // Helper function to transform topping imageUrl with full URL
 function transformToppingImageUrl(topping: Topping, request: HttpRequest): Topping {
@@ -18,16 +18,16 @@ app.http('toppings-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'toppings',
-  handler: async (request: HttpRequest, context: InvocationContext) => {
+  async handler(request: HttpRequest, context: InvocationContext) {
     context.log('Processing request to get toppings...');
     context.log('Request query:', request.query);
 
     const dataService = await DbService.getInstance();
-    const categoryParam = request.query.get('category');
+    const categoryParameter = request.query.get('category');
 
     // If a category is specified, filter toppings by category
-    if (categoryParam && Object.values(ToppingCategory).includes(categoryParam as ToppingCategory)) {
-      const toppings = await dataService.getToppingsByCategory(categoryParam as ToppingCategory);
+    if (categoryParameter && Object.values(ToppingCategory).includes(categoryParameter as ToppingCategory)) {
+      const toppings = await dataService.getToppingsByCategory(categoryParameter as ToppingCategory);
       // Transform imageUrls to include full URL
       const toppingsWithFullUrls = toppings.map((topping) => transformToppingImageUrl(topping, request));
       return {
@@ -51,8 +51,8 @@ app.http('topping-get-by-id', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'toppings/{id}',
-  handler: async (request: HttpRequest, _context: InvocationContext) => {
-    const id = request.params.id;
+  async handler(request: HttpRequest, _context: InvocationContext) {
+    const { id } = request.params;
     const dataService = await DbService.getInstance();
     const topping = await dataService.getTopping(id);
 
@@ -77,7 +77,7 @@ app.http('topping-categories-get', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'toppings/categories',
-  handler: async (_request: HttpRequest, _context: InvocationContext) => {
+  async handler(_request: HttpRequest, _context: InvocationContext) {
     return {
       jsonBody: Object.values(ToppingCategory),
       status: 200,
