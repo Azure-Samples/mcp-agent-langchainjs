@@ -47,7 +47,7 @@
     "rimraf": "^6",
     "run-on-output": "^1.0.1",
     "typescript": "^5",
-    "xo": "^0.60.0"
+    "xo": "^1.1.1"
   },
   "engines": {
     "node": ">=20",
