@@ -30,7 +30,6 @@ app.http("me-get", {
         user = await db.createUser(id);
         context.log(`Created new user with ID: ${id}`);
       } else {
-        context.log({user});
         context.log(`User exists, returning ID: ${user.id}`);
       }
 

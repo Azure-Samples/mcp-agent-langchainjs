@@ -123,8 +123,8 @@ export class UserCard extends LitElement {
       if (!response.ok) {
         throw new Error("An error occurred while fetching the user ID");
       }
-      const data = await response.json();
-      this.userId = data.userId;
+      const { id } = await response.json();
+      this.userId = id;
     } catch (error) {
       console.error("Error fetching user ID:", error);
       this.hasError = true;
@@ -146,7 +146,7 @@ export class UserCard extends LitElement {
         <button class="close-button" @click="${this.closeModal}" aria-label="Close modal">×</button>
         ${this.isLoading
           ? this.renderLoading()
-          : !this.username
+          : !this.username || this.hasError
           ? this.renderError()
           : this.renderRegistrationCard()}
       </div>
@@ -208,7 +208,7 @@ export class UserCard extends LitElement {
 
     .modal-content {
       position: relative;
-      max-width: 600px;
+      max-width: 640px;
       width: 100%;
       max-height: 90vh;
       background: var(--azc-primary);
@@ -283,7 +283,7 @@ export class UserCard extends LitElement {
         font-weight: 600;
         margin: 0;
         white-space: normal;
-        word-wrap: break-word;
+        line-break: anywhere;
       }
       p {
         margin: 1.5rem 0 0 0;
