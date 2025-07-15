@@ -55,10 +55,8 @@
   },
   "xo": {
     "space": true,
+    "semicolon": true,
     "prettier": true,
-    "envs": [
-      "node"
-    ],
     "rules": {
       "@typescript-eslint/triple-slash-reference": "off",
       "@typescript-eslint/naming-convention": "off",
@@ -96,16 +94,6 @@
     "semi": true,
     "singleQuote": true,
     "printWidth": 120,
-    "bracketSpacing": true,
-    "overrides": [
-      {
-        "files": [
-          "*.json"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ]
+    "bracketSpacing": true
   }
 }
