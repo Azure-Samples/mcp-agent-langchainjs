@@ -1,7 +1,12 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
+import process from 'node:process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
+import dotenv from 'dotenv';
+
+// Env file is located in the root of the repository
+dotenv.config({ path: path.join(process.cwd(), "../../.env") });
 
 app.http('openapi-get', {
   methods: ['GET'],
@@ -11,8 +16,14 @@ app.http('openapi-get', {
     context.log('Processing request to get OpenAPI specification...');
 
     try {
-      const openapiPath = path.join(__dirname, '../../../openapi.yaml');
+      const openapiPath = path.join(process.cwd(), 'openapi.yaml');
       const openapiContent = await fs.readFile(openapiPath, 'utf8');
+
+      // Replace BURGER_API_HOST placeholder with actual host URL
+      console.log('BURGER_API_URL:', process.env.BURGER_API_URL);
+      context.log('Replacing <BURGER_API_HOST> in OpenAPI specification...');
+      const burgerApiHost = process.env.BURGER_API_URL || 'http://localhost:7071';
+      const processedContent = openapiContent.replace('<BURGER_API_HOST>', burgerApiHost);
 
       const url = new URL(request.url);
       const wantsJson =
@@ -21,7 +32,7 @@ app.http('openapi-get', {
 
       if (wantsJson) {
         try {
-          const json = yaml.load(openapiContent);
+          const json = yaml.load(processedContent);
           return {
             jsonBody: json,
             headers: {
@@ -39,7 +50,7 @@ app.http('openapi-get', {
       }
 
       return {
-        body: openapiContent,
+        body: processedContent,
         headers: {
           'Content-Type': 'text/yaml'
         },
@@ -47,7 +58,7 @@ app.http('openapi-get', {
       };
     } catch (error) {
       context.error('Error reading OpenAPI specification file:', error);
-      
+
       return {
         jsonBody: { error: 'Error reading OpenAPI specification' },
         status: 500
