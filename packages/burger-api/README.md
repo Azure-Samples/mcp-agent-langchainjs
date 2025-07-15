@@ -58,12 +58,9 @@ You can view the complete API documentation by opening the [Swagger Editor](http
 
 ### Order Limits
 
-A user can have a maximum of **5 active orders** (status: `pending` or `in-preparation`) at a time. If you try to place more, the API will return:
+A user can have a maximum of **5 active orders** (status: `pending` or `in-preparation`) at a time. Additionally, a single order cannot exceed **50 burgers** in total across all items.
 
-- HTTP 429 Too Many Requests
-- Body: `{ "error": "Too many active orders: limit is 5 per user" }`
-
-This ensures fair use and prevents abuse.
+These limits ensure fair use and prevent abuse.
 
 ### Order Status Automation
 

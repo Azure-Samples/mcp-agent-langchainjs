@@ -110,6 +110,10 @@ paths:
       description: |
         Places a new order with burgers (requires userId).
         French fries are included as a side for every burger order.
+        
+        Limitations:
+        - Maximum 5 active orders per user
+        - Maximum 50 burgers total per order
       operationId: createOrder
       requestBody:
         required: true
@@ -536,6 +540,7 @@ components:
           example: "user123"
         items:
           type: array
+          description: List of burger items (maximum 50 burgers total across all items)
           items:
             type: object
             properties:

@@ -67,6 +67,15 @@ app.http('orders-post', {
       const orderItems: OrderItem[] = [];
       let totalPrice = 0;
 
+      // Calculate total burger count and validate limit
+      const totalBurgerCount = requestBody.items.reduce((sum, item) => sum + item.quantity, 0);
+      if (totalBurgerCount > 50) {
+        return {
+          status: 400,
+          jsonBody: { error: 'Order cannot exceed 50 burgers in total' }
+        };
+      }
+
       for (const item of requestBody.items) {
 
         // Validate quantity is a positive integer
