@@ -5,13 +5,11 @@
 // Note that you need to set GENAISCRIPT_IMAGE_MODEL env variable to either
 // "openai:gpt-image-1" or "azure:gpt-image-1" to run this script.
 
-import burgersData from '../data/burgers.json' with { type: "json" };
-import toppingsData from '../data/toppings.json' with { type: "json" };
+import burgersData from '../data/burgers.json' with { type: 'json' };
+import toppingsData from '../data/toppings.json' with { type: 'json' };
 import sharp from 'sharp';
 
-const toppingsMap = new Map(
-  toppingsData.map((topping) => [topping.id, topping.name]),
-);
+const toppingsMap = new Map(toppingsData.map((topping) => [topping.id, topping.name]));
 
 const role = `## Role
 You're an expert prompt engineer with a deep understanding of AI image generation capabilities and a renowned food photographer. You have a passion for creating visually stunning images that capture the essence of food and culinary art. You know how to create prompts that generate high-quality and realistic pictures with rich details of food and ingredients.`;
@@ -39,15 +37,15 @@ for (const burger of burgersData) {
   ## Burger
   - Name: ${name}
   - Description: ${description}
-  - Toppings: ${toppings.join(", ")}
+  - Toppings: ${toppings.join(', ')}
 
   ## Output
   Write only the prompt, without any additional text or explanation.`;
   });
 
   const { image } = await generateImage(burgerPrompt, {
-    size: "1024x1024",
-    style: "natural",
+    size: '1024x1024',
+    style: 'natural',
   });
 
   await sharp(image.filename).resize(512, 512).jpeg({ quality: 60 }).toFile(imagePath);
@@ -81,8 +79,8 @@ for (const topping of toppingsData) {
   });
 
   const { image } = await generateImage(toppingPrompt, {
-    size: "1024x1024",
-    style: "natural",
+    size: '1024x1024',
+    style: 'natural',
   });
 
   await sharp(image.filename).resize(512, 512).jpeg({ quality: 60 }).toFile(imagePath);
@@ -90,5 +88,5 @@ for (const topping of toppingsData) {
 
 // ----------------------------------------------------------------------------
 // Save updated files with imageUrls
-await workspace.writeText("data/burgers.json", JSON.stringify(burgersData, null, 2));
-await workspace.writeText("data/toppings.json", JSON.stringify(toppingsData, null, 2));
+await workspace.writeText('data/burgers.json', JSON.stringify(burgersData, null, 2));
+await workspace.writeText('data/toppings.json', JSON.stringify(toppingsData, null, 2));

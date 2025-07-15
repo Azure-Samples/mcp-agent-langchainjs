@@ -8,7 +8,7 @@ function transformBurgerImageUrl(burger: Burger, request: HttpRequest): Burger {
 
   return {
     ...burger,
-    imageUrl: `${baseUrl}/api/images/${burger.imageUrl}`
+    imageUrl: `${baseUrl}/api/images/${burger.imageUrl}`,
   };
 }
 
@@ -23,13 +23,13 @@ app.http('burgers-get', {
     const burgers = await dataService.getBurgers();
 
     // Transform imageUrl to include full URL
-    const burgersWithFullUrls = burgers.map(burger => transformBurgerImageUrl(burger, request));
+    const burgersWithFullUrls = burgers.map((burger) => transformBurgerImageUrl(burger, request));
 
     return {
       jsonBody: burgersWithFullUrls,
-      status: 200
+      status: 200,
     };
-  }
+  },
 });
 
 app.http('burger-get-by-id', {
@@ -44,7 +44,7 @@ app.http('burger-get-by-id', {
     if (!burger) {
       return {
         status: 404,
-        jsonBody: { message: 'Burger not found' }
+        jsonBody: { message: 'Burger not found' },
       };
     }
 
@@ -53,7 +53,7 @@ app.http('burger-get-by-id', {
 
     return {
       jsonBody: burgerWithFullUrl,
-      status: 200
+      status: 200,
     };
-  }
+  },
 });

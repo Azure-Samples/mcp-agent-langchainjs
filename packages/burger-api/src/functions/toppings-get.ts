@@ -10,7 +10,7 @@ function transformToppingImageUrl(topping: Topping, request: HttpRequest): Toppi
 
   return {
     ...topping,
-    imageUrl: `${baseUrl}/api/images/${topping.imageUrl}`
+    imageUrl: `${baseUrl}/api/images/${topping.imageUrl}`,
   };
 }
 
@@ -29,22 +29,22 @@ app.http('toppings-get', {
     if (categoryParam && Object.values(ToppingCategory).includes(categoryParam as ToppingCategory)) {
       const toppings = await dataService.getToppingsByCategory(categoryParam as ToppingCategory);
       // Transform imageUrls to include full URL
-      const toppingsWithFullUrls = toppings.map(topping => transformToppingImageUrl(topping, request));
+      const toppingsWithFullUrls = toppings.map((topping) => transformToppingImageUrl(topping, request));
       return {
         jsonBody: toppingsWithFullUrls,
-        status: 200
+        status: 200,
       };
     }
 
     // Otherwise return all toppings
     const toppings = await dataService.getToppings();
     // Transform imageUrls to include full URL
-    const toppingsWithFullUrls = toppings.map(topping => transformToppingImageUrl(topping, request));
+    const toppingsWithFullUrls = toppings.map((topping) => transformToppingImageUrl(topping, request));
     return {
       jsonBody: toppingsWithFullUrls,
-      status: 200
+      status: 200,
     };
-  }
+  },
 });
 
 app.http('topping-get-by-id', {
@@ -59,7 +59,7 @@ app.http('topping-get-by-id', {
     if (!topping) {
       return {
         jsonBody: { error: 'Topping not found' },
-        status: 404
+        status: 404,
       };
     }
 
@@ -68,9 +68,9 @@ app.http('topping-get-by-id', {
 
     return {
       jsonBody: toppingWithFullUrl,
-      status: 200
+      status: 200,
     };
-  }
+  },
 });
 
 app.http('topping-categories-get', {
@@ -80,7 +80,7 @@ app.http('topping-categories-get', {
   handler: async (_request: HttpRequest, _context: InvocationContext) => {
     return {
       jsonBody: Object.values(ToppingCategory),
-      status: 200
+      status: 200,
     };
-  }
+  },
 });

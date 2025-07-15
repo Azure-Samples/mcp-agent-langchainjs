@@ -37,7 +37,7 @@ export class UserDbService {
       this.database = database;
       const { container } = await this.database.containers.createIfNotExists({
         id: 'users',
-        partitionKey: { paths: ['/id'] }
+        partitionKey: { paths: ['/id'] },
       });
       this.usersContainer = container;
       this.isCosmosDbInitialized = true;
@@ -65,7 +65,7 @@ export class UserDbService {
   async createUser(id: string): Promise<any> {
     const user = {
       id,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     if (this.useInMemoryStorage) {

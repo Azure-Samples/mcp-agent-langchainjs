@@ -8,9 +8,9 @@ on:
     paths:
       - 'src/**'
       - 'infra/**'
-      - '.github/workflows/azure-dev.yaml'  
-      - '.github/workflows/strale-not.yaml'  
-      - '.github/workflows/validate-infra.yaml'  
+      - '.github/workflows/azure-dev.yaml'
+      - '.github/workflows/strale-not.yaml'
+      - '.github/workflows/validate-infra.yaml'
 # GitHub Actions workflow to deploy to Azure using azd
 # To configure required secrets for connecting to Azure, simply run `azd pipeline config`
 

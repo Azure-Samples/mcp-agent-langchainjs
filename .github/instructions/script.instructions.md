@@ -1,5 +1,5 @@
 ---
-applyTo: "**/scripts/*!(.genai).mjs"
+applyTo: '**/scripts/*!(.genai).mjs'
 ---
 
 ## Guidance for Code Generation

@@ -1,6 +1,6 @@
 // This script uses GenAIScript (https://aka.ms/genaiscript)
 // to generate the menu for a burger restaurant.
-import { z } from "@genaiscript/runtime";
+import { z } from '@genaiscript/runtime';
 
 const role = `## Role
 You're a renowned chef with a passion for creating amazing burgers. You have a deep knowledge of American cuisine and international flavors that appeal to diverse customers.`;
@@ -19,7 +19,7 @@ export const burgerSchema = z.object({
 export const burgerMenuSchema = z.array(burgerSchema);
 
 const { text: burgers } = await runPrompt((_) => {
-  const schema = _.defSchema("SCHEMA", burgerMenuSchema);
+  const schema = _.defSchema('SCHEMA', burgerMenuSchema);
   _.$`${role}
 
 ## Task
@@ -43,19 +43,12 @@ export const toppingSchema = z.object({
   description: z.string(),
   price: z.number(),
   imageUrl: z.string(),
-  category: z.enum([
-    "vegetable",
-    "meat",
-    "cheese",
-    "sauce",
-    "bun",
-    "extras",
-  ]),
+  category: z.enum(['vegetable', 'meat', 'cheese', 'sauce', 'bun', 'extras']),
 });
 export const toppingMenuSchema = z.array(toppingSchema);
 const { text: toppings } = await runPrompt((_) => {
-  const burgerMenu = def("BURGERS", burgers, { language: "json" });
-  const schema = _.defSchema("SCHEMA", toppingMenuSchema);
+  const burgerMenu = def('BURGERS', burgers, { language: 'json' });
+  const schema = _.defSchema('SCHEMA', toppingMenuSchema);
   _.$`${role}
 
 ## Task
@@ -74,9 +67,9 @@ ImageUrl should be an empty string for now, as the images will be added later.
 // Replace toppings with their IDs in burgers
 
 const { text: finalBurgers } = await runPrompt((_) => {
-  const burgerMenu = _.def("BURGERS", burgers, { language: "json" });
-  const toppingMenu = _.def("TOPPINGS", toppings, { language: "json" });
-  const schema = _.defSchema("SCHEMA", burgerMenuSchema);
+  const burgerMenu = _.def('BURGERS', burgers, { language: 'json' });
+  const toppingMenu = _.def('TOPPINGS', toppings, { language: 'json' });
+  const schema = _.defSchema('SCHEMA', burgerMenuSchema);
   _.$`${role}
 
 ## Task
@@ -115,5 +108,5 @@ for (const burger of parsedBurgers) {
 // ----------------------------------------------------------------------------
 // Save files
 
-await workspace.writeText("data/burgers.json", finalBurgers);
-await workspace.writeText("data/toppings.json", toppings);
+await workspace.writeText('data/burgers.json', finalBurgers);
+await workspace.writeText('data/toppings.json', toppings);

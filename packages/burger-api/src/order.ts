@@ -3,7 +3,7 @@ export enum OrderStatus {
   InPreparation = 'in-preparation',
   Ready = 'ready',
   Completed = 'completed',
-  Cancelled = 'cancelled'
+  Cancelled = 'cancelled',
 }
 
 export interface OrderItem {

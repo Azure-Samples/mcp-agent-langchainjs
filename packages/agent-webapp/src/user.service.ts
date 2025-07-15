@@ -36,7 +36,6 @@ export async function initUserSession() {
     window.chat.addEventListener('messagesUpdated', () => {
       window.chatHistory.refresh();
     });
-
   } catch (error) {
     console.log('Error initializing user session:', error);
   }

@@ -13,11 +13,10 @@ app.http('status-get', {
       const dataService = await DbService.getInstance();
       const orders = await dataService.getOrders();
       const registeredUsers = await dataService.getRegisteredUsers();
-      
+
       // Count active orders (orders that are not completed or cancelled)
-      const activeOrders = orders.filter(order => 
-        order.status !== OrderStatus.Completed && 
-        order.status !== OrderStatus.Cancelled
+      const activeOrders = orders.filter(
+        (order) => order.status !== OrderStatus.Completed && order.status !== OrderStatus.Cancelled,
       );
 
       return {
@@ -26,21 +25,21 @@ app.http('status-get', {
           activeOrders: activeOrders.length,
           totalOrders: orders.length,
           registeredUsers,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
-        status: 200
+        status: 200,
       };
     } catch (error) {
       context.error('Error processing server status request:', error);
-      
+
       return {
         jsonBody: {
           status: 'up',
           error: 'Error retrieving order information',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
-        status: 200 // Still return 200 to indicate the server is up
+        status: 200, // Still return 200 to indicate the server is up
       };
     }
-  }
+  },
 });

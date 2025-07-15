@@ -110,7 +110,7 @@ paths:
       description: |
         Places a new order with burgers (requires userId).
         French fries are included as a side for every burger order.
-        
+
         Limitations:
         - Maximum 5 active orders per user
         - Maximum 50 burgers total per order
@@ -400,15 +400,15 @@ components:
       properties:
         id:
           type: string
-          example: "burger-1"
+          example: 'burger-1'
         category:
           $ref: '#/components/schemas/MenuCategory'
         name:
           type: string
-          example: "Margherita Burger"
+          example: 'Margherita Burger'
         description:
           type: string
-          example: "Classic burger with tomato sauce and mozzarella"
+          example: 'Classic burger with tomato sauce and mozzarella'
         price:
           type: number
           format: float
@@ -438,7 +438,7 @@ components:
       properties:
         burgerId:
           type: string
-          example: "burger-1"
+          example: 'burger-1'
         quantity:
           type: integer
           minimum: 1
@@ -449,7 +449,7 @@ components:
           items:
             type: string
           description: Optional list of extra topping IDs to add to the burger
-          example: ["topping-1", "topping-2"]
+          example: ['topping-1', 'topping-2']
       required:
         - burgerId
         - quantity
@@ -458,15 +458,15 @@ components:
       properties:
         id:
           type: string
-          example: "1618057820123"
+          example: '1618057820123'
         userId:
           type: string
-          example: "user123"
+          example: 'user123'
         createdAt:
           type: string
           format: date-time
           description: ISO date string of when the order was created
-          example: "2025-04-10T14:30:00Z"
+          example: '2025-04-10T14:30:00Z'
         items:
           type: array
           items:
@@ -475,17 +475,17 @@ components:
           type: string
           format: date-time
           description: ISO date string for estimated completion time
-          example: "2025-04-10T15:00:00Z"
+          example: '2025-04-10T15:00:00Z'
         completedAt:
           type: string
           format: date-time
           description: ISO date string for when the order was completed (undefined until completed)
-          example: "2025-04-10T15:10:00Z"
+          example: '2025-04-10T15:10:00Z'
         readyAt:
           type: string
           format: date-time
           description: ISO date string for when the order was ready (undefined until ready)
-          example: "2025-04-10T15:05:00Z"
+          example: '2025-04-10T15:05:00Z'
         totalPrice:
           type: number
           format: float
@@ -537,7 +537,7 @@ components:
       properties:
         userId:
           type: string
-          example: "user123"
+          example: 'user123'
         items:
           type: array
           description: List of burger items (maximum 50 burgers total across all items)
@@ -546,7 +546,7 @@ components:
             properties:
               burgerId:
                 type: string
-                example: "burger-1"
+                example: 'burger-1'
               quantity:
                 type: integer
                 minimum: 1
@@ -556,7 +556,7 @@ components:
                 items:
                   type: string
                 description: Optional list of extra topping IDs to add to the burger
-                example: ["topping-1", "topping-2"]
+                example: ['topping-1', 'topping-2']
             required:
               - burgerId
               - quantity
@@ -568,6 +568,6 @@ components:
       properties:
         error:
           type: string
-          example: "Order must contain at least one item"
+          example: 'Order must contain at least one item'
       required:
         - error

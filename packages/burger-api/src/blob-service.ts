@@ -2,10 +2,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 // Env file is located in the root of the repository
-dotenv.config({ path: path.join(process.cwd(), "../../.env") });
+dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 export class BlobService {
   private static instance: BlobService;
@@ -94,7 +94,7 @@ export class BlobService {
       const imagesDir = path.join(process.cwd(), 'data', 'images');
 
       // Get all jpg files in the directory
-      const imageFiles = (await fs.readdir(imagesDir)).filter(file => file.endsWith('.jpg'));
+      const imageFiles = (await fs.readdir(imagesDir)).filter((file) => file.endsWith('.jpg'));
 
       console.log(`Found ${imageFiles.length} images to upload`);
 
@@ -107,8 +107,8 @@ export class BlobService {
 
         await blockBlobClient.upload(fileContent, fileContent.length, {
           blobHTTPHeaders: {
-            blobContentType: 'image/jpeg'
-          }
+            blobContentType: 'image/jpeg',
+          },
         });
 
         console.log(`Uploaded ${imageFile}`);

@@ -146,7 +146,7 @@ export class ChatComponent extends LitElement {
         role: 'assistant',
         context: {
           intermediateSteps: [],
-        }
+        },
       };
       for await (const chunk of chunks) {
         if (chunk.delta.content) {

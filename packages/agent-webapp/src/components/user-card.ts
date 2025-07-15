@@ -1,17 +1,17 @@
-import { LitElement, css, html, nothing } from "lit";
-import { unsafeSVG } from "lit/directives/unsafe-svg.js";
-import { customElement, state } from "lit/decorators.js";
-import { getUserInfo } from "../auth.service.js";
-import copySvg from "../../assets/icons/copy.svg?raw";
-import burgerOutlineSvg from "../../assets/icons/burger-outline.svg?raw";
-import cardSvg from "../../assets/icons/card.svg?raw";
+import { LitElement, css, html, nothing } from 'lit';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
+import { customElement, state } from 'lit/decorators.js';
+import { getUserInfo } from '../auth.service.js';
+import copySvg from '../../assets/icons/copy.svg?raw';
+import burgerOutlineSvg from '../../assets/icons/burger-outline.svg?raw';
+import cardSvg from '../../assets/icons/card.svg?raw';
 
-@customElement("azc-user-card")
+@customElement('azc-user-card')
 export class UserCard extends LitElement {
-  @state() protected userId: string = "";
+  @state() protected userId: string = '';
   @state() protected isLoading = false;
   @state() protected hasError = false;
-  @state() protected username: string = "";
+  @state() protected username: string = '';
   @state() protected isOpen = false;
 
   constructor() {
@@ -63,7 +63,7 @@ export class UserCard extends LitElement {
       try {
         await navigator.clipboard.writeText(this.userId);
         // Select the user-id text
-        const pre = this.renderRoot.querySelector(".user-id");
+        const pre = this.renderRoot.querySelector('.user-id');
         if (pre) {
           const range = document.createRange();
           range.selectNodeContents(pre);
@@ -74,14 +74,13 @@ export class UserCard extends LitElement {
           }
         }
       } catch (err) {
-        console.error("Failed to copy user ID:", err);
+        console.error('Failed to copy user ID:', err);
       }
     }
   };
 
-  protected renderError = () => html`<p class="message error">
-    An error during while loading your membership details. Please retry later.
-  </p>`;
+  protected renderError = () =>
+    html`<p class="message error">An error during while loading your membership details. Please retry later.</p>`;
 
   protected renderRegistrationCard = () => html`
     <div class="card card-shine">
@@ -104,9 +103,7 @@ export class UserCard extends LitElement {
             <span class="copy-icon">${unsafeSVG(copySvg)}</span>
           </button>
         </div>
-        <div class="warning">
-          This user ID is personal, do not share it with anyone!
-        </div>
+        <div class="warning">This user ID is personal, do not share it with anyone!</div>
       </div>
     </div>
   `;
@@ -121,12 +118,12 @@ export class UserCard extends LitElement {
 
       const response = await fetch(`/api/me`);
       if (!response.ok) {
-        throw new Error("An error occurred while fetching the user ID");
+        throw new Error('An error occurred while fetching the user ID');
       }
       const { id } = await response.json();
       this.userId = id;
     } catch (error) {
-      console.error("Error fetching user ID:", error);
+      console.error('Error fetching user ID:', error);
       this.hasError = true;
     } finally {
       this.isLoading = false;
@@ -147,17 +144,14 @@ export class UserCard extends LitElement {
         ${this.isLoading
           ? this.renderLoading()
           : !this.username || this.hasError
-          ? this.renderError()
-          : this.renderRegistrationCard()}
+            ? this.renderError()
+            : this.renderRegistrationCard()}
       </div>
     </div>
   `;
 
   protected override render() {
-    return html`
-      ${this.renderNavLink()}
-      ${this.isOpen ? this.renderModal() : nothing}
-    `;
+    return html` ${this.renderNavLink()} ${this.isOpen ? this.renderModal() : nothing} `;
   }
 
   static override styles = css`
@@ -229,7 +223,7 @@ export class UserCard extends LitElement {
       transition: background 0.2s;
     }
     .close-button:hover {
-      background: rgba(255, 255, 255, .4);
+      background: rgba(255, 255, 255, 0.4);
     }
     svg {
       fill: currentColor;
@@ -242,10 +236,14 @@ export class UserCard extends LitElement {
       font-weight: 600;
       text-transform: uppercase;
     }
-    h1, h2 {
-      font-family: "Sofia Sans Condensed", sans-serif;
+    h1,
+    h2 {
+      font-family: 'Sofia Sans Condensed', sans-serif;
     }
-    h1, h2, pre, .warning {
+    h1,
+    h2,
+    pre,
+    .warning {
       text-shadow: 0 1px 0px rgba(0, 0, 0, 0.5);
     }
     .card {
@@ -253,10 +251,11 @@ export class UserCard extends LitElement {
       background: var(--azc-primary);
       border-radius: var(--azc-border-radius);
       padding: 2rem;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2),
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.2),
         -1px -1px 1px rgba(255, 255, 255, 0.3),
         2px 4px 8px rgba(0, 0, 0, 0.4);
-      font-family: "Sofia Sans Condensed", sans-serif;
+      font-family: 'Sofia Sans Condensed', sans-serif;
       text-align: left;
       width: 100%;
       box-sizing: border-box;
@@ -285,7 +284,9 @@ export class UserCard extends LitElement {
       --shine-deg: 45deg;
       position: relative;
       background-repeat: no-repeat;
-      background-position: 0% 0, 0 0;
+      background-position:
+        0% 0,
+        0 0;
       background-image: linear-gradient(
         var(--shine-deg),
         transparent 20%,
@@ -295,11 +296,15 @@ export class UserCard extends LitElement {
         transparent 56%,
         transparent 100%
       );
-      background-size: 250% 250%, 100% 100%;
+      background-size:
+        250% 250%,
+        100% 100%;
       transition: background-position 1.5s ease;
     }
     .card-shine:hover {
-      background-position: 90% 0, 0 0;
+      background-position:
+        90% 0,
+        0 0;
     }
     .burger {
       z-index: 1;
@@ -362,6 +367,6 @@ export class UserCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "azc-user-card": UserCard;
+    'azc-user-card': UserCard;
   }
 }

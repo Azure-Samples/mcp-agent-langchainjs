@@ -6,7 +6,7 @@ import yaml from 'js-yaml';
 import dotenv from 'dotenv';
 
 // Env file is located in the root of the repository
-dotenv.config({ path: path.join(process.cwd(), "../../.env") });
+dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 app.http('openapi-get', {
   methods: ['GET'],
@@ -36,15 +36,15 @@ app.http('openapi-get', {
           return {
             jsonBody: json,
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
-            status: 200
+            status: 200,
           };
         } catch (err) {
           context.error('YAML to JSON conversion failed:', err);
           return {
             jsonBody: { error: 'YAML to JSON conversion failed.' },
-            status: 500
+            status: 500,
           };
         }
       }
@@ -52,17 +52,17 @@ app.http('openapi-get', {
       return {
         body: processedContent,
         headers: {
-          'Content-Type': 'text/yaml'
+          'Content-Type': 'text/yaml',
         },
-        status: 200
+        status: 200,
       };
     } catch (error) {
       context.error('Error reading OpenAPI specification file:', error);
 
       return {
         jsonBody: { error: 'Error reading OpenAPI specification' },
-        status: 500
+        status: 500,
       };
     }
-  }
+  },
 });

@@ -6,10 +6,10 @@ import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { RunnableWithMessageHistory } from '@langchain/core/runnables';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { createToolCallingAgent } from "langchain/agents";
-import { AgentExecutor } from "langchain/agents";
-import { loadMcpTools } from "@langchain/mcp-adapters";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { createToolCallingAgent } from 'langchain/agents';
+import { AgentExecutor } from 'langchain/agents';
+import { loadMcpTools } from '@langchain/mcp-adapters';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { v4 as uuidv4 } from 'uuid';
 import 'dotenv/config';
 import { badRequest, data, serviceUnavailable } from '../http-response.js';
@@ -67,7 +67,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
         jsonBody: {
           error: errorMessage,
         },
-      }
+      };
     }
 
     const credentials = getCredentials();
@@ -90,19 +90,19 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 
     const client = new Client({
       name: 'burger-mcp-client',
-      version: '1.0.0'
+      version: '1.0.0',
     });
     const transport = new StreamableHTTPClientTransport(new URL(burgerMcpEndpoint));
     await client.connect(transport);
-    context.log("Connected to Burger MCP server using Streamable HTTP transport");
+    context.log('Connected to Burger MCP server using Streamable HTTP transport');
 
-    const tools = await loadMcpTools("burger", client, {
+    const tools = await loadMcpTools('burger', client, {
       // Whether to throw errors if a tool fails to load (optional, default: true)
       throwOnLoadError: true,
       // Whether to prefix tool names with the server name (optional, default: false)
       prefixToolNameWithServerName: false,
       // Optional additional prefix for tool names (optional, default: "")
-      additionalToolNamePrefix: "",
+      additionalToolNamePrefix: '',
     });
 
     for (const tool of tools) {
@@ -114,11 +114,11 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     context.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
     const prompt = ChatPromptTemplate.fromMessages([
-      ["system", agentSystemPrompt],
-      ["human", "userId: {userId}"],
-      ["placeholder", "{chat_history}"],
-      ["human", "{question}"],
-      ["placeholder", "{agent_scratchpad}"],
+      ['system', agentSystemPrompt],
+      ['human', 'userId: {userId}'],
+      ['placeholder', '{chat_history}'],
+      ['human', '{question}'],
+      ['placeholder', '{agent_scratchpad}'],
     ]);
 
     const agent = createToolCallingAgent({
@@ -142,19 +142,16 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     });
     // Retriever to search for the documents in the database
     const question = messages.at(-1)!.content;
-    const responseStream = await agentChainWithHistory.stream(
-      { userId, question },
-      { configurable: { sessionId } },
-    );
+    const responseStream = await agentChainWithHistory.stream({ userId, question }, { configurable: { sessionId } });
     const jsonStream = Readable.from(createJsonStream(responseStream, sessionId));
 
     // Create a short title for this chat session
     const { title } = await chatHistory.getContext();
     if (!title) {
       const response = await ChatPromptTemplate.fromMessages([
-          ['system', titleSystemPrompt],
-          ['human', '{question}'],
-        ])
+        ['system', titleSystemPrompt],
+        ['human', '{question}'],
+      ])
         .pipe(model)
         .invoke({ question });
       context.log(`Title for session: ${response.content as string}`);
@@ -182,9 +179,11 @@ async function* createJsonStream(chunks: AsyncIterable<ChainValues>, sessionId: 
       delta: {
         content: chunk.output ?? '',
         role: 'assistant',
-        context: chunk.intermediateSteps ? {
-          intermediateSteps: chunk.intermediateSteps,
-        } : undefined,
+        context: chunk.intermediateSteps
+          ? {
+              intermediateSteps: chunk.intermediateSteps,
+            }
+          : undefined,
       },
       context: {
         sessionId,

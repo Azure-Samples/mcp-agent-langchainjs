@@ -16,7 +16,7 @@ app.http('orders-delete', {
       if (!id) {
         return {
           status: 400,
-          jsonBody: { error: 'Order ID is required' }
+          jsonBody: { error: 'Order ID is required' },
         };
       }
 
@@ -24,7 +24,7 @@ app.http('orders-delete', {
       if (!userId) {
         return {
           status: 400,
-          jsonBody: { error: 'userId is required as a query parameter' }
+          jsonBody: { error: 'userId is required as a query parameter' },
         };
       }
 
@@ -35,7 +35,7 @@ app.http('orders-delete', {
       if (!order) {
         return {
           status: 404,
-          jsonBody: { error: 'Order not found' }
+          jsonBody: { error: 'Order not found' },
         };
       }
 
@@ -44,20 +44,20 @@ app.http('orders-delete', {
       if (!deletedSuccessfully) {
         return {
           status: 404,
-          jsonBody: { error: 'Order not found or cannot be cancelled' }
+          jsonBody: { error: 'Order not found or cannot be cancelled' },
         };
       }
 
       return {
         status: 200,
-        jsonBody: { message: 'Order cancelled successfully', orderId: id }
+        jsonBody: { message: 'Order cancelled successfully', orderId: id },
       };
     } catch (error) {
       context.error('Error cancelling order:', error);
       return {
         status: 500,
-        jsonBody: { error: 'Internal server error' }
+        jsonBody: { error: 'Internal server error' },
       };
     }
-  }
+  },
 });

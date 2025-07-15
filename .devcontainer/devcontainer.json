@@ -10,16 +10,11 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/azure/azure-dev/azd:latest": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "moby": "false",
-    },
+      "moby": "false"
+    }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    7071,
-    7072,
-    7280,
-    3000
-  ],
+  "forwardPorts": [7071, 7072, 7280, 3000],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "npm i -g fuzz-run",
   // Configure tool-specific properties.
@@ -36,7 +31,7 @@
         "humao.rest-client",
         "hediet.vscode-drawio",
         "EditorConfig.EditorConfig",
-        "genaiscript.genaiscript-vscode",
+        "genaiscript.genaiscript-vscode"
       ]
     }
   },

@@ -14,6 +14,7 @@
 This is the Burger MCP server, exposing the Burger API as a Model Context Protocol (MCP) server. The MCP server allows LLMs to interact with the burger ordering process through MCP tools.
 
 This server supports the following transport types:
+
 - **Streamable HTTP**
 - **SSE** (legacy protocol, for backward compatibility)
 - **Stdio** (currently only supported when starting the server locally with `npm start:local`)
@@ -24,33 +25,33 @@ The remote server is deployed with [Azure Container Apps](https://learn.microsof
 
 The Burger MCP server provides the following tools:
 
-| Tool Name | Description |
-|-----------|-------------|
-| get_burgers | Get a list of all burgers in the menu |
-| get_burger_by_id | Get a specific burger by its ID |
-| get_toppings | Get a list of all toppings in the menu |
-| get_topping_by_id | Get a specific topping by its ID |
-| get_topping_categories | Get a list of all topping categories |
-| get_orders | Get a list of all orders in the system |
-| get_order_by_id | Get a specific order by its ID |
-| place_order | Place a new order with burgers (requires `userId`) |
-| delete_order_by_id | Cancel an order if it has not yet been started (status must be `pending`, requires `userId`) |
+| Tool Name              | Description                                                                                  |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| get_burgers            | Get a list of all burgers in the menu                                                        |
+| get_burger_by_id       | Get a specific burger by its ID                                                              |
+| get_toppings           | Get a list of all toppings in the menu                                                       |
+| get_topping_by_id      | Get a specific topping by its ID                                                             |
+| get_topping_categories | Get a list of all topping categories                                                         |
+| get_orders             | Get a list of all orders in the system                                                       |
+| get_order_by_id        | Get a specific order by its ID                                                               |
+| place_order            | Place a new order with burgers (requires `userId`)                                           |
+| delete_order_by_id     | Cancel an order if it has not yet been started (status must be `pending`, requires `userId`) |
 
 ## Test with MCP inspector
 
 First, you need to start the Burger API and Burger MCP server locally.
 
 1. In a terminal window, start MCP Inspector:
-    ```bash
-    npx -y @modelcontextprotocol/inspector
-    ```
+   ```bash
+   npx -y @modelcontextprotocol/inspector
+   ```
 2. Ctrl+click to load the MCP Inspector web app from the URL displayed by the app (e.g. http://127.0.0.1:6274)
-3. In the MCP Inspector, set the transport type to **Streamable HTTP** and 
-3. Put `http://localhost:3000/mcp` in the URL field and click on the **Connect** button.
-4. In the **Tools** tab, select **List Tools**. Click on a tool and select **Run Tool**.
+3. In the MCP Inspector, set the transport type to **Streamable HTTP** and
+4. Put `http://localhost:3000/mcp` in the URL field and click on the **Connect** button.
+5. In the **Tools** tab, select **List Tools**. Click on a tool and select **Run Tool**.
 
 > [!NOTE]
-> This application also provides an SSE endpoint if you use `/sse` instead of `/mcp` in the URL field. 
+> This application also provides an SSE endpoint if you use `/sse` instead of `/mcp` in the URL field.
 
 ## Development
 

@@ -7,10 +7,10 @@ import { Container, CosmosClient, Database } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
 import burgersData from '../data/burgers.json';
 import toppingsData from '../data/toppings.json';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 // Env file is located in the root of the repository
-dotenv.config({ path: path.join(process.cwd(), "../../.env") });
+dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 // Helper to strip properties starting with underscore from an object
 function stripUnderscoreProps<T extends object>(obj: T): T {
@@ -27,7 +27,7 @@ function stripUnderscoreProps<T extends object>(obj: T): T {
 // Helper to remove userId from Order(s)
 function stripUserId<T extends Order | Order[] | undefined>(orderOrOrders: T): T {
   if (Array.isArray(orderOrOrders)) {
-    return orderOrOrders.map(order => {
+    return orderOrOrders.map((order) => {
       if (!order) return order;
       const { userId, ...rest } = order;
       return rest as Order;
@@ -80,32 +80,32 @@ export class DbService {
 
       this.client = new CosmosClient({
         endpoint,
-        aadCredentials: credential
+        aadCredentials: credential,
       });
 
       // Get or create database
       const databaseId = 'burgerDB';
       const { database } = await this.client.databases.createIfNotExists({
-        id: databaseId
+        id: databaseId,
       });
       this.database = database;
 
       // Get or create containers
       const { container: burgersContainer } = await this.database.containers.createIfNotExists({
         id: 'burgers',
-        partitionKey: { paths: ['/id'] }
+        partitionKey: { paths: ['/id'] },
       });
       this.burgersContainer = burgersContainer;
 
       const { container: toppingsContainer } = await this.database.containers.createIfNotExists({
         id: 'toppings',
-        partitionKey: { paths: ['/id'] }
+        partitionKey: { paths: ['/id'] },
       });
       this.toppingsContainer = toppingsContainer;
 
       const { container: ordersContainer } = await this.database.containers.createIfNotExists({
         id: 'orders',
-        partitionKey: { paths: ['/id'] }
+        partitionKey: { paths: ['/id'] },
       });
       this.ordersContainer = ordersContainer;
 
@@ -113,13 +113,13 @@ export class DbService {
       try {
         const userDbId = 'userDB';
         const { database: userDatabase } = await this.client.databases.createIfNotExists({
-          id: userDbId
+          id: userDbId,
         });
 
         // Get or create users container
         const { container: usersContainer } = await userDatabase.containers.createIfNotExists({
           id: 'users',
-          partitionKey: { paths: ['/id'] }
+          partitionKey: { paths: ['/id'] },
         });
 
         this.usersContainer = usersContainer;
@@ -177,7 +177,7 @@ export class DbService {
     if (this.isCosmosDbInitialized) {
       try {
         const querySpec = {
-          query: 'SELECT * FROM c'
+          query: 'SELECT * FROM c',
         };
         const { resources } = await this.burgersContainer!.items.query(querySpec).fetchAll();
         return (resources as Burger[]).map(stripUnderscoreProps);
@@ -196,10 +196,10 @@ export class DbService {
         return resource ? stripUnderscoreProps(resource as Burger) : undefined;
       } catch (error) {
         console.error(`Error fetching burger ${id} from Cosmos DB:`, error);
-        return this.localBurgers.find(burger => burger.id === id);
+        return this.localBurgers.find((burger) => burger.id === id);
       }
     }
-    return this.localBurgers.find(burger => burger.id === id);
+    return this.localBurgers.find((burger) => burger.id === id);
   }
 
   // Topping methods
@@ -207,7 +207,7 @@ export class DbService {
     if (this.isCosmosDbInitialized) {
       try {
         const querySpec = {
-          query: 'SELECT * FROM c'
+          query: 'SELECT * FROM c',
         };
         const { resources } = await this.toppingsContainer!.items.query(querySpec).fetchAll();
         return (resources as Topping[]).map(stripUnderscoreProps);
@@ -226,15 +226,15 @@ export class DbService {
         return resource ? stripUnderscoreProps(resource as Topping) : undefined;
       } catch (error) {
         console.error(`Error fetching topping ${id} from Cosmos DB:`, error);
-        return this.localToppings.find(topping => topping.id === id);
+        return this.localToppings.find((topping) => topping.id === id);
       }
     }
-    return this.localToppings.find(topping => topping.id === id);
+    return this.localToppings.find((topping) => topping.id === id);
   }
 
   async getToppingsByCategory(category: ToppingCategory): Promise<Topping[]> {
     const toppings = await this.getToppings();
-    return toppings.filter(topping => topping.category === category);
+    return toppings.filter((topping) => topping.category === category);
   }
 
   // Order methods
@@ -248,24 +248,24 @@ export class DbService {
             parameters: [
               {
                 name: '@userId',
-                value: userId
-              }
-            ]
+                value: userId,
+              },
+            ],
           };
         } else {
           querySpec = {
-            query: 'SELECT * FROM c'
+            query: 'SELECT * FROM c',
           };
         }
         const { resources } = await this.ordersContainer!.items.query(querySpec).fetchAll();
         return stripUserId((resources as Order[]).map(stripUnderscoreProps));
       } catch (error) {
         console.error('Error fetching orders from Cosmos DB:', error);
-        const orders = userId ? this.localOrders.filter(order => order.userId === userId) : this.localOrders;
+        const orders = userId ? this.localOrders.filter((order) => order.userId === userId) : this.localOrders;
         return stripUserId(orders);
       }
     }
-    const orders = userId ? this.localOrders.filter(order => order.userId === userId) : this.localOrders;
+    const orders = userId ? this.localOrders.filter((order) => order.userId === userId) : this.localOrders;
     return stripUserId(orders);
   }
 
@@ -282,7 +282,7 @@ export class DbService {
         return stripUserId(order);
       } catch (error) {
         console.error(`Error fetching order ${id} from Cosmos DB:`, error);
-        const order = this.localOrders.find(order => order.id === id);
+        const order = this.localOrders.find((order) => order.id === id);
         if (!order) return undefined;
         if (userId && order.userId !== userId) {
           return undefined;
@@ -290,7 +290,7 @@ export class DbService {
         return stripUserId(order);
       }
     }
-    const order = this.localOrders.find(order => order.id === id);
+    const order = this.localOrders.find((order) => order.id === id);
     if (!order) return undefined;
     if (userId && order.userId !== userId) {
       return undefined;
@@ -328,7 +328,7 @@ export class DbService {
         return stripUserId(stripUnderscoreProps(resource as Order));
       } catch (error) {
         console.error(`Error updating order ${id} in Cosmos DB:`, error);
-        const orderIndex = this.localOrders.findIndex(order => order.id === id);
+        const orderIndex = this.localOrders.findIndex((order) => order.id === id);
         if (orderIndex === -1) return undefined;
 
         const order = this.localOrders[orderIndex];
@@ -340,7 +340,7 @@ export class DbService {
         return stripUserId(this.localOrders[orderIndex]);
       }
     }
-    const orderIndex = this.localOrders.findIndex(order => order.id === id);
+    const orderIndex = this.localOrders.findIndex((order) => order.id === id);
     if (orderIndex === -1) return undefined;
 
     const order = this.localOrders[orderIndex];
@@ -366,7 +366,7 @@ export class DbService {
         return true;
       } catch (error) {
         console.error(`Error deleting order ${id} from Cosmos DB:`, error);
-        const orderIndex = this.localOrders.findIndex(order => order.id === id);
+        const orderIndex = this.localOrders.findIndex((order) => order.id === id);
         if (orderIndex === -1) return false;
 
         const order = this.localOrders[orderIndex];
@@ -378,7 +378,7 @@ export class DbService {
         return true;
       }
     }
-    const orderIndex = this.localOrders.findIndex(order => order.id === id);
+    const orderIndex = this.localOrders.findIndex((order) => order.id === id);
     if (orderIndex === -1) return false;
 
     const order = this.localOrders[orderIndex];
@@ -401,14 +401,14 @@ export class DbService {
         return stripUserId(stripUnderscoreProps(resource as Order));
       } catch (error) {
         console.error(`Error updating order ${id} in Cosmos DB:`, error);
-        const orderIndex = this.localOrders.findIndex(order => order.id === id);
+        const orderIndex = this.localOrders.findIndex((order) => order.id === id);
         if (orderIndex === -1) return undefined;
 
         this.localOrders[orderIndex] = { ...this.localOrders[orderIndex], ...updates };
         return stripUserId(this.localOrders[orderIndex]);
       }
     }
-    const orderIndex = this.localOrders.findIndex(order => order.id === id);
+    const orderIndex = this.localOrders.findIndex((order) => order.id === id);
     if (orderIndex === -1) return undefined;
 
     this.localOrders[orderIndex] = { ...this.localOrders[orderIndex], ...updates };
@@ -426,7 +426,7 @@ export class DbService {
       await this.usersContainer.items.create({
         id,
         name,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
     } catch (error) {
       console.error('Error creating user:', error);
@@ -471,7 +471,7 @@ export class DbService {
 
     try {
       const querySpec = {
-        query: 'SELECT VALUE COUNT(1) FROM c'
+        query: 'SELECT VALUE COUNT(1) FROM c',
       };
       const { resources } = await this.usersContainer.items.query(querySpec).fetchAll();
       return resources[0] || 0;

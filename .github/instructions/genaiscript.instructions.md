@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.genai.*"
+applyTo: '**/*.genai.*'
 ---
 
 ## Role

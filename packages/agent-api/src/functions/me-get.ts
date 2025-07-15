@@ -1,27 +1,23 @@
-import { createHash } from "node:crypto";
-import {
-  app,
-  type HttpRequest,
-  type InvocationContext,
-} from "@azure/functions";
-import { UserDbService } from "../user-db-service.js";
-import { getUserId } from "../auth.js";
+import { createHash } from 'node:crypto';
+import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
+import { UserDbService } from '../user-db-service.js';
+import { getUserId } from '../auth.js';
 
-app.http("me-get", {
-  methods: ["GET"],
-  authLevel: "anonymous",
-  route: "me",
+app.http('me-get', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'me',
   async handler(request: HttpRequest, context: InvocationContext) {
     try {
       const rawUserId = getUserId(request);
       if (!rawUserId) {
         return {
           status: 401,
-          jsonBody: { error: "Unauthorized" },
+          jsonBody: { error: 'Unauthorized' },
         };
       }
 
-      const id = createHash("sha256").update(rawUserId).digest("hex").substring(0, 32);
+      const id = createHash('sha256').update(rawUserId).digest('hex').substring(0, 32);
       context.log(`User ID ${id}`);
 
       const db = await UserDbService.getInstance();
@@ -37,10 +33,10 @@ app.http("me-get", {
         jsonBody: { id: user.id },
       };
     } catch (error) {
-      context.error("Error in me-get handler", error);
+      context.error('Error in me-get handler', error);
       return {
         status: 500,
-        jsonBody: { error: "Internal Server Error" },
+        jsonBody: { error: 'Internal Server Error' },
       };
     }
   },

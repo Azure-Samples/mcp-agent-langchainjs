@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/*-webapp/**"
+applyTo: 'packages/*-webapp/**'
 ---
 
 ## Guidance for Code Generation

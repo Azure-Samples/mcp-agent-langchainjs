@@ -16,11 +16,10 @@ export class DebugComponent extends LitElement {
 
   protected override render() {
     return html`
-        <div class="debug">
-          show intermediateSteps >>
-          ${JSON.stringify(this.message?.['intermediateSteps'] ?? {}, null, 2)}
-        </div>
-        `;
+      <div class="debug">
+        show intermediateSteps >> ${JSON.stringify(this.message?.['intermediateSteps'] ?? {}, null, 2)}
+      </div>
+    `;
   }
 
   static override styles = css`

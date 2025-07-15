@@ -19,20 +19,20 @@ The API is built with [Azure Functions](https://learn.microsoft.com/azure/azure-
 
 The Burger API provides the following endpoints:
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /api | Returns basic server status information including active and total orders |
-| GET | /api/openapi | Returns the OpenAPI specification in YAML format (add `?format=json` for JSON) |
-| GET | /api/burgers | Returns a list of all burgers |
-| GET | /api/burgers/{id} | Retrieves a specific burger by its ID |
-| GET | /api/toppings | Returns a list of all toppings (can be filtered by category with ?category=X) |
-| GET | /api/toppings/{id} | Retrieves a specific topping by its ID |
-| GET | /api/toppings/categories | Returns a list of all topping categories |
-| GET | /api/orders | Returns a list of all orders in the system |
-| POST | /api/orders | Places a new order with burgers (requires `userId`) |
-| GET | /api/orders/{orderId} | Retrieves an order by its ID |
-| DELETE | /api/orders/{orderId} | Cancels an order if it has not yet been started (status must be 'pending', requires `userId` as a query parameter (e.g., `?userId={userId}`) |
-| GET | /api/images/{filepath} | Retrieves image files (e.g., /api/images/burger-1.jpg) |
+| Method | Path                     | Description                                                                                                                                  |
+| ------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | /api                     | Returns basic server status information including active and total orders                                                                    |
+| GET    | /api/openapi             | Returns the OpenAPI specification in YAML format (add `?format=json` for JSON)                                                               |
+| GET    | /api/burgers             | Returns a list of all burgers                                                                                                                |
+| GET    | /api/burgers/{id}        | Retrieves a specific burger by its ID                                                                                                        |
+| GET    | /api/toppings            | Returns a list of all toppings (can be filtered by category with ?category=X)                                                                |
+| GET    | /api/toppings/{id}       | Retrieves a specific topping by its ID                                                                                                       |
+| GET    | /api/toppings/categories | Returns a list of all topping categories                                                                                                     |
+| GET    | /api/orders              | Returns a list of all orders in the system                                                                                                   |
+| POST   | /api/orders              | Places a new order with burgers (requires `userId`)                                                                                          |
+| GET    | /api/orders/{orderId}    | Retrieves an order by its ID                                                                                                                 |
+| DELETE | /api/orders/{orderId}    | Cancels an order if it has not yet been started (status must be 'pending', requires `userId` as a query parameter (e.g., `?userId={userId}`) |
+| GET    | /api/images/{filepath}   | Retrieves image files (e.g., /api/images/burger-1.jpg)                                                                                       |
 
 ### Filtering orders
 
@@ -55,7 +55,6 @@ GET /api/orders?userId=user123&status=completed&last=60m
 
 You can view the complete API documentation by opening the [Swagger Editor](https://editor.swagger.io/?url=http://localhost:7071/api/openapi) or the [OpenAPI YAML file](http://localhost:7071/api/openapi).
 
-
 ### Order Limits
 
 A user can have a maximum of **5 active orders** (status: `pending` or `in-preparation`) at a time. Additionally, a single order cannot exceed **50 burgers** in total across all items.
@@ -65,11 +64,13 @@ These limits ensure fair use and prevent abuse.
 ### Order Status Automation
 
 Order statuses are updated automatically by a timer function every 40 seconds:
+
 - Orders move from 'pending' to 'in-preparation' 1-3 minutes after creation.
 - Orders move from 'in-preparation' to 'ready' within 3 minutes around their estimated completion time. When an order is ready, the `readyAt` property is set to the ready timestamp (ISO date string).
 - Orders move from 'ready' to 'completed' 1-2 minutes after being ready. When an order is completed, the `completedAt` property is set to the completion timestamp (ISO date string).
 
 Estimated completion time is calculated as:
+
 - 3-5 minutes for 1-2 burgers, plus 1 minute for each additional burger.
 
 No manual API call is needed for these transitions.

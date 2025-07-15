@@ -21,14 +21,14 @@ app.http('orders-post', {
 
     try {
       const dataService = await DbService.getInstance();
-      const requestBody = await request.json() as CreateOrderRequest;
+      const requestBody = (await request.json()) as CreateOrderRequest;
       context.log('Request body:', requestBody);
 
       // Validate userId is provided
       if (!requestBody.userId) {
         return {
           status: 400,
-          jsonBody: { error: 'userId is required' }
+          jsonBody: { error: 'userId is required' },
         };
       }
 
@@ -39,27 +39,27 @@ app.http('orders-post', {
         return {
           status: 401,
           jsonBody: {
-            error: `The specified userId is not registered. Please register to get a valid userId at: ${registrationUrl}`
-          }
+            error: `The specified userId is not registered. Please register to get a valid userId at: ${registrationUrl}`,
+          },
         };
       }
 
       if (!requestBody.items || !Array.isArray(requestBody.items) || requestBody.items.length === 0) {
         return {
           status: 400,
-          jsonBody: { error: 'Order must contain at least one burger' }
+          jsonBody: { error: 'Order must contain at least one burger' },
         };
       }
 
       // Limit: max 5 active orders per user
       const activeOrders = await dataService.getOrders(requestBody.userId);
-      const activeOrdersFiltered = activeOrders.filter(order =>
-        order.status === OrderStatus.Pending || order.status === OrderStatus.InPreparation
+      const activeOrdersFiltered = activeOrders.filter(
+        (order) => order.status === OrderStatus.Pending || order.status === OrderStatus.InPreparation,
       );
       if (activeOrdersFiltered.length >= 5) {
         return {
           status: 429,
-          jsonBody: { error: 'Too many active orders: limit is 5 per user' }
+          jsonBody: { error: 'Too many active orders: limit is 5 per user' },
         };
       }
 
@@ -72,17 +72,16 @@ app.http('orders-post', {
       if (totalBurgerCount > 50) {
         return {
           status: 400,
-          jsonBody: { error: 'Order cannot exceed 50 burgers in total' }
+          jsonBody: { error: 'Order cannot exceed 50 burgers in total' },
         };
       }
 
       for (const item of requestBody.items) {
-
         // Validate quantity is a positive integer
         if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
           return {
             status: 400,
-            jsonBody: { error: `Quantity for burgerId ${item.burgerId} must be a positive integer` }
+            jsonBody: { error: `Quantity for burgerId ${item.burgerId} must be a positive integer` },
           };
         }
 
@@ -90,7 +89,7 @@ app.http('orders-post', {
         if (!burger) {
           return {
             status: 400,
-            jsonBody: { error: `Burger with ID ${item.burgerId} not found` }
+            jsonBody: { error: `Burger with ID ${item.burgerId} not found` },
           };
         }
 
@@ -102,7 +101,7 @@ app.http('orders-post', {
             if (!topping) {
               return {
                 status: 400,
-                jsonBody: { error: `Topping with ID ${toppingId} not found` }
+                jsonBody: { error: `Topping with ID ${toppingId} not found` },
               };
             }
             extraToppingsPrice += topping.price;
@@ -115,7 +114,7 @@ app.http('orders-post', {
         orderItems.push({
           burgerId: item.burgerId,
           quantity: item.quantity,
-          extraToppingIds: item.extraToppingIds
+          extraToppingIds: item.extraToppingIds,
         });
       }
 
@@ -142,19 +141,19 @@ app.http('orders-post', {
         estimatedCompletionAt: estimatedCompletionAt.toISOString(),
         totalPrice,
         status: OrderStatus.Pending,
-        completedAt: undefined
+        completedAt: undefined,
       });
 
       return {
         status: 201,
-        jsonBody: order
+        jsonBody: order,
       };
     } catch (error) {
       context.error('Error creating order:', error);
       return {
         status: 500,
-        jsonBody: { error: 'Internal server error' }
+        jsonBody: { error: 'Internal server error' },
       };
     }
-  }
+  },
 });
