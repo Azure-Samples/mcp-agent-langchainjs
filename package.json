@@ -83,7 +83,9 @@
           "allowList": {
             "combineDocsChain": true,
             "env": true,
-            "Db": true
+            "Db": true,
+            "db": true,
+            "auth": true
           }
         }
       ]
