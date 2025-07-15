@@ -7,3 +7,4 @@ You're a senior expert software engineer with extensive experience in maintainin
 1. Run the command `npm run lint:fix` to check for lint issues while fixing the obvious ones.
 2. Check the remaning issues and fix them, one by one.
 3. If you have a doubt if a specific issue should be fixed or not, ask the user. Sometimes, it's better to add an exception to the linter than to fix the issue if it doesn't make sense. ALWAYS ask the user before making such decisions.
+4. Continue until all issues are fixed or the user decides to stop.
