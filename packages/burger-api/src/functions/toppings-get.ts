@@ -1,6 +1,18 @@
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
 import { DbService } from '../db-service';
-import { ToppingCategory } from '../topping';
+import { ToppingCategory, Topping } from '../topping';
+
+// Helper function to transform topping imageUrl with full URL
+function transformToppingImageUrl(topping: Topping, request: HttpRequest): Topping {
+  // Get the base URL directly from the request URL
+  const url = new URL(request.url);
+  const baseUrl = `${url.protocol}//${url.host}`;
+
+  return {
+    ...topping,
+    imageUrl: `${baseUrl}/api/images/${topping.imageUrl}`
+  };
+}
 
 app.http('toppings-get', {
   methods: ['GET'],
@@ -12,20 +24,24 @@ app.http('toppings-get', {
 
     const dataService = await DbService.getInstance();
     const categoryParam = request.query.get('category');
-    
+
     // If a category is specified, filter toppings by category
     if (categoryParam && Object.values(ToppingCategory).includes(categoryParam as ToppingCategory)) {
       const toppings = await dataService.getToppingsByCategory(categoryParam as ToppingCategory);
+      // Transform imageUrls to include full URL
+      const toppingsWithFullUrls = toppings.map(topping => transformToppingImageUrl(topping, request));
       return {
-        jsonBody: toppings,
+        jsonBody: toppingsWithFullUrls,
         status: 200
       };
     }
-    
+
     // Otherwise return all toppings
     const toppings = await dataService.getToppings();
+    // Transform imageUrls to include full URL
+    const toppingsWithFullUrls = toppings.map(topping => transformToppingImageUrl(topping, request));
     return {
-      jsonBody: toppings,
+      jsonBody: toppingsWithFullUrls,
       status: 200
     };
   }
@@ -47,8 +63,11 @@ app.http('topping-get-by-id', {
       };
     }
 
+    // Transform imageUrl to include full URL
+    const toppingWithFullUrl = transformToppingImageUrl(topping, request);
+
     return {
-      jsonBody: topping,
+      jsonBody: toppingWithFullUrl,
       status: 200
     };
   }
