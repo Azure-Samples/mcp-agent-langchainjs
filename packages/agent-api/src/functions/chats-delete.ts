@@ -37,6 +37,8 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
       sessionId,
       userId,
       credentials,
+      containerName: 'history',
+      databaseName: 'historyDB',
     });
 
     await chatHistory.clear();

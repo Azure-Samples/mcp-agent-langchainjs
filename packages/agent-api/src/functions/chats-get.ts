@@ -33,6 +33,8 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
       sessionId,
       userId,
       credentials,
+      containerName: 'history',
+      databaseName: 'historyDB',
     });
 
     if (sessionId) {

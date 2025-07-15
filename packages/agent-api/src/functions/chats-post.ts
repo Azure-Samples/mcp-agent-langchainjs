@@ -84,6 +84,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       sessionId,
       userId,
       credentials,
+      containerName: 'history',
+      databaseName: 'historyDB',
     });
 
     const client = new Client({

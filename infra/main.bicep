@@ -459,6 +459,17 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.12.0' = {
         ]
         name: 'userDB'
       }
+      {
+        containers: [
+          {
+            name: 'history'
+            paths: [
+              '/id'
+            ]
+          }
+        ]
+        name: 'historyDB'
+      }
     ]
     sqlRoleDefinitions: [
       {
