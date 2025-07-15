@@ -54,8 +54,8 @@ export class UserDbService {
 
     if (!this.isCosmosDbInitialized) return undefined;
     try {
-      const resource = await this.usersContainer!.item(id).read();
-      return resource;
+      const { item } = await this.usersContainer!.item(id).read();
+      return item;
     } catch (error: any) {
       if (error.code === 404) return undefined;
       throw error;
@@ -74,7 +74,7 @@ export class UserDbService {
     }
 
     if (!this.isCosmosDbInitialized) throw new Error('Cosmos DB not initialized');
-    const { resource } = await this.usersContainer!.items.create(user);
-    return resource;
+    const { item } = await this.usersContainer!.items.create(user);
+    return item;
   }
 }
