@@ -116,20 +116,6 @@ export const tools = [
       });
     },
   },
-  {
-    name: "get_image",
-    description: "Retrieve the full URL of an image file",
-    schema: z.object({
-      filepath: z.string().describe("Path to the image file"),
-    }),
-    handler: async (args: z.ZodRawShape) => {
-      const imageUrl = new URL(
-        `/api/images/${args.filepath}`,
-        burgerApiUrl
-      ).toString();
-      return JSON.stringify({ imageUrl });
-    },
-  },
 ];
 
 // Wraps standard fetch to include the base URL and handle errors
