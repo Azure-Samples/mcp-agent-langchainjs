@@ -70,6 +70,8 @@
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/no-floating-promises": "off",
       "@typescript-eslint/ban-types": "off",
+      "@typescript-eslint/no-restricted-types": "off",
+      "@typescript-eslint/switch-exhaustiveness-check": "off",
       "import/no-unassigned-import": "off",
       "import/extensions": "off",
       "n/prefer-global/process": "off",
@@ -77,6 +79,7 @@
       "unicorn/prefer-global-this": "off",
       "unicorn/prefer-module": "off",
       "unicorn/no-new-array": "off",
+      "unicorn/no-array-callback-reference": "off",
       "unicorn/prevent-abbreviations": [
         "error",
         {

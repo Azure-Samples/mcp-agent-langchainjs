@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { Buffer } from 'node:buffer';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
 import dotenv from 'dotenv';
@@ -95,16 +96,18 @@ export class BlobService {
       const imagesDirectory = path.join(process.cwd(), 'data', 'images');
 
       // Get all jpg files in the directory
-      const imageFiles = (await fs.readdir(imagesDirectory)).filter((file) => file.endsWith('.jpg'));
+      const allFiles = await fs.readdir(imagesDirectory);
+      const imageFiles = allFiles.filter((file) => file.endsWith('.jpg'));
 
       console.log(`Found ${imageFiles.length} images to upload`);
 
-      // Upload each image
-      for (const imageFile of imageFiles) {
+      // Upload all images in parallel
+      const { containerClient } = this;
+      const uploadPromises = imageFiles.map(async (imageFile) => {
         const filePath = path.join(imagesDirectory, imageFile);
         const fileContent = await fs.readFile(filePath);
 
-        const blockBlobClient = this.containerClient.getBlockBlobClient(imageFile);
+        const blockBlobClient = containerClient.getBlockBlobClient(imageFile);
 
         await blockBlobClient.upload(fileContent, fileContent.length, {
           blobHTTPHeaders: {
@@ -113,8 +116,10 @@ export class BlobService {
         });
 
         console.log(`Uploaded ${imageFile}`);
-      }
+        return imageFile;
+      });
 
+      await Promise.all(uploadPromises);
       console.log('All images uploaded successfully');
     } catch (error) {
       console.error('Error uploading images:', error);
@@ -155,7 +160,7 @@ export class BlobService {
       }
 
       // Convert stream to buffer
-      return new Promise<Buffer>((resolve, reject) => {
+      return await new Promise<Buffer>((resolve, reject) => {
         const chunks: Buffer[] = [];
         const stream = downloadResponse.readableStreamBody!;
 

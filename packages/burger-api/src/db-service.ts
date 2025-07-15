@@ -12,7 +12,7 @@ import { Order, OrderStatus } from './order.js';
 dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 // Helper to strip properties starting with underscore from an object
-function stripUnderscoreProperties<T extends Record<string, unknown>>(object: T): T {
+function stripUnderscoreProperties<T extends object>(object: T): T {
   if (!object || typeof object !== 'object') return object;
   const result: Record<string, any> = {};
   for (const key of Object.keys(object)) {
@@ -149,26 +149,26 @@ export class DbService {
     try {
       // Check if Burgers container is empty
       const burgerIterator = this.burgersContainer!.items.query('SELECT VALUE COUNT(1) FROM c');
-      const burgerCount = (await burgerIterator.fetchAll()).resources[0];
+      const burgerResponse = await burgerIterator.fetchAll();
+      const burgerCount = burgerResponse.resources[0];
 
       if (burgerCount === 0) {
         console.log('Seeding burgers data to Cosmos DB...');
         const burgers = burgersData as Burger[];
-        for (const burger of burgers) {
-          await this.burgersContainer!.items.create(burger);
-        }
+        const burgerCreationPromises = burgers.map(async (burger) => this.burgersContainer!.items.create(burger));
+        await Promise.all(burgerCreationPromises);
       }
 
       // Check if Toppings container is empty
       const toppingIterator = this.toppingsContainer!.items.query('SELECT VALUE COUNT(1) FROM c');
-      const toppingCount = (await toppingIterator.fetchAll()).resources[0];
+      const toppingResponse = await toppingIterator.fetchAll();
+      const toppingCount = toppingResponse.resources[0];
 
       if (toppingCount === 0) {
         console.log('Seeding toppings data to Cosmos DB...');
         const toppings = toppingsData as Topping[];
-        for (const topping of toppings) {
-          await this.toppingsContainer!.items.create(topping);
-        }
+        const toppingCreationPromises = toppings.map(async (topping) => this.toppingsContainer!.items.create(topping));
+        await Promise.all(toppingCreationPromises);
       }
     } catch (error) {
       console.error('Error seeding initial data:', error);
@@ -457,7 +457,7 @@ export class DbService {
     }
 
     try {
-      const { resource } = await this.usersContainer.item(id, id).read();
+      const { resource } = await this.usersContainer.item(id).read();
       return resource?.name;
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -472,7 +472,7 @@ export class DbService {
     }
 
     try {
-      const { resource } = await this.usersContainer.item(id, id).read();
+      const { resource } = await this.usersContainer.item(id).read();
       return Boolean(resource);
     } catch (error) {
       console.error('Error checking user existence:', error);

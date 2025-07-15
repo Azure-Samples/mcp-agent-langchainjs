@@ -15,21 +15,18 @@ app.timer('orders-status-timer', {
     const orders = allOrders.filter((order) =>
       [OrderStatus.Pending, OrderStatus.InPreparation, OrderStatus.Ready].includes(order.status),
     );
-    const updatePromises: Array<Promise<{ id: string; status: string; success: boolean; error?: Error }>> = [];
+
+    const updateTasks = [];
     for (const order of orders) {
       switch (order.status) {
         case OrderStatus.Pending: {
           const minutesSinceCreated = (now.getTime() - new Date(order.createdAt).getTime()) / 60_000;
           if (minutesSinceCreated > 3 || (minutesSinceCreated >= 1 && Math.random() < 0.5)) {
-            updatePromises.push(
-              db
-                .updateOrder(order.id, { status: OrderStatus.InPreparation })
-                .then(() => ({ id: order.id, status: 'in-preparation', success: true }))
-                .catch((error: any) => {
-                  context.error(`ERROR: Failed to update order ${order.id} to in-preparation:`, error);
-                  return { id: order.id, status: 'in-preparation', success: false, error };
-                }),
-            );
+            updateTasks.push({
+              orderId: order.id,
+              update: { status: OrderStatus.InPreparation },
+              statusName: 'in-preparation',
+            });
           }
 
           break;
@@ -39,15 +36,11 @@ app.timer('orders-status-timer', {
           const estimatedCompletionAt = new Date(order.estimatedCompletionAt);
           const diffMinutes = (now.getTime() - estimatedCompletionAt.getTime()) / 60_000;
           if (diffMinutes > 3 || (Math.abs(diffMinutes) <= 3 && Math.random() < 0.5)) {
-            updatePromises.push(
-              db
-                .updateOrder(order.id, { status: OrderStatus.Ready, readyAt: now.toISOString() })
-                .then(() => ({ id: order.id, status: 'ready', success: true }))
-                .catch((error: any) => {
-                  context.error(`ERROR: Failed to update order ${order.id} to ready:`, error);
-                  return { id: order.id, status: 'ready', success: false, error };
-                }),
-            );
+            updateTasks.push({
+              orderId: order.id,
+              update: { status: OrderStatus.Ready, readyAt: now.toISOString() },
+              statusName: 'ready',
+            });
           }
 
           break;
@@ -58,15 +51,11 @@ app.timer('orders-status-timer', {
             const readyAt = new Date(order.readyAt);
             const minutesSinceReady = (now.getTime() - readyAt.getTime()) / 60_000;
             if (minutesSinceReady >= 1 && (minutesSinceReady > 2 || Math.random() < 0.5)) {
-              updatePromises.push(
-                db
-                  .updateOrder(order.id, { status: OrderStatus.Completed, completedAt: now.toISOString() })
-                  .then(() => ({ id: order.id, status: 'completed', success: true }))
-                  .catch((error: any) => {
-                    context.error(`ERROR: Failed to update order ${order.id} to completed:`, error);
-                    return { id: order.id, status: 'completed', success: false, error };
-                  }),
-              );
+              updateTasks.push({
+                orderId: order.id,
+                update: { status: OrderStatus.Completed, completedAt: now.toISOString() },
+                statusName: 'completed',
+              });
             }
           }
 
@@ -76,7 +65,18 @@ app.timer('orders-status-timer', {
       }
     }
 
+    const updatePromises = updateTasks.map(async (task) => {
+      try {
+        await db.updateOrder(task.orderId, task.update);
+        return { id: task.orderId, status: task.statusName, success: true };
+      } catch (error) {
+        context.error(`ERROR: Failed to update order ${task.orderId} to ${task.statusName}:`, error);
+        return { id: task.orderId, status: task.statusName, success: false, error: error as Error };
+      }
+    });
+
     const results = await Promise.all(updatePromises);
+
     const updated = results.filter((r) => r.success).length;
     const failed = results.filter((r) => !r.success).length;
     const elapsedMs = Date.now() - startTime;

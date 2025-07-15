@@ -12,6 +12,36 @@ interface CreateOrderRequest {
   }>;
 }
 
+// Helper function for topping validation
+async function validateAndCalculateToppingsPrice(
+  dataService: DbService,
+  toppingIds?: string[],
+): Promise<number | { status: number; jsonBody: { error: string } }> {
+  if (!toppingIds || toppingIds.length === 0) {
+    return 0;
+  }
+
+  // Validate all toppings exist in parallel
+  const toppingPromises = toppingIds.map(async (toppingId) => {
+    const topping = await dataService.getTopping(toppingId);
+    if (!topping) {
+      throw new Error(`Topping with ID ${toppingId} not found`);
+    }
+
+    return topping.price;
+  });
+
+  try {
+    const toppingPrices = await Promise.all(toppingPromises);
+    return toppingPrices.reduce((sum, price) => sum + price, 0);
+  } catch (error) {
+    return {
+      status: 400,
+      jsonBody: { error: (error as Error).message },
+    };
+  }
+}
+
 app.http('orders-post', {
   methods: ['POST'],
   authLevel: 'anonymous',
@@ -35,11 +65,11 @@ app.http('orders-post', {
       // Check if userId exists in the database
       const userExists = await dataService.userExists(requestBody.userId);
       if (!userExists) {
-        const registrationUrl = process.env.REGISTRATION_WEBAPP_URL ?? '<unspecified>';
+        const registrationUrl = process.env.AGENT_WEBAPP_URL ?? '<unspecified>';
         return {
           status: 401,
           jsonBody: {
-            error: `The specified userId is not registered. Please register to get a valid userId at: ${registrationUrl}`,
+            error: `The specified userId is not registered. Please login to get a valid userId at: ${registrationUrl}`,
           },
         };
       }
@@ -64,7 +94,6 @@ app.http('orders-post', {
       }
 
       // Convert request items to order items
-      const orderItems: OrderItem[] = [];
       let totalPrice = 0;
 
       // Calculate total burger count and validate limit
@@ -76,47 +105,51 @@ app.http('orders-post', {
         };
       }
 
-      for (const item of requestBody.items) {
+      // Validate and process items in parallel
+      const itemValidationPromises = requestBody.items.map(async (item) => {
         // Validate quantity is a positive integer
         if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-          return {
-            status: 400,
-            jsonBody: { error: `Quantity for burgerId ${item.burgerId} must be a positive integer` },
-          };
+          throw new Error(`Quantity for burgerId ${item.burgerId} must be a positive integer`);
         }
 
         const burger = await dataService.getBurger(item.burgerId);
         if (!burger) {
-          return {
-            status: 400,
-            jsonBody: { error: `Burger with ID ${item.burgerId} not found` },
-          };
+          throw new Error(`Burger with ID ${item.burgerId} not found`);
         }
 
-        // Validate and calculate price for extra toppings
-        let extraToppingsPrice = 0;
-        if (item.extraToppingIds && item.extraToppingIds.length > 0) {
-          for (const toppingId of item.extraToppingIds) {
-            const topping = await dataService.getTopping(toppingId);
-            if (!topping) {
-              return {
-                status: 400,
-                jsonBody: { error: `Topping with ID ${toppingId} not found` },
-              };
-            }
-
-            extraToppingsPrice += topping.price;
-          }
+        // Validate all extra toppings exist
+        const extraToppingsPrice = await validateAndCalculateToppingsPrice(dataService, item.extraToppingIds);
+        if (typeof extraToppingsPrice === 'object') {
+          throw new TypeError(extraToppingsPrice.jsonBody.error);
         }
 
         const itemPrice = (burger.price + extraToppingsPrice) * item.quantity;
-        totalPrice += itemPrice;
 
-        orderItems.push({
-          burgerId: item.burgerId,
-          quantity: item.quantity,
-          extraToppingIds: item.extraToppingIds,
-        });
+        return {
+          orderItem: {
+            burgerId: item.burgerId,
+            quantity: item.quantity,
+            extraToppingIds: item.extraToppingIds,
+          },
+          itemPrice,
+        };
+      });
+
+      let validatedItems;
+      try {
+        validatedItems = await Promise.all(itemValidationPromises);
+      } catch (error) {
+        return {
+          status: 400,
+          jsonBody: { error: (error as Error).message },
+        };
+      }
+
+      // Calculate total price and build order items
+      const orderItems: OrderItem[] = [];
+      for (const { orderItem, itemPrice } of validatedItems) {
+        totalPrice += itemPrice;
+        orderItems.push(orderItem);
       }
 
       // Calculate estimated completion time based on burger count
