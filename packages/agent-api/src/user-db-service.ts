@@ -77,4 +77,14 @@ export class UserDbService {
     const { item } = await this.usersContainer!.items.create(user);
     return item;
   }
+
+  async getAllUsers(): Promise<any[]> {
+    if (this.useInMemoryStorage) {
+      return Array.from(this.inMemoryStorage.values());
+    }
+
+    if (!this.isCosmosDbInitialized) return [];
+    const { resources } = await this.usersContainer!.items.readAll().fetchAll();
+    return resources;
+  }
 }

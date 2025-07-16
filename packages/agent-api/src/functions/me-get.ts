@@ -20,6 +20,10 @@ app.http('me-get', {
       const id = createHash('sha256').update(rawUserId).digest('hex').substring(0, 32);
       context.log(`User ID ${id}`);
 
+
+      const allUsers = (await UserDbService.getInstance()).getAllUsers();
+      context.log(`All users: ${JSON.stringify(allUsers)}`);
+
       const db = await UserDbService.getInstance();
       let user = await db.getUserById(id);
       if (!user) {

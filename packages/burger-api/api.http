@@ -47,7 +47,7 @@ POST {{api_host}}/api/orders
 Content-Type: application/json
 
 {
-  "userId": "user123",
+  "userId": "7aaac02dc92f54bc4c614f6f14b6be78",
   "items": [
     {
       "burgerId": "1",

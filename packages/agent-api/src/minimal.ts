@@ -1,10 +1,10 @@
 import { AzureChatOpenAI } from '@langchain/openai';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { createToolCallingAgent } from "langchain/agents";
-import { AgentExecutor } from "langchain/agents";
-import { loadMcpTools } from "@langchain/mcp-adapters";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { createToolCallingAgent } from 'langchain/agents';
+import { AgentExecutor } from 'langchain/agents';
+import { loadMcpTools } from '@langchain/mcp-adapters';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import 'dotenv/config';
 import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from './auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -30,11 +30,11 @@ Make sure the last question ends with ">>".
 - The get_burger tool can help you get informations about the burgers
 `;
 
-const question = "show me the burger menu";
+const question = 'show me the burger menu';
 
 export async function run() {
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
-  const burgerMcpEndpoint = 'http://localhost:3000/mcp' //process.env.BURGER_MCP_ENDPOINT;
+  const burgerMcpEndpoint = 'http://localhost:3000/mcp'; //process.env.BURGER_MCP_ENDPOINT;
 
   try {
     let model: BaseChatModel;
@@ -47,7 +47,7 @@ export async function run() {
         jsonBody: {
           error: errorMessage,
         },
-      }
+      };
     }
 
     const azureADTokenProvider = getAzureOpenAiTokenProvider();
@@ -60,16 +60,16 @@ export async function run() {
 
     const client = new Client({
       name: 'burger-mcp',
-      version: '1.0.0'
+      version: '1.0.0',
     });
     const transport = new StreamableHTTPClientTransport(new URL(burgerMcpEndpoint));
     await client.connect(transport);
-    console.log("Connected to Burger MCP server using Streamable HTTP transport");
+    console.log('Connected to Burger MCP server using Streamable HTTP transport');
 
-    const tools = await loadMcpTools("burger", client);
+    const tools = await loadMcpTools('burger', client);
 
     const toolDefinitions = await client.listTools();
-console.log(JSON.stringify(toolDefinitions, null, 2));
+    console.log(JSON.stringify(toolDefinitions, null, 2));
 
     // for (const tool of tools) {
     //   if (!(tool.schema as any).properties) {
@@ -79,10 +79,10 @@ console.log(JSON.stringify(toolDefinitions, null, 2));
     console.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
     const prompt = ChatPromptTemplate.fromMessages([
-      ["system", agentSystemPrompt],
-      ["placeholder", "{chat_history}"],
-      ["human", "{input}"],
-      ["placeholder", "{agent_scratchpad}"],
+      ['system', agentSystemPrompt],
+      ['placeholder', '{chat_history}'],
+      ['human', '{input}'],
+      ['placeholder', '{agent_scratchpad}'],
     ]);
 
     const agent = createToolCallingAgent({
@@ -97,14 +97,11 @@ console.log(JSON.stringify(toolDefinitions, null, 2));
       // verbose: true,
     });
 
-    const response = await agentExecutor.invoke(
-      { input: question },
-    );
+    const response = await agentExecutor.invoke({ input: question });
 
     // console.log("Response:", response);
-    console.log("Intermediate steps:", JSON.stringify(response.intermediateSteps, null, 2));
-    console.log("Final answer:", response.output);
-
+    console.log('Intermediate steps:', JSON.stringify(response.intermediateSteps, null, 2));
+    console.log('Final answer:', response.output);
   } catch (_error: unknown) {
     const error = _error as Error;
     console.error(`Error when processing chat-post request: ${error.message}`);
