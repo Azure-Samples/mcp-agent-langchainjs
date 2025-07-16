@@ -30,7 +30,7 @@ app.http('me-get', {
       }
 
       return {
-        jsonBody: { id: user.id },
+        jsonBody: { id: user.id, createdAt: user.createdAt },
       };
     } catch (error) {
       context.error('Error in me-get handler', error);

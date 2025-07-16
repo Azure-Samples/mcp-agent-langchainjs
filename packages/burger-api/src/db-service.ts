@@ -457,7 +457,7 @@ export class DbService {
     }
 
     try {
-      const { resource } = await this.usersContainer.item(id).read();
+      const { resource } = await this.usersContainer.item(id, id).read();
       return resource?.name;
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -472,7 +472,7 @@ export class DbService {
     }
 
     try {
-      const { resource } = await this.usersContainer.item(id).read();
+      const { resource } = await this.usersContainer.item(id, id).read();
       return Boolean(resource);
     } catch (error) {
       console.error('Error checking user existence:', error);

@@ -54,8 +54,8 @@ export class UserDbService {
 
     if (!this.isCosmosDbInitialized) return undefined;
     try {
-      const { item } = await this.usersContainer!.item(id).read();
-      return item;
+      const { resource } = await this.usersContainer!.item(id, id).read();
+      return resource;
     } catch (error: any) {
       if (error.code === 404) return undefined;
       throw error;
