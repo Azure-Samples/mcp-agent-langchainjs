@@ -1,6 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import type { ZodRawShape } from 'zod/v4/classic/compat';
 import { tools } from './tools.js';
 
 export function getMcpServer() {
@@ -53,7 +52,7 @@ export function createMcpTool(
       }
     });
   } else {
-    server.tool(options.name, options.description, options.schema.shape, async (args: ZodRawShape) => {
+    server.tool(options.name, options.description, options.schema.shape, async (args: any) => {
       try {
         // console.log("Executing MCP tool:", toolArguments.name);
         // console.log("Tool arguments:", args);
