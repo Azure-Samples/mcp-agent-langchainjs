@@ -1,5 +1,6 @@
 {
   "name": "mcp-agent-langchainjs",
+  "description": "Serverless AI agent using LangChain.js and Model Context Protocol (MCP) integration to order burgers from a burger restaurant.",
   "version": "1.0.0",
   "private": true,
   "type": "module",
