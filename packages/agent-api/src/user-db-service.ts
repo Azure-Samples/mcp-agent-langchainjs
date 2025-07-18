@@ -1,9 +1,6 @@
+import process from 'node:process';
 import { CosmosClient, Database, Container } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
-import path from 'node:path';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: path.join(process.cwd(), '../../.env') });
 
 export class UserDbService {
   private static instance: UserDbService;
