@@ -79,7 +79,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 
     model = new AzureChatOpenAI({
       // Controls randomness. 0 = deterministic, 1 = maximum randomness
-      temperature: 0.7,
+      temperature: 0.3,
       azureADTokenProvider,
     });
 
