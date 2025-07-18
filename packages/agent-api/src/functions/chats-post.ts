@@ -42,7 +42,7 @@ const titleSystemPrompt = `Create a title for this chat session, based on the us
 
 export async function postChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
-  const burgerMcpEndpoint = process.env.BURGER_MCP_ENDPOINT;
+  const burgerMcpUrl = process.env.BURGER_MCP_URL ?? 'http://localhost:3000/mcp';
 
   try {
     const requestBody = (await request.json()) as AIChatCompletionRequest;
@@ -63,8 +63,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const sessionId = ((chatContext as any)?.sessionId as string) || uuidv4();
     context.log(`userId: ${userId}, sessionId: ${sessionId}`);
 
-    if (!azureOpenAiEndpoint || !burgerMcpEndpoint) {
-      const errorMessage = 'Missing required environment variables: AZURE_OPENAI_API_ENDPOINT or BURGER_MCP_ENDPOINT';
+    if (!azureOpenAiEndpoint || !burgerMcpUrl) {
+      const errorMessage = 'Missing required environment variables: AZURE_OPENAI_API_ENDPOINT or BURGER_MCP_URL';
       context.error(errorMessage);
       return {
         status: 500,
@@ -96,7 +96,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       name: 'burger-mcp-client',
       version: '1.0.0',
     });
-    const transport = new StreamableHTTPClientTransport(new URL(burgerMcpEndpoint));
+    const transport = new StreamableHTTPClientTransport(new URL(burgerMcpUrl));
     await client.connect(transport);
     context.log('Connected to Burger MCP server using Streamable HTTP transport');
 
