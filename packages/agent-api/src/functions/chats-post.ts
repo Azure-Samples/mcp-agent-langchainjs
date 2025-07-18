@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import { randomUUID } from 'node:crypto';
 import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/functions';
 import { AIChatCompletionRequest, AIChatCompletionDelta } from '@microsoft/ai-chat-protocol';
 import { AzureChatOpenAI } from '@langchain/openai';
@@ -10,7 +11,6 @@ import { createToolCallingAgent } from 'langchain/agents';
 import { AgentExecutor } from 'langchain/agents';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { v4 as uuidv4 } from 'uuid';
 import 'dotenv/config';
 import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from '../auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -60,7 +60,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 
     let model: BaseChatModel;
     let chatHistory;
-    const sessionId = ((chatContext as any)?.sessionId as string) || uuidv4();
+    const sessionId = ((chatContext as any)?.sessionId as string) || randomUUID();
     context.log(`userId: ${userId}, sessionId: ${sessionId}`);
 
     if (!azureOpenAiEndpoint || !burgerMcpUrl) {

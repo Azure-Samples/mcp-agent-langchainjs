@@ -27,8 +27,7 @@
     "@langchain/openai": "^0.5.10",
     "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
     "dotenv": "^17.0.1",
-    "langchain": "^0.3.6",
-    "uuid": "^11.0.3"
+    "langchain": "^0.3.6"
   },
   "devDependencies": {
     "@types/node": "^20",
