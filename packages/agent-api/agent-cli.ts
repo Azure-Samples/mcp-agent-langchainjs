@@ -21,6 +21,7 @@ const agentSystemPrompt = `
 ## Role
 You an expert assistant that helps users with managing burger orders. Use the provided tools to get the information you need and perform actions on behalf of the user.
 Only answer to requests that are related to burger orders and the menu. If the user asks for something else, politely inform them that you can only assist with burger orders.
+You are invoked from a command line interface.
 
 ## Task
 Help the user with their request, ask any clarifying questions if needed.
@@ -30,7 +31,7 @@ Help the user with their request, ask any clarifying questions if needed.
 - If you get any errors when trying to use a tool that does not seem related to missing parameters, try again
 - If you cannot get the information needed to answer the user's question or perform the specified action, inform the user that you are unable to do so. Never make up information.
 - The get_burger tool can help you get informations about the burgers
-- Creating or cancelling an order requires a \`userId\`: if not provided, ask the user to provide it or to run the CLI with the \`--userId\` option.
+- Creating or cancelling an order requires a \`userId\`: if not provided, ask the user to provide it or to run the CLI with the \`--userId\` option. To get its user ID, the user must connect to ${process.env.AGENT_API_URL ?? 'http://localhost:4280 (make sure that agent-webapp is running)'}.
 
 ## Output
 Your response will be printed to a terminal. Do not use markdown formatting or any other special formatting. Just provide the plain text response.
@@ -40,6 +41,7 @@ interface CliArgs {
   question: string;
   userId?: string;
   isNew: boolean;
+  verbose: boolean;
 }
 
 interface SessionData {
@@ -51,16 +53,18 @@ function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
-    console.log('Usage: agent-cli <question> [--userId <userId>] [--new]');
+    console.log('Usage: agent-cli <question> [--userId <userId>] [--new] [--verbose]');
     console.log('  question: Your question about burger orders');
     console.log('  --userId: Optional user ID (needed for some tasks)');
     console.log('  --new: Start a new session');
+    console.log('  --verbose: Enable verbose mode to show intermediate steps');
     process.exit(0);
   }
 
   const questionParts: string[] = [];
   let userId: string | undefined;
   let isNew = false;
+  let verbose = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -70,6 +74,8 @@ function parseArgs(): CliArgs {
       i++;
     } else if (arg === '--new') {
       isNew = true;
+    } else if (arg === '--verbose') {
+      verbose = true;
     } else {
       questionParts.push(arg);
     }
@@ -82,7 +88,7 @@ function parseArgs(): CliArgs {
     process.exit(1);
   }
 
-  return { question, userId, isNew };
+  return { question, userId, isNew, verbose };
 }
 
 async function getSessionPath(): Promise<string> {
@@ -119,9 +125,11 @@ function convertHistoryToMessages(history: SessionData['history']): BaseMessage[
 }
 
 export async function run() {
-  const { question, userId, isNew } = parseArgs();
+  const { question, userId, isNew, verbose } = parseArgs();
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
   const burgerMcpEndpoint = process.env.BURGER_MCP_URL ?? 'http://localhost:3000/mcp';
+
+  let client: Client | undefined;
 
   try {
     let model: BaseChatModel;
@@ -129,7 +137,7 @@ export async function run() {
     if (!azureOpenAiEndpoint || !burgerMcpEndpoint) {
       const errorMessage = 'Missing required environment variables: AZURE_OPENAI_API_ENDPOINT or BURGER_MCP_URL';
       console.error(errorMessage);
-      return;
+      process.exit(1);
     }
 
     let session: SessionData;
@@ -150,7 +158,7 @@ export async function run() {
       azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
     });
 
-    const client = new Client({
+    client = new Client({
       name: 'burger-mcp',
       version: '1.0.0',
     });
@@ -178,7 +186,7 @@ export async function run() {
     const agentExecutor = new AgentExecutor({
       agent,
       tools,
-      returnIntermediateSteps: false,
+      returnIntermediateSteps: verbose,
     });
 
     const chatHistory = convertHistoryToMessages(session.history);
@@ -188,18 +196,36 @@ export async function run() {
       chat_history: chatHistory
     });
 
-    console.log('----------\n' + response.output);
+    if (verbose && response.intermediateSteps && response.intermediateSteps.length > 0) {
+      console.log('--------------------\nIntermediate steps\n--------------------');
+      for (const [index, step] of response.intermediateSteps.entries()) {
+        console.log(`*** Step ${index + 1} ***`);
+        console.log(`Action: ${step.action.tool}`);
+        console.log(`Input: ${JSON.stringify(step.action.toolInput, null, 2)}`);
+        console.log(`Output: ${step.observation}`);
+      }
+    }
+
+    console.log('--------------------\n' + response.output);
 
     session.history.push({ type: 'human', content: question });
     session.history.push({ type: 'ai', content: response.output });
 
     await saveSession(session);
 
-    console.log('----------\nDone.');
-
   } catch (_error: unknown) {
     const error = _error as Error;
     console.error(`Error when processing request: ${error.message}`);
+    process.exitCode = 1;
+  } finally {
+    if (client) {
+      try {
+        await client.close();
+      } catch (error) {
+        console.error('Error closing MCP client:', error);
+      }
+    }
+    process.exitCode = 0;
   }
 }
 
