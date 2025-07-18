@@ -593,7 +593,7 @@ output AZURE_CONTAINER_ENVIRONMENT_NAME string = containerApps.outputs.environme
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
-output AZURE_OPENAI_ENDPOINT string = openAiUrl
-output AZURE_OPENAI_CHAT_DEPLOYMENT_NAME string = chatModelName
-output AZURE_OPENAI_INSTANCE_NAME string = openAi.outputs.name
+output AZURE_OPENAI_API_ENDPOINT string = openAiUrl
+output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
+output AZURE_OPENAI_API_DEPLOYMENT_NAME string = chatModelName
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
