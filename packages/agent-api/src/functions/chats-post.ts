@@ -12,7 +12,6 @@ import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { v4 as uuidv4 } from 'uuid';
 import 'dotenv/config';
-import { badRequest, data, serviceUnavailable } from '../http-response.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from '../auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { ChainValues } from '@langchain/core/utils/types.js';
@@ -20,7 +19,7 @@ import { ChainValues } from '@langchain/core/utils/types.js';
 const agentSystemPrompt = `
 # Role
 You an expert assistant that helps users with managing burger orders. Use the provided tools to get the information you need and perform actions on behalf of the user.
-Only anwser to requests that are related to burger orders and the menu. If the user asks for something else, politely inform them that you can only assist with burger orders.
+Only answer to requests that are related to burger orders and the menu. If the user asks for something else, politely inform them that you can only assist with burger orders.
 
 # Task
 1. Help the user with their request, ask any clarifying questions if needed.
@@ -51,7 +50,12 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const userId = getUserId(request, requestBody);
 
     if (!messages || messages.length === 0 || !messages.at(-1)?.content) {
-      return badRequest('Invalid or missing messages in the request body');
+      return {
+        status: 400,
+        jsonBody: {
+          error: 'Invalid or missing messages in the request body',
+        },
+      }
     }
 
     let model: BaseChatModel;
@@ -140,7 +144,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       historyMessagesKey: 'chat_history',
       getMessageHistory: async () => chatHistory,
     });
-    // Retriever to search for the documents in the database
+    // Add question and start the agent
     const question = messages.at(-1)!.content;
     const responseStream = await agentChainWithHistory.stream({ userId, question }, { configurable: { sessionId } });
     const jsonStream = Readable.from(createJsonStream(responseStream, sessionId));
@@ -158,15 +162,23 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       chatHistory.setContext({ title: response.content });
     }
 
-    return data(jsonStream, {
-      'Content-Type': 'application/x-ndjson',
-      'Transfer-Encoding': 'chunked',
-    });
+    return {
+      headers: {
+        'Content-Type': 'application/x-ndjson',
+        'Transfer-Encoding': 'chunked',
+      },
+      body: jsonStream,
+    }
   } catch (_error: unknown) {
     const error = _error as Error;
     context.error(`Error when processing chat-post request: ${error.message}`);
 
-    return serviceUnavailable('Service temporarily unavailable. Please try again later.');
+    return {
+      status: 500,
+      jsonBody: {
+        error: 'Internal server error while processing the request',
+      },
+    }
   }
 }
 

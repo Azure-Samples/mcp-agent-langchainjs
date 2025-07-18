@@ -2,7 +2,6 @@ import process from 'node:process';
 import { HttpRequest, HttpResponseInit, InvocationContext, app } from '@azure/functions';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import 'dotenv/config';
-import { badRequest, ok, notFound } from '../http-response.js';
 import { getCredentials, getUserId } from '../auth.js';
 
 async function getChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
@@ -11,7 +10,12 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
   const userId = getUserId(request);
 
   if (!userId) {
-    return badRequest('Invalid or missing userId in the request');
+    return {
+      status: 400,
+      jsonBody: {
+        error: 'Invalid or missing userId in the request',
+      },
+    }
   }
 
   try {
@@ -43,7 +47,7 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
         role: message.getType() === 'human' ? 'user' : 'assistant',
         content: message.content,
       }));
-      return ok(chatMessages);
+      return { jsonBody: chatMessages }
     }
 
     const sessions = await chatHistory.getAllSessions();
@@ -51,12 +55,17 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
       id: session.id,
       title: session.context?.title,
     }));
-    return ok(chatSessions);
+    return { jsonBody: chatSessions };
   } catch (_error: unknown) {
     const error = _error as Error;
     context.error(`Error when processing chats-get request: ${error.message}`);
 
-    return notFound('Session not found');
+    return {
+      status: 404,
+      jsonBody: {
+        error: 'Session not found',
+      },
+    }
   }
 }
 

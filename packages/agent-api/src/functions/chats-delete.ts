@@ -2,7 +2,6 @@ import process from 'node:process';
 import { HttpRequest, HttpResponseInit, InvocationContext, app } from '@azure/functions';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import 'dotenv/config';
-import { badRequest, ok, notFound } from '../http-response.js';
 import { getCredentials, getUserId } from '../auth.js';
 
 async function deleteChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
@@ -11,11 +10,21 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
   const userId = getUserId(request);
 
   if (!userId) {
-    return badRequest('Invalid or missing userId in the request');
+    return {
+      status: 400,
+      jsonBody: {
+        error: 'Invalid or missing userId in the request',
+      },
+    }
   }
 
   if (!sessionId) {
-    return badRequest('Invalid or missing sessionId in the request');
+    return {
+      status: 400,
+      jsonBody: {
+        error: 'Invalid or missing sessionId in the request',
+      },
+    }
   }
 
   try {
@@ -42,12 +51,17 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
     });
 
     await chatHistory.clear();
-    return ok();
+    return { status: 204 };
   } catch (_error: unknown) {
     const error = _error as Error;
     context.error(`Error when processing chats-delete request: ${error.message}`);
 
-    return notFound('Session not found');
+    return {
+      status: 404,
+      jsonBody: {
+        error: 'Session not found',
+      },
+    }
   }
 }
 
