@@ -24,7 +24,7 @@
     "@langchain/core": "^0.3.18",
     "@langchain/langgraph": "^0.3.6",
     "@langchain/mcp-adapters": "^0.5.2",
-    "@langchain/openai": "^0.5.10",
+    "@langchain/openai": "^0.6.2",
     "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
     "dotenv": "^17.0.1",
     "langchain": "^0.3.6"
