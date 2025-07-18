@@ -1,5 +1,7 @@
-#!/usr/bin/env node
-
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { AzureChatOpenAI } from '@langchain/openai';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
@@ -7,12 +9,8 @@ import { createToolCallingAgent } from 'langchain/agents';
 import { AgentExecutor } from 'langchain/agents';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { getAzureOpenAiTokenProvider } from './src/auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { BaseMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import os from 'node:os';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: path.join(process.cwd(), '../../.env'), quiet: true });
@@ -150,7 +148,7 @@ export async function run() {
       }
     }
 
-    const azureADTokenProvider = getAzureOpenAiTokenProvider();
+    const azureADTokenProvider = getBearerTokenProvider(new DefaultAzureCredential(), 'https://cognitiveservices.azure.com/.default');;
 
     model = new AzureChatOpenAI({
       temperature: 0.3,
@@ -227,8 +225,4 @@ export async function run() {
     }
     process.exitCode = 0;
   }
-}
-
-if (process.argv[1] && process.argv[1].endsWith('agent-cli.ts') || process.argv[1].endsWith('agent-cli.js')) {
-  run();
 }

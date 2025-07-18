@@ -15,23 +15,3 @@ You can use the `api.http` file to test the API using the [REST Client](https://
 ### `npm run build`
 
 To build the API for production to the `dist` folder.
-
-### `npm run cli`
-
-Run the burger agent CLI. Usage examples:
-
-```bash
-# Ask a simple question
-npm run cli "show me the burger menu"
-
-# Ask with a specific user ID
-npm run cli "place an order" -- --userId user123
-
-# Start a new session
-npm run cli "hello" -- --new
-
-# Combine options
-npm run cli "cancel my order" -- --userId user123 --new
-```
-
-The CLI maintains conversation history in `~/.burger-agent-cli/burger-agent-cli.json` for context across sessions.

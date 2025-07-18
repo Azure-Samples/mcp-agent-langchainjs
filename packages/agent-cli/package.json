@@ -1,0 +1,32 @@
+{
+  "name": "agent-cli",
+  "version": "1.0.0",
+  "description": "Contoso Burgers AI lightweight Agent CLI",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "agent-cli": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "tsx ./bin/cli.js --",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/identity": "^4.2.0",
+    "@langchain/core": "^0.3.18",
+    "@langchain/langgraph": "^0.3.6",
+    "@langchain/mcp-adapters": "^0.5.2",
+    "@langchain/openai": "^0.5.18",
+    "dotenv": "^17.0.1",
+    "langchain": "^0.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}
