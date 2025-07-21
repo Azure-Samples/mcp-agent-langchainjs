@@ -106,7 +106,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-module burgerApiFunction 'br/public:avm/res/web/site:0.16.0' = {
+module burgerApiFunction 'br/public:avm/res/web/site:0.16.1' = {
   name: 'burger-api'
   scope: resourceGroup
   params: {
@@ -163,7 +163,7 @@ module burgerApiFunction 'br/public:avm/res/web/site:0.16.0' = {
 }
 
 // Needed to avoid circular resource dependencies
-// TODO: child module?
+// TODO: migrate to child module once it's available in the public registry
 module burgerApiFunctionSettings './core/site-app-settings.bicep' = {
   name: 'burger-api-settings'
   scope: resourceGroup
@@ -181,7 +181,7 @@ module burgerApiFunctionSettings './core/site-app-settings.bicep' = {
   }
 }
 
-module agentApiFunction 'br/public:avm/res/web/site:0.16.0' = {
+module agentApiFunction 'br/public:avm/res/web/site:0.16.1' = {
   name: 'agent-api'
   scope: resourceGroup
   params: {
@@ -307,7 +307,7 @@ module agentWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
   }
 }
 
-module storage 'br/public:avm/res/storage/storage-account:0.25.0' = {
+module storage 'br/public:avm/res/storage/storage-account:0.25.1' = {
   name: 'storage'
   scope: resourceGroup
   params: {
@@ -358,7 +358,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.0' = {
   }
 }
 
-module openAi 'br/public:avm/res/cognitive-services/account:0.11.0' = {
+module openAi 'br/public:avm/res/cognitive-services/account:0.12.0' = {
   name: 'openai'
   scope: resourceGroup
   params: {
@@ -491,13 +491,13 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.12.0' = {
   }
 }
 
-module containerApps 'br/public:avm/ptn/azd/container-apps-stack:0.1.1' = {
+module containerApps 'br/public:avm/ptn/azd/container-apps-stack:0.2.0' = {
   name: 'container-apps'
   scope: resourceGroup
   params: {
     containerAppsEnvironmentName: '${abbrs.appManagedEnvironments}${resourceToken}'
     containerRegistryName: '${abbrs.containerRegistryRegistries}${resourceToken}'
-    logAnalyticsWorkspaceResourceId: monitoring.outputs.logAnalyticsWorkspaceResourceId
+    logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
     appInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
     acrSku: 'Basic'
     location: location
