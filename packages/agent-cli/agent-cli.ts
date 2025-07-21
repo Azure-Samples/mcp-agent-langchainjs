@@ -135,7 +135,8 @@ export async function run() {
     if (!azureOpenAiEndpoint || !burgerMcpEndpoint) {
       const errorMessage = 'Missing required environment variables: AZURE_OPENAI_API_ENDPOINT or BURGER_MCP_URL';
       console.error(errorMessage);
-      process.exit(1);
+      process.exitCode = 1;
+      return;
     }
 
     let session: SessionData;
@@ -167,8 +168,6 @@ export async function run() {
     const tools = await loadMcpTools('burger', client);
     console.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
-    console.log(`Thinking...`);
-
     const prompt = ChatPromptTemplate.fromMessages([
       ['system', agentSystemPrompt + (session.userId ? `\n\nUser ID: ${session.userId}` : '')],
       ['placeholder', '{chat_history}'],
@@ -189,6 +188,7 @@ export async function run() {
 
     const chatHistory = convertHistoryToMessages(session.history);
 
+    console.log(`Thinking...`);
     const response = await agentExecutor.invoke({
       input: question,
       chat_history: chatHistory
@@ -215,14 +215,14 @@ export async function run() {
     const error = _error as Error;
     console.error(`Error when processing request: ${error.message}`);
     process.exitCode = 1;
-  } finally {
-    if (client) {
-      try {
-        await client.close();
-      } catch (error) {
-        console.error('Error closing MCP client:', error);
-      }
-    }
-    process.exitCode = 0;
   }
+
+  if (client) {
+    try {
+      await client.close();
+    } catch (error) {
+      console.error('Error closing MCP client:', error);
+    }
+  }
+  process.exitCode = 0;
 }
