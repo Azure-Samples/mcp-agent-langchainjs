@@ -12,8 +12,7 @@
     "start:host": "func start --port 7072",
     "start": "concurrently npm:start:* npm:watch --raw --kill-others",
     "update:local-settings": "node ./scripts/update-local-settings.mjs",
-    "postinstall": "npm run update:local-settings",
-    "cli": "tsx agent-cli.ts --"
+    "postinstall": "npm run update:local-settings"
   },
   "author": "Microsoft",
   "license": "MIT",
@@ -33,5 +32,8 @@
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }

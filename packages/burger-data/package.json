@@ -15,5 +15,8 @@
     "@genaiscript/runtime": "^2",
     "genaiscript": "^2",
     "sharp": "^0.34.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }

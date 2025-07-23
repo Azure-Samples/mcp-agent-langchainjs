@@ -22,6 +22,9 @@
   "devDependencies": {
     "vite": "^7.0.0"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "files": [
     "dist"
   ]

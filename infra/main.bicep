@@ -156,7 +156,7 @@ module burgerApiFunction 'br/public:avm/res/web/site:0.16.1' = {
       }
       runtime: {
         name: 'node'
-        version: '20'
+        version: '22'
       }
     }
   }
@@ -231,7 +231,7 @@ module agentApiFunction 'br/public:avm/res/web/site:0.16.1' = {
       }
       runtime: {
         name: 'node'
-        version: '20'
+        version: '22'
       }
     }
   }
