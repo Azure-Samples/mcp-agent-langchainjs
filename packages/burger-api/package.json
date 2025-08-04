@@ -34,8 +34,5 @@
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
     "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=22.0.0"
   }
 }

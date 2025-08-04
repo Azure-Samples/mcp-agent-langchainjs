@@ -32,8 +32,5 @@
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=22.0.0"
   }
 }

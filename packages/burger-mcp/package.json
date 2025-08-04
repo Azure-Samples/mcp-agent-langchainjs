@@ -28,8 +28,5 @@
     "@types/express": "^5.0.0",
     "@types/node": "^20",
     "tsx": "^4"
-  },
-  "engines": {
-    "node": ">=22.0.0"
   }
 }
