@@ -6,7 +6,7 @@ import { DefaultAzureCredential } from '@azure/identity';
 import dotenv from 'dotenv';
 
 // Env file is located in the root of the repository
-dotenv.config({ path: path.join(process.cwd(), '../../.env') });
+dotenv.config({ path: path.join(process.cwd(), '../../.env'), quiet: true });
 
 export class BlobService {
   private static instance: BlobService;

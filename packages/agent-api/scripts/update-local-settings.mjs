@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Env file is located in the root of the repository
-dotenv.config({ path: path.join(__dirname, '../../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../../.env'), quiet: true });
 
 let settings = {
   FUNCTIONS_WORKER_RUNTIME: 'node',
