@@ -233,7 +233,7 @@ module agentApiFunction 'br/public:avm/res/web/site:0.16.1' = {
       deployment: {
         storage: {
           type: 'blobContainer'
-          value: '${storage.outputs.primaryBlobEndpoint}${burgerMcpResourceName}'
+          value: '${storage.outputs.primaryBlobEndpoint}${agentApiResourceName}'
           authentication: {
             type: 'SystemAssignedIdentity'
           }
@@ -413,10 +413,10 @@ module storage 'br/public:avm/res/storage/storage-account:0.25.1' = {
           name: burgerApiResourceName
         }
         {
-          name: burgerMcpResourceName
+          name: agentApiResourceName
         }
         {
-          name: agentApiResourceName
+          name: burgerMcpResourceName
         }
         {
           name: blobContainerName
@@ -586,11 +586,22 @@ module storageRoleBurgerApi 'br/public:avm/ptn/authorization/resource-role-assig
   }
 }
 
-module storageRoleRegistrationApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+module storageRoleAgentApi 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup
   name: 'storage-role-agent-api'
   params: {
     principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId!
+    roleName: 'Storage Blob Data Contributor'
+    roleDefinitionId: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+    resourceId: storage.outputs.resourceId
+  }
+}
+
+module storageRoleBurgerMcp 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+  scope: resourceGroup
+  name: 'storage-role-burger-mcp'
+  params: {
+    principalId: burgerMcpFunction.outputs.?systemAssignedMIPrincipalId!
     roleName: 'Storage Blob Data Contributor'
     roleDefinitionId: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
     resourceId: storage.outputs.resourceId
@@ -619,3 +630,5 @@ output AZURE_OPENAI_API_ENDPOINT string = openAiUrl
 output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
 output AZURE_OPENAI_API_DEPLOYMENT_NAME string = chatModelName
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
+
+output GENAISCRIPT_DEFAULT_MODEL string = 'azure:${chatModelName}'
