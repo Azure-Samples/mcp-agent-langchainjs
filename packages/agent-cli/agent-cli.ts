@@ -152,7 +152,6 @@ export async function run() {
     const azureADTokenProvider = getBearerTokenProvider(new DefaultAzureCredential(), 'https://cognitiveservices.azure.com/.default');;
 
     model = new AzureChatOpenAI({
-      temperature: 0.3,
       azureADTokenProvider,
       azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
     });
