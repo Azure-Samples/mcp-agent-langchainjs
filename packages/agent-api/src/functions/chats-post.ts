@@ -77,11 +77,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const credentials = getCredentials();
     const azureADTokenProvider = getAzureOpenAiTokenProvider();
 
-    model = new AzureChatOpenAI({
-      // Controls randomness. 0 = deterministic, 1 = maximum randomness
-      temperature: 0.3,
-      azureADTokenProvider,
-    });
+    model = new AzureChatOpenAI({ azureADTokenProvider });
 
     // Initialize chat history
     chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
