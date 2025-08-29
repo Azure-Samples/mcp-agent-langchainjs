@@ -12,8 +12,8 @@
     "dev:local": "tsx watch src/local.ts",
     "build": "tsc",
     "clean": "rimraf lib",
-    "docker:build": "docker build -t burger-mcp -f ./Dockerfile ../..",
-    "docker:run": "docker run --rm -p 3000:3000 burger-mcp"
+    "update:local-settings": "node ./scripts/update-local-settings.mjs",
+    "postinstall": "npm run update:local-settings"
   },
   "keywords": [],
   "author": "Microsoft",

@@ -1,0 +1,17 @@
+{
+  "version": "2.0",
+  "extensions": {
+    "http": {
+      "routePrefix": ""
+    }
+  },
+  "customHandler": {
+    "description": {
+      "defaultExecutablePath": "node",
+      "workingDirectory": "",
+      "arguments": ["lib/server.js"]
+    },
+    "enableForwardingHttpRequest": true,
+    "enableHttpProxyingRequest": true
+  }
+}

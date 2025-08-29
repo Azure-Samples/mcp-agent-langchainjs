@@ -12,12 +12,8 @@ services:
 
   burger-mcp:
     project: ./packages/burger-mcp
-    docker:
-      path: ./Dockerfile
-      # We build the Dockerfile from the root of the project as we're in an NPM workspace
-      context: ../..
     language: ts
-    host: containerapp
+    host: function
 
   burger-webapp:
     project: ./packages/burger-webapp
