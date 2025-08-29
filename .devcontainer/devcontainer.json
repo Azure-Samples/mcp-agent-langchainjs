@@ -3,7 +3,7 @@
 {
   "name": "Node.js",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bullseye",
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/devcontainers/features/azure-cli:1": {},
@@ -14,7 +14,7 @@
     }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [7071, 7072, 7280, 3000],
+  "forwardPorts": [7071, 7072, 4280, 3000],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "npm i -g fuzz-run",
   // Configure tool-specific properties.
