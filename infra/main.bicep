@@ -75,8 +75,6 @@ param principalId string = ''
 // Differentiates between automated and manual deployments
 param isContinuousIntegration bool // Set in main.parameters.json
 
-param burgerMcpContainerAppExists bool = false
-
 // ---------------------------------------------------------------------------
 // Common variables
 
@@ -86,13 +84,13 @@ var tags = { 'azd-env-name': environmentName }
 
 var principalType = isContinuousIntegration ? 'ServicePrincipal' : 'User'
 var burgerApiResourceName = '${abbrs.webSitesFunctions}burger-api-${resourceToken}'
-var burgerMcpResourceName = '${abbrs.appContainerApps}burger-mcp-${resourceToken}'
+var burgerMcpResourceName = '${abbrs.webSitesFunctions}burger-mcp-${resourceToken}'
 var agentApiResourceName = '${abbrs.webSitesFunctions}agent-api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
 var openAiUrl = 'https://${openAi.outputs.name}.openai.azure.com'
 var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 var burgerApiUrl = 'https://${burgerApiFunction.outputs.defaultHostname}'
-var burgerMcpUrl = '${burgerMcpContainerApp.outputs.uri}/mcp'
+var burgerMcpUrl = 'https://${burgerMcpFunction.outputs.defaultHostname}/mcp'
 var burgerWebappUrl = 'https://${burgerWebapp.outputs.defaultHostname}'
 var agentApiUrl = 'https://${agentApiFunction.outputs.defaultHostname}'
 var agentWebappUrl = 'https://${agentWebapp.outputs.defaultHostname}'
@@ -181,6 +179,28 @@ module burgerApiFunctionSettings './core/site-app-settings.bicep' = {
   }
 }
 
+module burgerApiAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
+  name: 'burger-api-appserviceplan'
+  scope: resourceGroup
+  params: {
+    name: '${abbrs.webServerFarms}burger-api-${resourceToken}'
+    tags: tags
+    location: location
+    skuName: 'FC1'
+    reserved: true
+  }
+}
+
+module burgerWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
+  name: 'burger-webapp'
+  scope: resourceGroup
+  params: {
+    name: burgerWebappName
+    location: webappLocation
+    tags: union(tags, { 'azd-service-name': burgerWebappName })
+  }
+}
+
 module agentApiFunction 'br/public:avm/res/web/site:0.16.1' = {
   name: 'agent-api'
   scope: resourceGroup
@@ -237,40 +257,6 @@ module agentApiFunction 'br/public:avm/res/web/site:0.16.1' = {
   }
 }
 
-module burgerApiAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
-  name: 'burger-api-appserviceplan'
-  scope: resourceGroup
-  params: {
-    name: '${abbrs.webServerFarms}burger-api-${resourceToken}'
-    tags: tags
-    location: location
-    skuName: 'FC1'
-    reserved: true
-  }
-}
-
-module burgerWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
-  name: 'burger-webapp'
-  scope: resourceGroup
-  params: {
-    name: burgerWebappName
-    location: webappLocation
-    tags: union(tags, { 'azd-service-name': burgerWebappName })
-  }
-}
-
-module agentApiAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
-  name: 'agent-api-appserviceplan'
-  scope: resourceGroup
-  params: {
-    name: '${abbrs.webServerFarms}agent-api-${resourceToken}'
-    tags: tags
-    location: location
-    skuName: 'FC1'
-    reserved: true
-  }
-}
-
 // Needed to avoid circular resource dependencies
 module agentApiFunctionSettings './core/site-app-settings.bicep' = {
   name: 'agent-api-settings'
@@ -292,6 +278,18 @@ module agentApiFunctionSettings './core/site-app-settings.bicep' = {
   }
 }
 
+module agentApiAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
+  name: 'agent-api-appserviceplan'
+  scope: resourceGroup
+  params: {
+    name: '${abbrs.webServerFarms}agent-api-${resourceToken}'
+    tags: tags
+    location: location
+    skuName: 'FC1'
+    reserved: true
+  }
+}
+
 module agentWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
   name: 'agent-webapp'
   scope: resourceGroup
@@ -304,6 +302,93 @@ module agentWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
       resourceId: agentApiFunction.outputs.resourceId
       location: location
     }
+  }
+}
+
+module burgerMcpFunction 'br/public:avm/res/web/site:0.16.1' = {
+  name: 'burger-mcp'
+  scope: resourceGroup
+  params: {
+    tags: union(tags, { 'azd-service-name': burgerMcpServiceName })
+    location: location
+    kind: 'functionapp,linux'
+    name: burgerMcpResourceName
+    serverFarmResourceId: burgerMcpAppServicePlan.outputs.resourceId
+    configs: [
+      {
+        name: 'appsettings'
+        applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+        storageAccountResourceId: storage.outputs.resourceId
+        storageAccountUseIdentityAuthentication: true
+      }
+    ]
+    managedIdentities: { systemAssigned: true }
+    siteConfig: {
+      minTlsVersion: '1.2'
+      ftpsState: 'FtpsOnly'
+      cors: {
+        allowedOrigins: [
+          '*'
+        ]
+        supportCredentials: false
+      }
+    }
+    functionAppConfig: {
+      deployment: {
+        storage: {
+          type: 'blobContainer'
+          value: '${storage.outputs.primaryBlobEndpoint}${burgerMcpResourceName}'
+          authentication: {
+            type: 'SystemAssignedIdentity'
+          }
+        }
+      }
+      scaleAndConcurrency: {
+        alwaysReady: [
+          {
+            name: 'http'
+            instanceCount: 1
+          }
+        ]
+        maximumInstanceCount: 100
+        instanceMemoryMB: 2048
+      }
+      runtime: {
+        name: 'node'
+        version: '22'
+      }
+    }
+  }
+}
+
+// Needed to avoid circular resource dependencies
+// TODO: migrate to child module once it's available in the public registry
+module burgerMcpFunctionSettings './core/site-app-settings.bicep' = {
+  name: 'burger-mcp-settings'
+  scope: resourceGroup
+  params: {
+    appName: burgerMcpFunction.outputs.name
+    kind: 'functionapp,linux'
+    appSettingsKeyValuePairs: {
+      AZURE_STORAGE_URL: storageUrl
+      AZURE_STORAGE_CONTAINER_NAME: blobContainerName
+      BURGER_API_URL: burgerApiUrl
+    }
+    storageAccountResourceId: storage.outputs.resourceId
+    storageAccountUseIdentityAuthentication: true
+    appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+  }
+}
+
+module burgerMcpAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
+  name: 'burger-mcp-appserviceplan'
+  scope: resourceGroup
+  params: {
+    name: '${abbrs.webServerFarms}burger-mcp-${resourceToken}'
+    tags: tags
+    location: location
+    skuName: 'FC1'
+    reserved: true
   }
 }
 
@@ -329,6 +414,9 @@ module storage 'br/public:avm/res/storage/storage-account:0.25.1' = {
         }
         {
           name: burgerMcpResourceName
+        }
+        {
+          name: agentApiResourceName
         }
         {
           name: blobContainerName
@@ -358,6 +446,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.0' = {
   }
 }
 
+// TODO: migrate to Foundry
 module openAi 'br/public:avm/res/cognitive-services/account:0.12.0' = {
   name: 'openai'
   scope: resourceGroup
@@ -398,20 +487,14 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.12.0' = {
   }
 }
 
-// TODO: update to use the latest version of the module
-module cosmosDb 'br/public:avm/res/document-db/database-account:0.12.0' = {
+module cosmosDb 'br/public:avm/res/document-db/database-account:0.15.0' = {
   name: 'cosmosDb'
   scope: resourceGroup
   params: {
     name: '${abbrs.documentDBDatabaseAccounts}${resourceToken}'
     tags: tags
-    locations: [
-      {
-        locationName: location
-        failoverPriority: 0
-        isZoneRedundant: false
-      }
-    ]
+    location: location
+    zoneRedundant: false
     managedIdentities: {
       systemAssigned: true
     }
@@ -471,78 +554,21 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.12.0' = {
         name: 'historyDB'
       }
     ]
-    sqlRoleDefinitions: [
+    dataPlaneRoleDefinitions: [
       {
-        name: 'db-contrib-role-definition'
-        roleName: 'Reader Writer'
-        roleType: 'CustomRole'
-        dataAction: [
+        roleName: 'db-contrib-role-definition'
+        dataActions: [
           'Microsoft.DocumentDB/databaseAccounts/readMetadata'
           'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*'
           'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*'
         ]
+        assignments: [
+          { principalId: principalId }
+          { principalId: burgerApiFunction.outputs.?systemAssignedMIPrincipalId! }
+          { principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId! }
+        ]
       }
     ]
-    sqlRoleAssignmentsPrincipalIds: [
-      principalId
-      burgerApiFunction.outputs.?systemAssignedMIPrincipalId
-      agentApiFunction.outputs.?systemAssignedMIPrincipalId
-    ]
-  }
-}
-
-module containerApps 'br/public:avm/ptn/azd/container-apps-stack:0.2.0' = {
-  name: 'container-apps'
-  scope: resourceGroup
-  params: {
-    containerAppsEnvironmentName: '${abbrs.appManagedEnvironments}${resourceToken}'
-    containerRegistryName: '${abbrs.containerRegistryRegistries}${resourceToken}'
-    logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
-    appInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
-    acrSku: 'Basic'
-    location: location
-    acrAdminUserEnabled: true
-    zoneRedundant: false
-    tags: tags
-  }
-}
-
-module burgerMcpIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
-  name: 'burger-mcp-identity'
-  scope: resourceGroup
-  params: {
-    name: '${abbrs.managedIdentityUserAssignedIdentities}burger-mcp-${resourceToken}'
-    location: location
-  }
-}
-
-module burgerMcpContainerApp 'br/public:avm/ptn/azd/container-app-upsert:0.1.2' = {
-  name: 'burger-mcp-container-app'
-  scope: resourceGroup
-  params: {
-    name: burgerMcpResourceName
-    tags: union(tags, { 'azd-service-name': burgerMcpServiceName })
-    location: location
-    env: [
-      {
-        name: 'BURGER_API_URL'
-        value: burgerApiUrl
-      }
-    ]
-    containerAppsEnvironmentName: containerApps.outputs.environmentName
-    containerRegistryName: containerApps.outputs.registryName
-    exists: burgerMcpContainerAppExists
-    identityType: 'UserAssigned'
-    identityName: burgerMcpIdentity.name
-    containerCpuCoreCount: '2.0'
-    containerMemory: '4.0Gi'
-    targetPort: 3000
-    containerMinReplicas: 1
-    containerMaxReplicas: 1
-    ingressEnabled: true
-    containerName: 'main'
-    userAssignedIdentityResourceId: burgerMcpIdentity.outputs.resourceId
-    identityPrincipalId: burgerMcpIdentity.outputs.principalId
   }
 }
 
@@ -588,10 +614,6 @@ output AZURE_STORAGE_URL string = storageUrl
 output AZURE_STORAGE_CONTAINER_NAME string = blobContainerName
 
 output AZURE_COSMOSDB_NOSQL_ENDPOINT string = cosmosDb.outputs.endpoint
-
-output AZURE_CONTAINER_ENVIRONMENT_NAME string = containerApps.outputs.environmentName
-output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
-output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
 output AZURE_OPENAI_API_ENDPOINT string = openAiUrl
 output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name

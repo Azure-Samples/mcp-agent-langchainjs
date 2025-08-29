@@ -21,19 +21,16 @@
       "value": "${AZURE_OPENAI_API_VERSION=2025-04-01-preview}"
     },
     "chatModelName": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-4.1-mini}"
+      "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-5-mini}"
     },
     "chatModelVersion": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2025-04-14}"
+      "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2025-08-07}"
     },
     "chatModelCapacity": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL_CAPACITY=50}"
+      "value": "${AZURE_OPENAI_CHAT_MODEL_CAPACITY=150}"
     },
     "isContinuousIntegration": {
       "value": "${CI=false}"
-    },
-    "burgerMcpContainerAppExists": {
-      "value": "${SERVICE_BURGER_MCP_RESOURCE_EXISTS=false}"
     }
   }
 }
