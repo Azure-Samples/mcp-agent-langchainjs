@@ -18,14 +18,14 @@
   "dependencies": {
     "@azure/identity": "^4.2.0",
     "@langchain/core": "^0.3.18",
-    "@langchain/langgraph": "^0.3.6",
-    "@langchain/mcp-adapters": "^0.5.2",
-    "@langchain/openai": "^0.5.18",
+    "@langchain/langgraph": "^0.4.9",
+    "@langchain/mcp-adapters": "^0.6.0",
+    "@langchain/openai": "^0.6.9",
     "dotenv": "^17.0.1",
     "langchain": "^0.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^22",
     "tsx": "^4",
     "typescript": "^5"
   }

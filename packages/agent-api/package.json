@@ -21,14 +21,14 @@
     "@azure/storage-blob": "^12.17.0",
     "@langchain/azure-cosmosdb": "^0.2.2",
     "@langchain/core": "^0.3.18",
-    "@langchain/langgraph": "^0.3.6",
-    "@langchain/mcp-adapters": "^0.5.2",
-    "@langchain/openai": "^0.5.18",
+    "@langchain/langgraph": "^0.4.9",
+    "@langchain/mcp-adapters": "^0.6.0",
+    "@langchain/openai": "^0.6.9",
     "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
     "langchain": "^0.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^22",
     "azure-functions-core-tools": "^4",
     "dotenv": "^17.2.1",
     "typescript": "^5"
