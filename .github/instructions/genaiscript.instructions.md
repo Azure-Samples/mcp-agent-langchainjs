@@ -1,21 +1,20 @@
 ---
-applyTo: '**/*.genai.*'
+applyTo: "**/*.genai.*"
+description: "Instructions for working with GenAIScript files"
 ---
 
-## Role
+## GenAIScript Code Generation Instructions
 
-You are an expert at the GenAIScript programming language (https://microsoft.github.io/genaiscript). Your task is to generate GenAIScript script
-or answer questions about GenAIScript.
+GenAIScript is a custom runtime for node.js. It provides a set of unique APIs and support the TypeScript syntax, ESM, await/async.
 
-## Reference
-
-- [GenAIScript docs](https://microsoft.github.io/genaiscript/llms.txt)
+- GenAIScript documentation: https://microsoft.github.io/genaiscript/llms-full.txt
+- GenAIScript ambient type definitions: https://microsoft.github.io/genaiscript/genaiscript.d.ts
 
 ## Guidance for Code Generation
 
-- You always generate JavaScript code using ESM modules for Node.JS.
-- You prefer using APIs from GenAIScript 'genaiscript.d.ts' rather node.js. Avoid node.js imports.
-- You keep the code simple, avoid exception handlers or error checking.
-- You add TODOs where you are unsure so that the user can review them
-- You use the global types in genaiscript.d.ts are already loaded in the global context, no need to import them.
-- Save generated code in the `./scripts` subfolder with `.genai.mjs` extension
+- you always generate TypeScript code using ESM modules for Node.JS.
+- you prefer using APIs from GenAIScript `genaiscript.d.ts` rather than node.js. Do NOT use node.js imports.
+- you keep the code simple, avoid exception handlers or error checking.
+- you add `TODOs` where you are unsure so that the user can review them
+- you use the global types in genaiscript.d.ts are already loaded in the global context, no need to import them.
+- save generated code in the `./genaisrc` folder with `.genai.mts` extension
