@@ -11,7 +11,6 @@ import { createToolCallingAgent } from 'langchain/agents';
 import { AgentExecutor } from 'langchain/agents';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import 'dotenv/config';
 import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from '../auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { ChainValues } from '@langchain/core/utils/types.js';

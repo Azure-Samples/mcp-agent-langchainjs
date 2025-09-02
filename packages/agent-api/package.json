@@ -8,11 +8,10 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist",
-    "prestart": "npm run clean && npm run build",
+    "prestart": "npm run clean && npm run update:local-settings && npm run build",
     "start:host": "func start --port 7072",
     "start": "concurrently npm:start:* npm:watch --raw --kill-others",
-    "update:local-settings": "node ./scripts/update-local-settings.mjs",
-    "postinstall": "npm run update:local-settings"
+    "update:local-settings": "node ./scripts/update-local-settings.mjs"
   },
   "author": "Microsoft",
   "license": "MIT",
@@ -31,6 +30,7 @@
   "devDependencies": {
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
+    "dotenv": "^17.2.1",
     "typescript": "^5"
   }
 }

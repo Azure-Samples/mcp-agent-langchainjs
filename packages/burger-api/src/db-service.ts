@@ -1,15 +1,10 @@
-import path from 'node:path';
 import { Container, CosmosClient, Database } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
-import dotenv from 'dotenv';
 import burgersData from '../data/burgers.json';
 import toppingsData from '../data/toppings.json';
 import { ToppingCategory, Topping } from './topping.js';
 import { Burger } from './burger.js';
 import { Order, OrderStatus } from './order.js';
-
-// Env file is located in the root of the repository
-dotenv.config({ path: path.join(process.cwd(), '../../.env'), quiet: true });
 
 // Helper to strip properties starting with underscore from an object
 function stripUnderscoreProperties<T extends object>(object: T): T {

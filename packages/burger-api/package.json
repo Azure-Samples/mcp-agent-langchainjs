@@ -8,14 +8,11 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist",
-    "prestart": "npm run clean",
+    "prestart": "npm run clean && npm run update:local-settings",
     "start:storage": "azurite --silent --location ./.azurite --debug ./.azurite/debug.log",
     "start:host": "func start",
     "start": "concurrently npm:start:* npm:watch --raw --kill-others",
-    "update:local-settings": "node ./scripts/update-local-settings.mjs",
-    "postinstall": "npm run update:local-settings",
-    "generate:burgers": "npx -y genaiscript@latest run generate-burgers",
-    "generate:images": "npx -y genaiscript@latest run generate-images"
+    "update:local-settings": "node ./scripts/update-local-settings.mjs"
   },
   "author": "Microsoft",
   "license": "MIT",
@@ -25,7 +22,6 @@
     "@azure/functions": "^4.7.0",
     "@azure/identity": "^4.8.0",
     "@azure/storage-blob": "^12.27.0",
-    "dotenv": "^17.0.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
@@ -33,6 +29,7 @@
     "@types/node": "^20",
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
+    "dotenv": "^17.0.0",
     "typescript": "^5"
   }
 }
