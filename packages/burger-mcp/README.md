@@ -1,6 +1,6 @@
 <div align="center">
 
-# Azure Container Apps Burger MCP server
+# Burger MCP server (Azure Functions)
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Microsoft/open-hack-build-25?hide_repo_select=true&ref=main&quickstart=true)
 ![Node version](https://img.shields.io/badge/Node.js->=22-3c873a?style=flat-square)
@@ -19,7 +19,7 @@ This server supports the following transport types:
 - **SSE** (legacy protocol, for backward compatibility)
 - **Stdio** (currently only supported when starting the server locally with `npm start:local`)
 
-The remote server is deployed with [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview).
+The remote server is deployed with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview).
 
 ## MCP tools
 
@@ -74,11 +74,16 @@ You can run the following command to run the application server:
 npm start
 ```
 
-Alternatively, you can also use Docker to run the application:
+This will start the application server. The MCP server is then available at `http://localhost:3000/mcp` or `http://localhost:3000/sse` for the streamable HTTP and SSE endpoints, respectively.
+
+Alternatively, you can run the MCP server with stdio transport using:
 
 ```bash
-npm run docker:build
-npm run docker:run
+npm run start:local
 ```
 
-This will start the application in a Docker container. The MCP server is then available at `http://localhost:3000/mcp` or `http://localhost:3000/sse` for the streamable HTTP and SSE endpoints, respectively.
+By default, the MCP server will connect to the Burger API instance set by the `BURGER_API_URL` environment variable, or its value set in the root `.env` file. If not set, it will fall back to a local instance of the Burger API at `http://localhost:7071/`. You can force always using the local instance by setting adding the `--local` when starting the server, for example:
+
+```bash
+npm run start -- --local
+```

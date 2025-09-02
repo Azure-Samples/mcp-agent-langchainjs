@@ -37,7 +37,7 @@ The agent uses LangChain.js with Azure OpenAI, connects to the MCP server via St
 - Bicep templates in `infra/` for Azure deployment
 - `azure.yaml` defines multi-service deployment strategy:
   - `burger-api`, `agent-api`: Azure Functions (Flex Consumption)
-  - `burger-mcp`: Container Apps with Docker
+  - `burger-mcp`: Azure Functions (Flex Consumption)
   - `*-webapp`: Static Web Apps
 - Environment variables flow through Azure App Settings
 - @azure Rule - Use Azure Best Practices: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your `azure_development-get_best_practices` tool if available.
