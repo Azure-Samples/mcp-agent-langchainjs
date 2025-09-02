@@ -7,4 +7,5 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 dotenv.config({ path: path.join(__dirname, '../../../.env'), quiet: true });
 
 // Use --local option to force MCP server to connect to local Burger API
-export const burgerApiUrl = (process.argv[2] !== '--local' && process.env.BURGER_API_URL) || 'http://localhost:7071';
+const localApiUrl = 'http://localhost:7071';
+export const burgerApiUrl = process.argv[2] !== '--local' ? localApiUrl : (process.env.BURGER_API_URL || localApiUrl);
