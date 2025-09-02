@@ -547,7 +547,7 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.15.0' = {
           {
             name: 'history'
             paths: [
-              '/id'
+              '/userId'
             ]
           }
         ]
