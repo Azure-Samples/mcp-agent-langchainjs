@@ -40,6 +40,7 @@ interface CliArgs {
   userId?: string;
   isNew: boolean;
   verbose: boolean;
+  local: boolean;
 }
 
 interface SessionData {
@@ -51,11 +52,12 @@ function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
-    console.log('Usage: agent-cli <question> [--userId <userId>] [--new] [--verbose]');
+    console.log('Usage: agent-cli <question> [--userId <userId>] [--new] [--verbose] [--local]');
     console.log('  question: Your question about burger orders');
     console.log('  --userId: Optional user ID (needed for some tasks)');
     console.log('  --new: Start a new session');
     console.log('  --verbose: Enable verbose mode to show intermediate steps');
+    console.log('  --local: Force connection to localhost MCP server');
     process.exit(0);
   }
 
@@ -63,6 +65,7 @@ function parseArgs(): CliArgs {
   let userId: string | undefined;
   let isNew = false;
   let verbose = false;
+  let local = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -74,6 +77,8 @@ function parseArgs(): CliArgs {
       isNew = true;
     } else if (arg === '--verbose') {
       verbose = true;
+    } else if (arg === '--local') {
+      local = true;
     } else {
       questionParts.push(arg);
     }
@@ -86,7 +91,7 @@ function parseArgs(): CliArgs {
     process.exit(1);
   }
 
-  return { question, userId, isNew, verbose };
+  return { question, userId, isNew, verbose, local };
 }
 
 async function getSessionPath(): Promise<string> {
@@ -123,9 +128,10 @@ function convertHistoryToMessages(history: SessionData['history']): BaseMessage[
 }
 
 export async function run() {
-  const { question, userId, isNew, verbose } = parseArgs();
+  const { question, userId, isNew, verbose, local } = parseArgs();
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
-  const burgerMcpEndpoint = process.env.BURGER_MCP_URL ?? 'http://localhost:3000/mcp';
+  const localMcpEndpoint = 'http://localhost:3000/mcp';
+  const burgerMcpEndpoint = local ? localMcpEndpoint : (process.env.BURGER_MCP_URL ?? localMcpEndpoint);
 
   let client: Client | undefined;
 

@@ -18,11 +18,21 @@ npm run start "place an order" -- --userId user123
 # Start a new session
 npm run start "hello" -- --new
 
+# Use local MCP server
+npm run start "show me the menu" -- --local
+
 # Combine options
-npm run start "cancel my order" -- --userId user123 --new
+npm run start "cancel my order" -- --userId user123 --new --local
 ```
 
 The CLI maintains conversation history in `~/.burger-agent-cli/burger-agent-cli.json` for context across sessions.
+
+### Options
+
+- `--userId <userId>`: Specify a user ID for operations that require user context (like placing or cancelling orders)
+- `--new`: Start a new conversation session, discarding previous history
+- `--verbose`: Show intermediate steps and tool calls during execution
+- `--local`: Force connection to localhost MCP server (http://localhost:3000/mcp) instead of using BURGER_MCP_URL environment variable
 
 ### `npm run build`
 
