@@ -49,3 +49,10 @@ hooks:
     posix:
       shell: sh
       run: azd env get-values > .env
+  postup:
+    windows:
+      shell: pwsh
+      run: npm run -s env
+    posix:
+      shell: sh
+      run: npm run -s env

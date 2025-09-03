@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "run-on-output -n 'ready' -p 'burger.*lock,agent.*lock' concurrently \"npm:start:*\" --kill-others",
+    "start": "run-on-output -n 'ready' -p 'burger.*lock lease,agent.*lock lease' concurrently \"npm:start:*\" --kill-others",
     "start:burger": "npm run start --workspace=burger-webapp",
     "start:mcp": "npm run start --workspace=burger-mcp --",
     "start:agent": "npm run start --workspace=agent-webapp",
@@ -44,6 +44,7 @@
   ],
   "devDependencies": {
     "concurrently": "^9",
+    "dotenv": "^17.2.2",
     "prettier": "^3",
     "rimraf": "^6",
     "run-on-output": "^1.0.1",
