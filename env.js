@@ -1,3 +1,4 @@
+// Display deployed services URLs from environment variables
 import 'dotenv/config';
 
 function cyan(text) {
