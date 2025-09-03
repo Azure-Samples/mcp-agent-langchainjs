@@ -12,6 +12,7 @@
     "ready": "echo '\n🚀 All services ready 🚀\n\n- Agent webapp  : http://localhost:4280\n- Burger webapp : http://localhost:5173\n- Burger MCP    : http://localhost:3000/mcp\n'",
     "build": "npm run build --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
+    "env": "node env.js",
     "lint": "xo",
     "lint:fix": "xo --fix",
     "format": "prettier --list-different --write ."
