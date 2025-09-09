@@ -21,6 +21,7 @@ export type ChatComponentOptions = ChatRequestOptions & {
   enablePromptSuggestions: boolean;
   promptSuggestions: string[];
   apiUrl?: string;
+  enableMarkdown?: boolean;
   strings: {
     promptSuggestionsTitle: string;
     citationsTitle: string;
@@ -39,6 +40,7 @@ export const chatDefaultOptions: ChatComponentOptions = {
   chunkIntervalMs: 30,
   apiUrl: '',
   enablePromptSuggestions: true,
+  enableMarkdown: true,
   promptSuggestions: [
     'What burgers do you have on the menu?',
     'What toppings are available?',
@@ -334,7 +336,9 @@ export class ChatComponent extends LitElement {
   `;
 
   protected override render() {
-    const parsedMessages = this.messages.map((message) => parseMessageIntoHtml(message));
+    const parsedMessages = this.messages.map((message) =>
+      parseMessageIntoHtml(message, this.options.enableMarkdown),
+    );
     return html`
       <section class="chat-container">
         ${this.options.enablePromptSuggestions &&
@@ -518,6 +522,43 @@ export class ChatComponent extends LitElement {
     }
     .content {
       white-space: pre-line;
+    }
+    .content h1,
+    .content h2,
+    .content h3 {
+      margin: 0 0 var(--space-md);
+      line-height: 1.2;
+    }
+    .content p,
+    .content ul,
+    .content ol,
+    .content pre,
+    .content code,
+    .content blockquote {
+      margin: 0 0 var(--space-md);
+      line-height: 1.4;
+    }
+    .content ul,
+    .content ol {
+      padding-left: 1.2em;
+    }
+    .content code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+      background: color-mix(in srgb, var(--bot-message-bg), #000 5%);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+    .content pre code {
+      display: block;
+      padding: var(--space-md);
+      overflow-x: auto;
+  white-space: pre;
+    }
+    .content blockquote {
+      border-left: 4px solid var(--primary);
+      padding-left: var(--space-md);
+      background: color-mix(in srgb, var(--bot-message-bg), #000 3%);
     }
     .message-role {
       position: absolute;
