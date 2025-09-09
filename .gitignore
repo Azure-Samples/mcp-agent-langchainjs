@@ -18,4 +18,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 Thumbs.db
-TODO
+/TODO*
