@@ -191,7 +191,7 @@ module burgerApiAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
   }
 }
 
-module burgerWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
+module burgerWebapp 'br/public:avm/res/web/static-site:0.9.3' = {
   name: 'burger-webapp'
   scope: resourceGroup
   params: {
@@ -290,7 +290,7 @@ module agentApiAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
   }
 }
 
-module agentWebapp 'br/public:avm/res/web/static-site:0.9.0' = {
+module agentWebapp 'br/public:avm/res/web/static-site:0.9.3' = {
   name: 'agent-webapp'
   scope: resourceGroup
   params: {
