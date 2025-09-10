@@ -3,7 +3,7 @@ import { map } from 'lit/directives/map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { AIChatCompletionDelta, AIChatMessage } from '@microsoft/ai-chat-protocol';
+import { type AIChatCompletionDelta, type AIChatMessage } from '@microsoft/ai-chat-protocol';
 import { DebugComponent } from './debug.js';
 import { type ChatRequestOptions, getCompletion } from '../api.service.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
@@ -93,11 +93,6 @@ export class ChatComponent extends LitElement {
   async onSuggestionClicked(suggestion: string) {
     this.question = suggestion;
     await this.onSendClicked();
-  }
-
-  onCitationClicked(citation: string) {
-    const path = getCitationUrl(citation);
-    window.open(path, '_blank');
   }
 
   onNewChatClicked() {

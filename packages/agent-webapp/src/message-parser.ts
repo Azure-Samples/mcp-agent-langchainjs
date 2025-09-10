@@ -2,11 +2,10 @@ import { type HTMLTemplateResult, html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { AIChatMessage } from '@microsoft/ai-chat-protocol';
+import { type AIChatMessage } from '@microsoft/ai-chat-protocol';
 
 export type ParsedMessage = {
   html: HTMLTemplateResult;
-  citations: string[];
   followupQuestions: string[];
   role: string;
   context?: object;
@@ -16,14 +15,12 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
   if (message.role === 'user') {
     return {
       html: html`${message.content}`,
-      citations: [],
       followupQuestions: [],
       role: message.role,
       context: message.context,
     };
   }
 
-  const citations: string[] = [];
   const followupQuestions: string[] = [];
 
   // Extract any follow-up questions that might be in the message
@@ -37,6 +34,7 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
 
   let result;
   if (enableMarkdown) {
+    // Render markdown after sanitizing
     const md = marked.parse(text, { async: false }) as string;
     const safe = DOMPurify.sanitize(md, { USE_PROFILES: { html: true } });
     result = html`${unsafeHTML(safe)}`;
@@ -46,7 +44,6 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
 
   return {
     html: result,
-    citations,
     followupQuestions,
     role: message.role,
     context: message.context,
