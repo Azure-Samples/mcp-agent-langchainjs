@@ -35,7 +35,7 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
   let result;
   if (enableMarkdown) {
     // Render markdown after sanitizing
-    const md = marked.parse(text, { async: false }) as string;
+    const md = marked.parse(text, { async: false, gfm: true }) as string;
     const safe = DOMPurify.sanitize(md, { USE_PROFILES: { html: true } });
     result = html`${unsafeHTML(safe)}`;
   } else {

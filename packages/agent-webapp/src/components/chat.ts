@@ -360,6 +360,7 @@ export class ChatComponent extends LitElement {
       --text-invert-color: var(--azc--text-invert-color, #fff);
       --disabled-color: var(--azc-disabled-color, #ccc);
       --bg: var(--azc-bg, #eee);
+      --border-color: var(--azc-border-color, #ccc);
       --card-bg: var(--azc-card-bg, #fff);
       --card-shadow: var(--azc-card-shadow, 0 0.3px 0.9px rgba(0 0 0 / 12%), 0 1.6px 3.6px rgba(0 0 0 / 16%));
       --space-md: var(--azc-space-md, 12px);
@@ -438,22 +439,6 @@ export class ChatComponent extends LitElement {
         'Helvetica Neue',
         sans-serif;
     }
-    .citation {
-      font-size: 0.85rem;
-      color: var(--citation-color);
-      background: var(--citation-bg);
-      border: var(--citation-border);
-      padding: var(--space-xxs) var(--space-xs);
-      margin-right: var(--space-xs);
-      margin-top: var(--space-xs);
-
-      &:hover {
-        background: var(--citation-bg-hover);
-      }
-    }
-    .citations-title {
-      font-weight: bold;
-    }
     .suggestions-container {
       text-align: center;
       padding: var(--space-xl);
@@ -516,44 +501,70 @@ export class ChatComponent extends LitElement {
       gap: var(--space-md);
     }
     .content {
-      white-space: pre-line;
-    }
-    .content h1,
-    .content h2,
-    .content h3 {
-      margin: 0 0 var(--space-md);
-      line-height: 1.2;
-    }
-    .content p,
-    .content ul,
-    .content ol,
-    .content pre,
-    .content code,
-    .content blockquote {
-      margin: 0 0 var(--space-md);
-      line-height: 1.4;
-    }
-    .content ul,
-    .content ol {
-      padding-left: 1.2em;
-    }
-    .content code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-      background: color-mix(in srgb, var(--bot-message-bg), #000 5%);
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-size: 0.95em;
-    }
-    .content pre code {
-      display: block;
-      padding: var(--space-md);
-      overflow-x: auto;
-  white-space: pre;
-    }
-    .content blockquote {
-      border-left: 4px solid var(--primary);
-      padding-left: var(--space-md);
-      background: color-mix(in srgb, var(--bot-message-bg), #000 3%);
+      h1,
+      h2,
+      h3 {
+        margin: 0 0 var(--space-md);
+        line-height: 1.2;
+      }
+      p,
+      ul,
+      ol,
+      pre,
+      code,
+      blockquote {
+        margin: 0 0 var(--space-md);
+        line-height: 1.4;
+      }
+      ul,
+      ol {
+        padding-left: 1.2em;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+        background: color-mix(in srgb, var(--bot-message-bg), #000 5%);
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 0.95em;
+      }
+      pre code {
+        display: block;
+        padding: var(--space-md);
+        overflow-x: auto;
+        white-space: pre;
+      }
+      blockquote {
+        border-left: 4px solid var(--primary);
+        padding-top: var(--space-md);
+        padding-left: var(--space-md);
+        padding-bottom: var(--space-md);
+        background: color-mix(in srgb, var(--bot-message-bg), #000 3%);
+        & > :last-child {
+          margin-bottom: 0;
+        }
+      }
+      img {
+        max-width: 100%;
+        border-radius: calc(var(--border-radius) / 2);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        th,
+        td {
+          border: 1px solid var(--border-color);
+          padding: var(--space-xs);
+          text-align: left;
+        }
+        th {
+          background: color-mix(in srgb, var(--bot-message-bg), #000 5%);
+        }
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border-color);
+        margin: var(--space-md) 0;
+      }
     }
     .message-role {
       position: absolute;
