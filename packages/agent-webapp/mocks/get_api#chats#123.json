@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "What burgers do you have on the menu?"
+  },
+  {
+    "role": "assistant",
+    "content": "Here’s our current burger menu (10 items):\n\n- Classic American Cheeseburger — $10.99 — Angus beef, American cheese, lettuce, tomato, onion, house sauce.  \n- Smoky BBQ Bacon Burger — $12.49 — Beef, BBQ sauce, bacon, cheddar, onion rings, pickles.  \n- Spicy Jalapeño Fiesta Burger — $11.99 — Beef, pepper jack, jalapeños, chipotle mayo, avocado.  \n- Mushroom Swiss Gourmet — $12.29 — Beef, sautéed mushrooms, Swiss, caramelized onions, garlic aioli.  \n- Southern Fried Chicken Burger — $11.49 — Crispy chicken, coleslaw, spicy mayo, dill pickles.  \n- Cali Veggie Supreme (Vegetarian) — $10.79 — Grilled veggie patty, provolone, sprouts, herb aioli.  \n- Spiced Chickpea Vegan Burger (Vegan) — $10.99 — Chickpea patty, vegan tzatziki, arugula, pickles.  \n- Tokyo Teriyaki Fusion Burger — $12.59 — Teriyaki-glazed beef, grilled pineapple, wasabi mayo.  \n- Mediterranean Lamb Burger — $13.49 — Lamb, feta, tzatziki, grilled eggplant, arugula.  \n- Gluten-Free Avocado Turkey Burger (Gluten-Free) — $11.99 — Turkey, avocado, pepper jack, honey mustard.\n\nWould you like details on toppings or nutrition, or to place an order?\n\n<<Would you like to place an order now?>>\n<<See available toppings?>>\n<<Any dietary restrictions or preferences?>>"
+  }
+]

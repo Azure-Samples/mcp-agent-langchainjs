@@ -6,24 +6,29 @@
   "type": "module",
   "scripts": {
     "start": "swa start",
-    "dev": "concurrently \"npm:dev:*\" --kill-others",
-    "dev:vite": "vite --port 5174 --host",
-    "dev:api": "cd ../agent-api && npm run start",
+    "start:mock": "swa start mock",
+    "swa:start": "concurrently npm:serve:api npm:serve:webapp --kill-others",
+    "swa:startmock": "concurrently npm:serve:mocks npm:serve:webapp --kill-others",
+    "serve:mocks": "smoke -p 7072 -h 127.0.0.1 mocks",
+    "serve:api": "cd ../agent-api && npm run start",
+    "serve:webapp": "npm run dev -s",
+    "dev": "vite --port 5174 --host",
     "build": "vite build",
-    "watch": "vite build --watch --minify false",
+    "preview": "vite preview",
     "clean": "npx rimraf dist"
   },
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
     "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
-  "lit": "^3.0.0",
-  "marked": "^12.0.0",
-  "dompurify": "^3.0.0"
+    "dompurify": "^3.0.0",
+    "lit": "^3.0.0",
+    "marked": "^12.0.0"
   },
   "devDependencies": {
-  "vite": "^7.0.0",
-  "@types/dompurify": "^3.0.0"
+    "@types/dompurify": "^3.0.0",
+    "smoke": "^4.1.3",
+    "vite": "^7.0.0"
   },
   "files": [
     "dist"

@@ -1,9 +1,17 @@
 {
   "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
   "configurations": {
-    "registration-webapp": {
+    "api": {
       "appLocation": ".",
-      "run": "npm run dev",
+      "run": "npm run swa:start",
+      "appDevserverUrl": "http://localhost:5174",
+      "apiDevserverUrl": "http://localhost:7072",
+      "appBuildCommand": "npm run build",
+      "outputLocation": "dist"
+    },
+    "mock": {
+      "appLocation": ".",
+      "run": "npm run swa:startmock",
       "appDevserverUrl": "http://localhost:5174",
       "apiDevserverUrl": "http://localhost:7072",
       "appBuildCommand": "npm run build",

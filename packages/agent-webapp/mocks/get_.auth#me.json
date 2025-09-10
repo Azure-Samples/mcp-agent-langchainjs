@@ -1,0 +1,12 @@
+{
+  "clientPrincipal": {
+    "userId": "abc123",
+    "userRoles": [
+      "anonymous",
+      "authenticated"
+    ],
+    "claims": [],
+    "identityProvider": "aad",
+    "userDetails": "John Doe"
+  }
+}
