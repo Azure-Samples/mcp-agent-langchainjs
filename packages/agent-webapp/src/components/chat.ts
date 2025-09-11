@@ -565,6 +565,16 @@ export class ChatComponent extends LitElement {
         border-top: 1px solid var(--border-color);
         margin: var(--space-md) 0;
       }
+      a {
+        color: var(--primary);
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    .debug {
+      align-self: end;
     }
     .message-role {
       position: absolute;
