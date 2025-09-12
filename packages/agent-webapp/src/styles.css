@@ -40,6 +40,12 @@ nav {
   }
 }
 
+@media (width < 800px) {
+  nav azc-auth {
+    font-size: 0 !important;
+  }
+}
+
 main {
   flex: 1;
   display: flex;
