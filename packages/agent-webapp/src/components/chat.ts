@@ -146,18 +146,20 @@ export class ChatComponent extends LitElement {
         },
       };
       for await (const chunk of chunks) {
-        if (chunk.delta.content) {
-          this.isStreaming = true;
-          message.content += chunk.delta.content;
-          this.messages = [...messages, message];
-        }
+        this.isStreaming = true;
 
-        if (chunk.delta.context?.['intermediateSteps']) {
+        if (chunk.delta.content) {
+          message.content += chunk.delta.content;
+        } else if (chunk.delta.context?.['intermediateSteps']) {
+          // Only add intermediate steps when there is no content,
+          // otherwise they will be duplicated
           message.context!['intermediateSteps'] = [
-            ...(message.context?.['intermediateSteps'] ?? []),
-            ...(chunk.delta.context?.['intermediateSteps'] ?? []),
+            ...message.context!['intermediateSteps'],
+            ...chunk.delta.context?.['intermediateSteps']
           ];
         }
+
+        this.messages = [...messages, message];
 
         const sessionId = (chunk.context as any)?.sessionId;
         if (!this.sessionId && sessionId) {
@@ -254,6 +256,7 @@ export class ChatComponent extends LitElement {
         ${message.role === 'assistant'
           ? html`<azc-debug .message=${message}></azc-debug>`
           : nothing}
+        ${!message.content ? html`<slot name="loader"><div class="loader-animation"></div></slot>` : nothing}
         <div class="content">${message.html}</div>
       </div>
       <div class="message-role">
@@ -545,17 +548,21 @@ export class ChatComponent extends LitElement {
       }
       img {
         max-width: 100%;
+        max-height: 300px;
         border-radius: calc(var(--border-radius) / 2);
       }
       table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: var(--space-md);
+        table-layout: fixed;
         th,
         td {
           border: 1px solid var(--border-color);
           padding: var(--space-xs);
           text-align: left;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
         th {
           background: color-mix(in srgb, var(--bot-message-bg), #000 5%);

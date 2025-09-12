@@ -5,6 +5,7 @@ import DOMPurify from 'dompurify';
 import { type AIChatMessage } from '@microsoft/ai-chat-protocol';
 
 export type ParsedMessage = {
+  content: string;
   html: HTMLTemplateResult;
   followupQuestions: string[];
   role: string;
@@ -14,6 +15,7 @@ export type ParsedMessage = {
 export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = true): ParsedMessage {
   if (message.role === 'user') {
     return {
+      content: message.content,
       html: html`${message.content}`,
       followupQuestions: [],
       role: message.role,
@@ -43,6 +45,7 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
   }
 
   return {
+    content: text,
     html: result,
     followupQuestions,
     role: message.role,

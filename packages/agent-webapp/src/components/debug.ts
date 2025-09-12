@@ -93,9 +93,6 @@ export class DebugComponent extends LitElement {
             </div>
             <div class="step-summary">
               <span class="step-title">${summary}</span>
-              ${step.action?.toolInput && Object.keys(step.action.toolInput).length > 0
-                ? html`<span class="step-subtitle">with inputs</span>`
-                : nothing}
             </div>
             <div class="step-toggle ${isExpanded ? 'expanded' : ''}">▼</div>
           </button>
@@ -130,7 +127,7 @@ export class DebugComponent extends LitElement {
         <span class="toggle-icon">
           ${unsafeSVG(aiSvg)}
         </span>
-        ${this.isExpanded ? 'Hide thinking steps' : 'Show thinking steps'}
+        ${this.isExpanded ? 'Hide intermediate steps' : 'Show intermediate steps'} (${intermediateSteps.length})
       </button>
 
       ${this.isExpanded ? html`
@@ -305,11 +302,6 @@ export class DebugComponent extends LitElement {
     .step-title {
       font-weight: 500;
       color: var(--text-color);
-    }
-
-    .step-subtitle {
-      font-size: 0.8rem;
-      color: color-mix(in srgb, var(--text-color), transparent 40%);
     }
 
     .step-toggle {
