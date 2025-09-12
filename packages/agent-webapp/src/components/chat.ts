@@ -4,12 +4,12 @@ import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { type AIChatCompletionDelta, type AIChatMessage } from '@microsoft/ai-chat-protocol';
-import { DebugComponent } from './debug.js';
 import { type ChatRequestOptions, getCompletion } from '../api.service.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/icons/send.svg?raw';
 import questionSvg from '../../assets/icons/question.svg?raw';
 import newChatSvg from '../../assets/icons/new-chat.svg?raw';
+import './debug.js';
 
 export type ChatComponentState = {
   hasError: boolean;
@@ -251,9 +251,9 @@ export class ChatComponent extends LitElement {
     <div class="message ${message.role} animation">
       ${message.role === 'assistant' ? html`<slot name="message-header"></slot>` : nothing}
       <div class="message-body">
-        <div class="debug">
-          <azc-debug .message=${message}></azc-debug>
-        </div>
+        ${message.role === 'assistant'
+          ? html`<azc-debug .message=${message}></azc-debug>`
+          : nothing}
         <div class="content">${message.html}</div>
       </div>
       <div class="message-role">
@@ -550,6 +550,7 @@ export class ChatComponent extends LitElement {
       table {
         width: 100%;
         border-collapse: collapse;
+        margin-bottom: var(--space-md);
         th,
         td {
           border: 1px solid var(--border-color);
