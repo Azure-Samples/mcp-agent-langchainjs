@@ -2,4 +2,5 @@
   "workbench.editorAssociations": {
     "*.ipynb.md": "genaiscript"
   },
+  "azureFunctions.projectSubpath": "packages/agent-api",
 }
