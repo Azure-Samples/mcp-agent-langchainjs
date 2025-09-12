@@ -3,21 +3,145 @@ import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ParsedMessage } from '../message-parser';
-import deleteSvg from '../../assets/icons/delete.svg?raw';
+import aiSvg from '../../assets/icons/ai.svg?raw';
 
 @customElement('azc-debug')
 export class DebugComponent extends LitElement {
   @property({ type: Object }) message: ParsedMessage | undefined;
-  @state() protected hasError = false;
-  @state() protected isLoading = false;
+  @state() protected isExpanded = false;
+  @state() protected expandedSteps = new Set<number>();
+  @state() protected expandedOutputs = new Set<string>();
 
-  protected renderLoader = () =>
-    this.isLoading ? html`<slot name="loader"><div class="loader-animation"></div></slot>` : nothing;
+  protected toggleExpanded() {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  protected toggleStepExpanded(index: number) {
+    if (this.expandedSteps.has(index)) {
+      this.expandedSteps = new Set([...this.expandedSteps].filter(i => i !== index));
+    } else {
+      this.expandedSteps = new Set([...this.expandedSteps, index]);
+    }
+  }
+
+  protected toggleOutputExpanded(stepIndex: number, section: string) {
+    const key = `${stepIndex}-${section}`;
+    if (this.expandedOutputs.has(key)) {
+      this.expandedOutputs = new Set([...this.expandedOutputs].filter(k => k !== key));
+    } else {
+      this.expandedOutputs = new Set([...this.expandedOutputs, key]);
+    }
+  }
+
+  protected getStepType(step: any): 'tool' | 'llm' {
+    return step.action?.tool ? 'tool' : 'llm';
+  }
+
+  protected getStepSummary(step: any): string {
+    if (step.action?.tool) {
+      return `Tool: ${step.action.tool}`;
+    }
+    return 'LLM call';
+  }
+
+  protected truncateText(text: string, maxLength: number = 100): string {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
+
+  protected renderDetailSection(title: string, content: string, stepIndex: number, section: string, isTruncated: boolean = false) {
+    const key = `${stepIndex}-${section}`;
+    const isExpanded = this.expandedOutputs.has(key);
+    const displayContent = isTruncated && !isExpanded ? this.truncateText(content, 500) : content;
+
+    return html`
+      <div class="detail-section">
+        <div class="detail-header">
+          <h4>${title}</h4>
+          ${isTruncated ? html`
+            <div class="detail-actions">
+              <button
+                class="action-button expand-button"
+                @click=${() => this.toggleOutputExpanded(stepIndex, section)}
+                title=${isExpanded ? 'Show less' : 'Show full content'}
+              >
+                ${isExpanded ? 'Less' : 'More'}
+              </button>
+            </div>
+          ` : nothing}
+        </div>
+        <pre class="detail-content">${displayContent}</pre>
+      </div>
+    `;
+  }
+
+  protected renderStep(step: any, index: number) {
+    const stepType = this.getStepType(step);
+    const isExpanded = this.expandedSteps.has(index);
+    const summary = this.getStepSummary(step);
+
+    return html`
+      <div class="step ${stepType}">
+        <div class="step-content">
+          <button
+            class="step-header"
+            @click=${() => this.toggleStepExpanded(index)}
+            aria-expanded=${isExpanded}
+          >
+            <div class="step-indicator ${stepType}">
+              ${stepType === 'tool' ? 'T' : 'L'}
+            </div>
+            <div class="step-summary">
+              <span class="step-title">${summary}</span>
+              ${step.action?.toolInput && Object.keys(step.action.toolInput).length > 0
+                ? html`<span class="step-subtitle">with inputs</span>`
+                : nothing}
+            </div>
+            <div class="step-toggle ${isExpanded ? 'expanded' : ''}">▼</div>
+          </button>
+
+          ${isExpanded ? html`
+            <div class="step-details">
+              ${step.action?.log ? this.renderDetailSection('Log', step.action.log, index, 'log') : nothing}
+
+              ${step.action?.toolInput !== undefined
+                ? this.renderDetailSection('Input', JSON.stringify(step.action.toolInput, null, 2), index, 'input')
+                : nothing}
+
+              ${step.observation
+                ? this.renderDetailSection('Output', step.observation, index, 'output', step.observation.length > 500)
+                : nothing}
+            </div>
+          ` : nothing}
+        </div>
+      </div>
+    `;
+  }
 
   protected override render() {
-    return html`
-      <div class="debug">
-        show intermediateSteps >> ${JSON.stringify(this.message?.['intermediateSteps'] ?? {}, null, 2)}
+    const intermediateSteps = this.message?.context?.['intermediateSteps'] ?? [];
+    return intermediateSteps.length === 0 ? nothing : html`
+      <div class="debug-container">
+      <button
+        class="debug-toggle ${this.isExpanded ? 'expanded' : ''}"
+        @click=${this.toggleExpanded}
+        aria-expanded=${this.isExpanded}
+      >
+        <span class="toggle-icon">
+          ${unsafeSVG(aiSvg)}
+        </span>
+        ${this.isExpanded ? 'Hide thinking steps' : 'Show thinking steps'}
+      </button>
+
+      ${this.isExpanded ? html`
+        <div class="steps-timeline">
+          ${repeat(
+          intermediateSteps,
+          (_, index) => index,
+          (step, index) => this.renderStep(step, index)
+          )}
+        </div>
+      ` : nothing}
       </div>
     `;
   }
@@ -38,138 +162,273 @@ export class DebugComponent extends LitElement {
       --overlay-color: var(--azc-overlay-color, rgba(0 0 0 / 40%));
 
       /* Component-specific properties */
-      --panel-bg: var(--azc-panel-bg, #fff);
-      --panel-width: var(--azc-panel-width, 300px);
-      --panel-shadow: var(--azc-panel-shadow, 0 0 10px rgba(0, 0, 0, 0.1));
-      --error-color: var(--azc-error-color, var(--error));
-      --error-border: var(--azc-error-border, none);
-      --error-bg: var(--azc-error-bg, var(--card-bg));
-      --icon-button-color: var(--azc-icon-button-color, var(--text-color));
-      --icon-button-bg: var(--azc-icon-button-bg, none);
-      --icon-button-bg-hover: var(--azc-icon-button-bg, rgba(0, 0, 0, 0.07));
-      --panel-button-color: var(--azc-panel-button-color, var(--text-color));
-      --panel-button-bg: var(--azc-panel-button-bg, var(--bg));
-      --panel-button-bg-hover: var(--azc-panel-button-bg, hsl(from var(--panel-button-bg) h s calc(l - 6)));
-      --chat-entry-bg: var(--azc-chat-entry-bg, none);
-      --chat-entry-bg-hover: var(--azc-chat-entry-bg-hover, #f0f0f0);
+      --card-bg: var(--azc-card-bg, #fff);
+      --border-color: var(--azc-border-color, #ccc);
 
-      width: 0;
-      transition: width 0.3s ease;
-      overflow: hidden;
+      display: contents
     }
+
     *:focus-visible {
       outline: var(--focus-outline) var(--primary);
     }
-    .animation {
-      animation: 0.3s ease;
-    }
+
     svg {
       fill: currentColor;
       width: 100%;
     }
+
     button {
-      font-size: 1rem;
+      font-family: inherit;
+      font-size: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
       border-radius: calc(var(--border-radius) / 2);
       outline: var(--focus-outline) transparent;
-      transition: outline 0.3s ease;
+      transition: all 0.2s ease;
+    }
 
-      &:not(:disabled) {
-        cursor: pointer;
-      }
+    .debug-container {
+      width: 100%;
     }
-    h2 {
-      margin: var(--space-md) 0 0 0;
-      padding: var(--space-xs) var(--space-md);
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-      padding: var(--space-xs);
-      position: sticky;
-      top: 0;
-      background: var(--panel-bg);
-      box-shadow: 0 var(--space-xs) var(--space-xs) var(--panel-bg);
-    }
-    .chats-panel {
-      width: var(--panel-width);
-      height: 100%;
-      background: var(--panel-bg);
-      font-family:
-        'Segoe UI',
-        -apple-system,
-        BlinkMacSystemFont,
-        Roboto,
-        'Helvetica Neue',
-        sans-serif;
-      overflow: auto;
-    }
-    .chats {
-      margin: 0;
-      padding: 0;
-      font-size: 0.9rem;
-    }
-    .chat-title {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .chat-entry {
+
+    .debug-toggle {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: var(--space-xxs) var(--space-xxs) var(--space-xxs) var(--space-xs);
-      margin: 0 var(--space-xs);
-      border-radius: calc(var(--border-radius) / 2);
-      color: var(--text-color);
-      text-decoration: none;
-      background: var(--chat-entry-bg);
-
-      & .icon-button {
-        flex: 0 0 auto;
-        padding: var(--space-xxs);
-        width: 28px;
-        height: 28px;
-      }
+      gap: var(--space-xs);
+      padding: calc(var(--space-xs) / 2) var(--space-xs);
+      background: color-mix(in srgb, var(--text-color), transparent 95%);
+      border: none;
+      border-radius: calc(var(--border-radius) / 4);
+      color: color-mix(in srgb, var(--text-color), transparent 30%);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-align: left;
+      transition: all 0.2s ease;
 
       &:hover {
-        background: var(--chat-entry-bg-hover);
+        background: color-mix(in srgb, var(--text-color), transparent 90%);
+        color: var(--text-color);
       }
 
-      &:not(:focus):not(:hover) .icon-button:not(:focus) {
-        opacity: 0;
+      &.expanded {
+        color: var(--text-color);
       }
     }
-    .message {
+
+    .toggle-icon {
+      display: contents;
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+
+    .toggle-arrow {
+      transition: transform 0.2s ease;
+      opacity: 0.6;
+      font-size: 0.8rem;
+
+      &.expanded {
+        transform: rotate(180deg);
+      }
+    }
+
+    .steps-timeline {
+      margin-top: var(--space-md);
+      position: relative;
+    }
+
+    .step {
+      position: relative;
+      margin-bottom: var(--space-md);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .step-content {
+      position: relative;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
       padding: var(--space-xs) var(--space-md);
-    }
-    .error {
-      color: var(--error-color);
-    }
-    .icon-button {
-      width: 36px;
-      height: 36px;
-      padding: var(--space-xs);
-      background: none;
-      border: none;
-      background: var(--icon-button-bg);
-      color: var(--icon-button-color);
-      font-size: 1.5rem;
-      &:hover:not(:disabled) {
-        background: var(--icon-button-bg-hover);
-        color: var(--icon-button-color);
+      background: color-mix(in srgb, var(--card-bg), var(--text-color) 2%);
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--border-radius) / 2);
+      width: 100%;
+      text-align: left;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: color-mix(in srgb, var(--card-bg), var(--text-color) 4%);
+      }
+
+      &[aria-expanded="true"] {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-color: transparent;
       }
     }
+
+    .step-indicator {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+
+      &.tool {
+        background: var(--primary);
+      }
+
+      &.llm {
+        background: oklch(from var(--primary) l c calc(h + 180));
+      }
+    }
+
+    .step-summary {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .step-title {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .step-subtitle {
+      font-size: 0.8rem;
+      color: color-mix(in srgb, var(--text-color), transparent 40%);
+    }
+
+    .step-toggle {
+      transition: transform 0.2s ease;
+      opacity: 0.6;
+      font-size: 0.7rem;
+
+      &.expanded {
+        transform: rotate(180deg);
+      }
+    }
+
+    .step-details {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-top: none;
+      border-radius: 0 0 calc(var(--border-radius) / 2) calc(var(--border-radius) / 2);
+      padding: var(--space-md);
+      margin-top: -1px;
+    }
+
+    .detail-section {
+      margin-bottom: var(--space-md);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .detail-section h4 {
+      margin: 0 0 var(--space-xs) 0;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+    }
+
+    .detail-actions {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .action-button {
+      padding: calc(var(--space-xs) / 2) var(--space-xs);
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--primary);
+      background: color-mix(in srgb, var(--primary), transparent 90%);
+      border: 1px solid color-mix(in srgb, var(--primary), transparent 70%);
+      border-radius: calc(var(--border-radius) / 4);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: color-mix(in srgb, var(--primary), transparent 80%);
+        border-color: color-mix(in srgb, var(--primary), transparent 50%);
+      }
+
+      &:active {
+        transform: translateY(1px);
+      }
+    }
+
+    .detail-content {
+      background: color-mix(in srgb, var(--card-bg), var(--text-color) 3%);
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--border-radius) / 4);
+      padding: var(--space-xs);
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     .loader-animation {
       position: absolute;
-      width: var(--panel-width);
+      width: 100%;
       height: 2px;
       overflow: hidden;
       background-color: var(--primary);
       transform: scaleX(0);
       transform-origin: center left;
       animation: cubic-bezier(0.85, 0, 0.15, 1) 2s infinite load-animation;
+    }
+
+    @keyframes load-animation {
+      0% {
+        transform: scaleX(0);
+        transform-origin: center left;
+      }
+      50% {
+        transform: scaleX(1);
+        transform-origin: center left;
+      }
+      51% {
+        transform: scaleX(1);
+        transform-origin: center right;
+      }
+      100% {
+        transform: scaleX(0);
+        transform-origin: center right;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none;
+        transition: none;
+      }
     }
   `;
 }

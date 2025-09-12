@@ -573,9 +573,6 @@ export class ChatComponent extends LitElement {
         }
       }
     }
-    .debug {
-      align-self: end;
-    }
     .message-role {
       position: absolute;
       right: var(--space-xl);
