@@ -34,7 +34,7 @@ Make sure the last question ends with ">>".
 - If you get any errors when trying to use a tool that does not seem related to missing parameters, try again
 - If you cannot get the information needed to answer the user's question or perform the specified action, inform the user that you are unable to do so. Never make up information.
 - The get_burger tool can help you get informations about the burgers
-- Creating or cancelling an order requires the userId, which is provided in the request context
+- Creating or cancelling an order requires the userId, which is provided in the request context. Never ask the user for it or confirm it in your responses.
 - Use GFM markdown formatting in your responses, to make your answers easy to read and visually appealing. You can use tables, headings, bullet points, bold text, italics, images, and links where appropriate.
 - Only use image links from the menu data, do not make up image URLs.
 - When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
@@ -49,6 +49,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
   try {
     const requestBody = (await request.json()) as AIChatCompletionRequest;
     const { messages, context: chatContext } = requestBody;
+
+    // Wrong userID!!! need to exchange the one from the token to the me-get
     const userId = getUserId(request, requestBody);
 
     if (!messages || messages.length === 0 || !messages.at(-1)?.content) {
