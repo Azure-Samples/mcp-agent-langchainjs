@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { app, type HttpRequest, type InvocationContext } from '@azure/functions';
 import { UserDbService } from '../user-db-service.js';
-import { getUserId } from '../auth.js';
+import { getAuthenticationUserId } from '../auth.js';
 
 app.http('me-get', {
   methods: ['GET'],
@@ -9,15 +9,15 @@ app.http('me-get', {
   route: 'me',
   async handler(request: HttpRequest, context: InvocationContext) {
     try {
-      const rawUserId = getUserId(request);
-      if (!rawUserId) {
+      const authenticationUserId = getAuthenticationUserId(request);
+      if (!authenticationUserId) {
         return {
           status: 401,
           jsonBody: { error: 'Unauthorized' },
         };
       }
 
-      const id = createHash('sha256').update(rawUserId).digest('hex').substring(0, 32);
+      const id = createHash('sha256').update(authenticationUserId).digest('hex').substring(0, 32);
       context.log(`User ID ${id}`);
 
       const db = await UserDbService.getInstance();

@@ -1,5 +1,6 @@
 import { HttpRequest } from '@azure/functions';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { UserDbService } from './user-db-service';
 
 const azureOpenAiScope = 'https://cognitiveservices.azure.com/.default';
 
@@ -17,18 +18,31 @@ export function getAzureOpenAiTokenProvider() {
   return getBearerTokenProvider(getCredentials(), azureOpenAiScope);
 }
 
-export function getUserId(request: HttpRequest, body?: any): string | undefined {
+export function getAuthenticationUserId(request: HttpRequest, body?: any): string | undefined {
   let userId: string | undefined;
 
-  // Get the user ID from Azure easy auth if it's available
+  // Get the user ID from Azure easy auth
   try {
     const token = Buffer.from(request.headers.get('x-ms-client-principal') ?? '', 'base64').toString('ascii');
     const infos = token && JSON.parse(token);
     userId = infos?.userId;
   } catch {}
 
-  // Get the user ID from the request as a fallback
-  userId ??= body?.context?.userId ?? request.query.get('userId') ?? undefined;
-
   return userId;
+}
+
+export async function getInternalUserId(request: HttpRequest, body?: any): Promise<string | undefined> {
+  // Get the user ID from Azure easy auth if it's available,
+  let authUserId = getAuthenticationUserId(request, body);
+  if (authUserId) {
+    // Exchange the auth user ID to the internal user ID
+    const db = await UserDbService.getInstance();
+    let user = await db.getUserById(authUserId);
+    if (user) {
+      return user.id;
+    }
+  }
+
+  // Get the user ID from the request as a fallback
+  return body?.context?.userId ?? request.query.get('userId') ?? undefined;
 }

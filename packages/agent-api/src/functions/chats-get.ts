@@ -1,12 +1,12 @@
 import process from 'node:process';
 import { HttpRequest, HttpResponseInit, InvocationContext, app } from '@azure/functions';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
-import { getCredentials, getUserId } from '../auth.js';
+import { getCredentials, getInternalUserId } from '../auth.js';
 
 async function getChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const azureCosmosDbEndpoint = process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT;
   const { sessionId } = request.params;
-  const userId = getUserId(request);
+  const userId = await getInternalUserId(request);
 
   if (!userId) {
     return {

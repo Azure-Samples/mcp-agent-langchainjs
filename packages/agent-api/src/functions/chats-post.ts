@@ -11,7 +11,7 @@ import { createToolCallingAgent } from 'langchain/agents';
 import { AgentExecutor } from 'langchain/agents';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { getAzureOpenAiTokenProvider, getCredentials, getUserId } from '../auth.js';
+import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { ChainValues } from '@langchain/core/utils/types.js';
 
@@ -50,8 +50,15 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const requestBody = (await request.json()) as AIChatCompletionRequest;
     const { messages, context: chatContext } = requestBody;
 
-    // Wrong userID!!! need to exchange the one from the token to the me-get
-    const userId = getUserId(request, requestBody);
+    const userId = await getInternalUserId(request, requestBody);
+    if (!userId) {
+      return {
+        status: 400,
+        jsonBody: {
+          error: 'Invalid or missing userId in the request',
+        },
+      }
+    }
 
     if (!messages || messages.length === 0 || !messages.at(-1)?.content) {
       return {
@@ -59,7 +66,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
         jsonBody: {
           error: 'Invalid or missing messages in the request body',
         },
-      }
+      };
     }
 
     let model: BaseChatModel;
