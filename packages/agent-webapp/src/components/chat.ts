@@ -18,10 +18,11 @@ export type ChatComponentState = {
 };
 
 export type ChatComponentOptions = ChatRequestOptions & {
-  enablePromptSuggestions: boolean;
-  promptSuggestions: string[];
   apiUrl?: string;
+  promptSuggestions: string[];
+  enablePromptSuggestions: boolean;
   enableMarkdown?: boolean;
+  enableDebug?: boolean;
   strings: {
     promptSuggestionsTitle: string;
     citationsTitle: string;
@@ -41,6 +42,7 @@ export const chatDefaultOptions: ChatComponentOptions = {
   apiUrl: '',
   enablePromptSuggestions: true,
   enableMarkdown: true,
+  enableDebug: true,
   promptSuggestions: [
     'What burgers do you have on the menu?',
     'What toppings are available?',
@@ -253,7 +255,7 @@ export class ChatComponent extends LitElement {
     <div class="message ${message.role} animation">
       ${message.role === 'assistant' ? html`<slot name="message-header"></slot>` : nothing}
       <div class="message-body">
-        ${message.role === 'assistant'
+        ${message.role === 'assistant' && this.options.enableDebug
           ? html`<azc-debug .message=${message}></azc-debug>`
           : nothing}
         ${!message.content ? html`<slot name="loader"><div class="loader-animation"></div></slot>` : nothing}
