@@ -161,21 +161,20 @@ module burgerApiFunction 'br/public:avm/res/web/site:0.16.1' = {
 }
 
 // Needed to avoid circular resource dependencies
-// TODO: migrate to child module once it's available in the public registry
-module burgerApiFunctionSettings './core/site-app-settings.bicep' = {
+module burgerApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
   name: 'burger-api-settings'
   scope: resourceGroup
   params: {
+    name: 'appsettings'
     appName: burgerApiFunction.outputs.name
-    kind: 'functionapp,linux'
-    appSettingsKeyValuePairs: {
+    properties: {
       AZURE_STORAGE_URL: storageUrl
       AZURE_STORAGE_CONTAINER_NAME: blobContainerName
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
-    appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+    applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
   }
 }
 
@@ -258,13 +257,13 @@ module agentApiFunction 'br/public:avm/res/web/site:0.16.1' = {
 }
 
 // Needed to avoid circular resource dependencies
-module agentApiFunctionSettings './core/site-app-settings.bicep' = {
+module agentApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
   name: 'agent-api-settings'
   scope: resourceGroup
   params: {
+    name: 'appsettings'
     appName: agentApiFunction.outputs.name
-    kind: 'functionapp,linux'
-    appSettingsKeyValuePairs: {
+    properties: {
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
       AZURE_OPENAI_ENDPOINT: openAiUrl
       AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: chatModelName
@@ -274,7 +273,7 @@ module agentApiFunctionSettings './core/site-app-settings.bicep' = {
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
-    appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+    applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
   }
 }
 
@@ -362,21 +361,20 @@ module burgerMcpFunction 'br/public:avm/res/web/site:0.16.1' = {
 }
 
 // Needed to avoid circular resource dependencies
-// TODO: migrate to child module once it's available in the public registry
-module burgerMcpFunctionSettings './core/site-app-settings.bicep' = {
+module burgerMcpFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
   name: 'burger-mcp-settings'
   scope: resourceGroup
   params: {
+    name: 'appsettings'
     appName: burgerMcpFunction.outputs.name
-    kind: 'functionapp,linux'
-    appSettingsKeyValuePairs: {
+    properties: {
       AZURE_STORAGE_URL: storageUrl
       AZURE_STORAGE_CONTAINER_NAME: blobContainerName
       BURGER_API_URL: burgerApiUrl
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
-    appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+    applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
   }
 }
 
