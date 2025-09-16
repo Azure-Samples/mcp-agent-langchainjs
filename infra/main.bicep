@@ -390,7 +390,7 @@ module burgerMcpAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
   }
 }
 
-module storage 'br/public:avm/res/storage/storage-account:0.25.1' = {
+module storage 'br/public:avm/res/storage/storage-account:0.26.2' = {
   name: 'storage'
   scope: resourceGroup
   params: {
@@ -432,7 +432,7 @@ module storage 'br/public:avm/res/storage/storage-account:0.25.1' = {
   }
 }
 
-module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.0' = {
+module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.1' = {
   name: 'monitoring'
   scope: resourceGroup
   params: {
@@ -445,7 +445,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.0' = {
 }
 
 // TODO: migrate to Foundry
-module openAi 'br/public:avm/res/cognitive-services/account:0.12.0' = {
+module openAi 'br/public:avm/res/cognitive-services/account:0.13.2' = {
   name: 'openai'
   scope: resourceGroup
   params: {
@@ -485,7 +485,7 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.12.0' = {
   }
 }
 
-module cosmosDb 'br/public:avm/res/document-db/database-account:0.15.0' = {
+module cosmosDb 'br/public:avm/res/document-db/database-account:0.16.0' = {
   name: 'cosmosDb'
   scope: resourceGroup
   params: {
@@ -562,8 +562,8 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.15.0' = {
         ]
         assignments: [
           { principalId: principalId }
-          { principalId: burgerApiFunction.outputs.?systemAssignedMIPrincipalId! }
-          { principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId! }
+          { principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId! }
+          { principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId! }
         ]
       }
     ]
