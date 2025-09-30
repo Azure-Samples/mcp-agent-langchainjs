@@ -5,6 +5,13 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { ParsedMessage } from '../message-parser';
 import aiSvg from '../../assets/icons/ai.svg?raw';
 
+export type IntermediateStep = {
+  type: 'tool' | 'llm';
+  name: string;
+  input?: string;
+  output?: string;
+}
+
 @customElement('azc-debug')
 export class DebugComponent extends LitElement {
   @property({ type: Object }) message: ParsedMessage | undefined;
@@ -33,15 +40,12 @@ export class DebugComponent extends LitElement {
     }
   }
 
-  protected getStepType(step: any): 'tool' | 'llm' {
-    return step.action?.tool ? 'tool' : 'llm';
+  protected getStepType(step: IntermediateStep): 'tool' | 'llm' {
+    return step.type;
   }
 
-  protected getStepSummary(step: any): string {
-    if (step.action?.tool) {
-      return `Tool: ${step.action.tool}`;
-    }
-    return 'LLM call';
+  protected getStepSummary(step: IntermediateStep): string {
+    return step.type === 'tool' ? `Tool: ${step.name}` : `LLM: ${step.name}`;
   }
 
   protected truncateText(text: string, maxLength: number = 100): string {
@@ -75,7 +79,7 @@ export class DebugComponent extends LitElement {
     `;
   }
 
-  protected renderStep(step: any, index: number) {
+  protected renderStep(step: IntermediateStep, index: number) {
     const stepType = this.getStepType(step);
     const isExpanded = this.expandedSteps.has(index);
     const summary = this.getStepSummary(step);
@@ -99,14 +103,11 @@ export class DebugComponent extends LitElement {
 
           ${isExpanded ? html`
             <div class="step-details">
-              ${step.action?.log ? this.renderDetailSection('Log', step.action.log, index, 'log') : nothing}
-
-              ${step.action?.toolInput !== undefined
-                ? this.renderDetailSection('Input', JSON.stringify(step.action.toolInput, null, 2), index, 'input')
+              ${step.input !== undefined
+                ? this.renderDetailSection('Input', step.input, index, 'input', step.input.length > 500)
                 : nothing}
-
-              ${step.observation
-                ? this.renderDetailSection('Output', step.observation, index, 'output', step.observation.length > 500)
+              ${step.output !== undefined
+                ? this.renderDetailSection('Output', step.output, index, 'output', step.output.length > 500)
                 : nothing}
             </div>
           ` : nothing}
@@ -116,7 +117,7 @@ export class DebugComponent extends LitElement {
   }
 
   protected override render() {
-    const intermediateSteps = this.message?.context?.['intermediateSteps'] ?? [];
+    const intermediateSteps: IntermediateStep[] = (this.message?.context?.['intermediateSteps'] as IntermediateStep[] | undefined) ?? [];
     return intermediateSteps.length === 0 ? nothing : html`
       <div class="debug-container">
       <button
@@ -135,7 +136,7 @@ export class DebugComponent extends LitElement {
           ${repeat(
           intermediateSteps,
           (_, index) => index,
-          (step, index) => this.renderStep(step, index)
+          (step, index) => this.renderStep(step as IntermediateStep, index)
           )}
         </div>
       ` : nothing}
