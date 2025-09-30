@@ -20,13 +20,13 @@
     "openAiApiVersion": {
       "value": "${AZURE_OPENAI_API_VERSION=2025-04-01-preview}"
     },
-    "chatModelName": {
+    "defaultModelName": {
       "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-5-mini}"
     },
-    "chatModelVersion": {
+    "defaultModelVersion": {
       "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2025-08-07}"
     },
-    "chatModelCapacity": {
+    "defaultModelCapacity": {
       "value": "${AZURE_OPENAI_CHAT_MODEL_CAPACITY=150}"
     },
     "isContinuousIntegration": {

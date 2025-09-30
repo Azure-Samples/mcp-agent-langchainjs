@@ -54,9 +54,9 @@ param blobContainerName string = 'blobs'
 })
 param aiServicesLocation string // Set in main.parameters.json
 param openAiApiVersion string // Set in main.parameters.json
-param chatModelName string // Set in main.parameters.json
-param chatModelVersion string // Set in main.parameters.json
-param chatModelCapacity int // Set in main.parameters.json
+param defaultModelName string // Set in main.parameters.json
+param defaultModelVersion string // Set in main.parameters.json
+param defaultModelCapacity int // Set in main.parameters.json
 
 // Location is not relevant here as it's only for the built-in api
 // which is not used here. Static Web App is a global service otherwise
@@ -266,7 +266,7 @@ module agentApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
     properties: {
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
       AZURE_OPENAI_ENDPOINT: openAiUrl
-      AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: chatModelName
+      AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: defaultModelName
       AZURE_OPENAI_INSTANCE_NAME: openAi.outputs.name
       AZURE_OPENAI_API_VERSION: openAiApiVersion
       BURGER_MCP_ENDPOINT: burgerMcpUrl
@@ -458,14 +458,14 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.13.2' = {
     publicNetworkAccess: 'Enabled'
     deployments: [
       {
-        name: chatModelName
+        name: defaultModelName
         model: {
           format: 'OpenAI'
-          name: chatModelName
-          version: chatModelVersion
+          name: defaultModelName
+          version: defaultModelVersion
         }
         sku: {
-          capacity: chatModelCapacity
+          capacity: defaultModelCapacity
           name: 'GlobalStandard'
         }
       }
@@ -626,7 +626,8 @@ output AZURE_COSMOSDB_NOSQL_ENDPOINT string = cosmosDb.outputs.endpoint
 
 output AZURE_OPENAI_API_ENDPOINT string = openAiUrl
 output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
-output AZURE_OPENAI_API_DEPLOYMENT_NAME string = chatModelName
+output AZURE_OPENAI_API_DEPLOYMENT_NAME string = defaultModelName
 output AZURE_OPENAI_API_VERSION string = openAiApiVersion
+output AZURE_OPENAI_MODEL string = defaultModelName
 
-output GENAISCRIPT_DEFAULT_MODEL string = 'azure:${chatModelName}'
+output GENAISCRIPT_DEFAULT_MODEL string = 'azure:${defaultModelName}'
