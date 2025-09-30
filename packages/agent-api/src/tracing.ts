@@ -6,8 +6,8 @@ import { useAzureMonitor } from "@azure/monitor-opentelemetry";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
-import { LangChainInstrumentation } from "@traceloop/instrumentation-langchain";
-import { registerInstrumentations } from "@opentelemetry/instrumentation";
+import { LangChainInstrumentation } from "@arizeai/openinference-instrumentation-langchain";
+import * as CallbackManagerModule from "@langchain/core/callbacks/manager";
 
 let isTracingInitialized = false;
 if (!isTracingInitialized) {
@@ -32,9 +32,9 @@ if (!isTracingInitialized) {
     provider.register();
   }
 
-  registerInstrumentations({
-    instrumentations: [new LangChainInstrumentation()],
-  });
+  // Manually instrument LangChain's CallbackManager to capture traces
+  const langchainInstrumentation = new LangChainInstrumentation();
+  langchainInstrumentation.manuallyInstrument(CallbackManagerModule);
 
   isTracingInitialized = true;
 }
