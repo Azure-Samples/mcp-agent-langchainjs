@@ -7,9 +7,9 @@ import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { loadMcpTools } from '@langchain/mcp-adapters';
-import { StreamEvent } from '@langchain/core/tracers/log_stream';
+import { StreamEvent } from '@langchain/core/tracers/log_stream.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
 
 const agentSystemPrompt = `## Role
@@ -134,11 +134,14 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     // Update chat history when the response is complete
     const onResponseComplete = async (content: string) => {
       try {
-        await chatHistory.addMessages([
-          new HumanMessage(question),
-          new AIMessage(content),
-        ]);
-        context.log('Chat history updated successfully');
+        if (content) {
+          // When no content is generated, do not update the history as it's likely an error
+          await chatHistory.addMessages([
+            new HumanMessage(question),
+            new AIMessage(content),
+          ]);
+          context.log('Chat history updated successfully');
+        }
       } catch (error) {
         context.error('Error updating chat history:', error);
       }
