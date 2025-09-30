@@ -4,19 +4,15 @@ import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/fu
 import { AIChatCompletionRequest, AIChatCompletionDelta } from '@microsoft/ai-chat-protocol';
 import { AzureChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
-import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { RunnableWithMessageHistory } from '@langchain/core/runnables';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { createToolCallingAgent } from 'langchain/agents';
-import { AgentExecutor } from 'langchain/agents';
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { loadMcpTools } from '@langchain/mcp-adapters';
+import { StreamEvent } from '@langchain/core/tracers/log_stream';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { ChainValues } from '@langchain/core/utils/types.js';
 
-const agentSystemPrompt = `
-## Role
+const agentSystemPrompt = `## Role
 You an expert assistant that helps users with managing burger orders. Use the provided tools to get the information you need and perform actions on behalf of the user.
 Only answer to requests that are related to burger orders and the menu. If the user asks for something else, politely inform them that you can only assist with burger orders.
 Be conversational and friendly, like a real person would be, but keep your answers concise and to the point.
@@ -73,8 +69,6 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       };
     }
 
-    let model: BaseChatModel;
-    let chatHistory;
     const sessionId = ((chatContext as any)?.sessionId as string) || randomUUID();
     context.log(`userId: ${userId}, sessionId: ${sessionId}`);
 
@@ -92,10 +86,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const credentials = getCredentials();
     const azureADTokenProvider = getAzureOpenAiTokenProvider();
 
-    model = new AzureChatOpenAI({ azureADTokenProvider });
-
-    // Initialize chat history
-    chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
+    const model = new AzureChatOpenAI({ azureADTokenProvider, streaming: true });
+    const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
       sessionId,
       userId,
       credentials,
@@ -111,64 +103,56 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     await client.connect(transport);
     context.log('Connected to Burger MCP server using Streamable HTTP transport');
 
-    const tools = await loadMcpTools('burger', client, {
-      // Whether to throw errors if a tool fails to load (optional, default: true)
-      throwOnLoadError: true,
-      // Whether to prefix tool names with the server name (optional, default: false)
-      prefixToolNameWithServerName: false,
-      // Optional additional prefix for tool names (optional, default: "")
-      additionalToolNamePrefix: '',
+    const tools = await loadMcpTools('burger', client);
+    context.log(`Loaded ${tools.length} tools from Burger MCP server`);
+
+    const agent = createReactAgent({
+      llm: model,
+      tools,
+      prompt: agentSystemPrompt
     });
 
-    for (const tool of tools) {
-      if (!(tool.schema as any).properties) {
-        (tool as any).schema = undefined;
+    const question = messages.at(-1)!.content;
+    const previousMessages = await chatHistory.getMessages();
+    context.log(`Previous messages in history: ${previousMessages.length}`);
+
+    // Start the agent and stream the response events
+    const responseStream = await agent.streamEvents(
+      {
+        messages: [
+          ['human', `userId: ${userId}`],
+          ...previousMessages,
+          ['human', question]
+        ]
+      },
+      {
+        configurable: { sessionId },
+        version: 'v2'
+      },
+    );
+
+    // Update chat history when the response is complete
+    const onResponseComplete = async (content: string) => {
+      try {
+        await chatHistory.addMessages([
+          new HumanMessage(question),
+          new AIMessage(content),
+        ]);
+        context.log('Chat history updated successfully');
+      } catch (error) {
+        context.error('Error updating chat history:', error);
       }
     }
 
-    context.log(`Loaded ${tools.length} tools from Burger MCP server`);
-
-    const prompt = ChatPromptTemplate.fromMessages([
-      ['system', agentSystemPrompt],
-      ['human', 'userId: {userId}'],
-      ['placeholder', '{chat_history}'],
-      ['human', '{question}'],
-      ['placeholder', '{agent_scratchpad}'],
-    ]);
-
-    const agent = createToolCallingAgent({
-      llm: model,
-      tools,
-      prompt,
-    });
-    const agentExecutor = new AgentExecutor({
-      agent,
-      tools,
-      returnIntermediateSteps: true,
-      verbose: true,
-    });
-
-    // Handle chat history
-    const agentChainWithHistory = new RunnableWithMessageHistory({
-      runnable: agentExecutor,
-      inputMessagesKey: 'question',
-      historyMessagesKey: 'chat_history',
-      getMessageHistory: async () => chatHistory,
-    });
-    // Add question and start the agent
-    const question = messages.at(-1)!.content;
-    const responseStream = await agentChainWithHistory.stream({ userId, question }, { configurable: { sessionId } });
-    const jsonStream = Readable.from(createJsonStream(responseStream, sessionId));
+    const jsonStream = Readable.from(createJsonStream(responseStream, sessionId, onResponseComplete));
 
     // Create a short title for this chat session
     const { title } = await chatHistory.getContext();
     if (!title) {
-      const response = await ChatPromptTemplate.fromMessages([
+      const response = await model.invoke([
         ['system', titleSystemPrompt],
-        ['human', '{question}'],
-      ])
-        .pipe(model)
-        .invoke({ question });
+        ['human', question],
+      ]);
       context.log(`Title for session: ${response.content as string}`);
       chatHistory.setContext({ title: response.content });
     }
@@ -179,7 +163,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
         'Transfer-Encoding': 'chunked',
       },
       body: jsonStream,
-    }
+    };
   } catch (_error: unknown) {
     const error = _error as Error;
     context.error(`Error when processing chat-post request: ${error.message}`);
@@ -189,29 +173,54 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       jsonBody: {
         error: 'Internal server error while processing the request',
       },
-    }
+    };
   }
 }
 
 // Transform the response chunks into a JSON stream
-async function* createJsonStream(chunks: AsyncIterable<ChainValues>, sessionId: string) {
+async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: string, onComplete: (responseContent: string) => Promise<void>) {
   for await (const chunk of chunks) {
-    if (!chunk) continue;
+    const data = chunk.data;
+    let responseChunk: AIChatCompletionDelta | undefined;
 
-    const responseChunk: AIChatCompletionDelta = {
-      delta: {
-        content: chunk.output ?? '',
-        role: 'assistant',
-        context: chunk.intermediateSteps
-          ? {
-              intermediateSteps: chunk.intermediateSteps,
-            }
-          : undefined,
-      },
-      context: {
-        sessionId,
-      },
-    };
+    if (chunk.event === 'on_chain_end' && chunk.name === 'RunnableSequence') {
+      // End of our agentic chain
+      const content = data?.output?.content ?? '';
+      await onComplete(content);
+
+    } else if (chunk.event === 'on_chat_model_stream' && data.chunk.content.length > 0) {
+      // Streaming response from the LLM
+      responseChunk = {
+        delta: {
+          content: data.chunk.content,
+          role: 'assistant',
+        },
+        context: {
+          sessionId,
+        },
+      };
+    } else if (chunk.event === 'on_tool_end') {
+      // Tool call completed
+      responseChunk = {
+        delta: {
+          context: {
+            intermediateSteps: [{
+              type: 'tool',
+              name: chunk.name,
+              input: data?.input?.input ? data.input?.input : undefined,
+              output: data?.output.content ? data?.output.content : undefined,
+            }],
+          }
+        },
+        context: {
+          sessionId,
+        },
+      };
+    }
+
+    if (!responseChunk) {
+      continue;
+    }
 
     // Format response chunks in Newline delimited JSON
     // see https://github.com/ndjson/ndjson-spec
