@@ -5,7 +5,7 @@
 import { useAzureMonitor } from "@azure/monitor-opentelemetry";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
-import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { LangChainInstrumentation } from "@arizeai/openinference-instrumentation-langchain";
 import * as CallbackManagerModule from "@langchain/core/callbacks/manager";
 
@@ -27,7 +27,7 @@ if (!isTracingInitialized) {
       url: "http://localhost:4318/v1/traces",
     });
     const provider = new NodeTracerProvider({
-      spanProcessors: [new BatchSpanProcessor(exporter as any) as any],
+      spanProcessors: [new SimpleSpanProcessor(exporter as any) as any],
     });
     provider.register();
   }
