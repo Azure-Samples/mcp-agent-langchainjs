@@ -11,17 +11,16 @@ param environmentName string
 // Run `az functionapp list-flexconsumption-locations --output table` to get the latest list
 @allowed([
   'northeurope'
-  'southeastasia'
-  'eastasia'
+  'uksouth'
+  'swedencentral'
+  'eastus'
   'eastus2'
   'southcentralus'
-  'australiaeast'
-  'eastus'
   'westus2'
-  'uksouth'
-  'eastus2euap'
   'westus3'
-  'swedencentral'
+  'eastasia'
+  'southeastasia'
+  'australiaeast'
 ])
 param location string
 
@@ -38,7 +37,9 @@ param blobContainerName string = 'blobs'
   'australiaeast'
   'canadaeast'
   'eastus'
+  'westus2'
   'eastus2'
+  'westus3'
   'francecentral'
   'japaneast'
   'northcentralus'
@@ -53,7 +54,6 @@ param blobContainerName string = 'blobs'
   }
 })
 param aiServicesLocation string // Set in main.parameters.json
-param openAiApiVersion string // Set in main.parameters.json
 param defaultModelName string // Set in main.parameters.json
 param defaultModelVersion string // Set in main.parameters.json
 param defaultModelCapacity int // Set in main.parameters.json
@@ -61,7 +61,7 @@ param defaultModelCapacity int // Set in main.parameters.json
 // Location is not relevant here as it's only for the built-in api
 // which is not used here. Static Web App is a global service otherwise
 @description('Location for the Static Web App')
-@allowed(['westus2', 'centralus', 'eastus2', 'westeurope', 'eastasia', 'eastasiastage'])
+@allowed(['westus2', 'centralus', 'eastus2', 'westeurope', 'eastasia'])
 @metadata({
   azd: {
     type: 'location'
@@ -87,7 +87,7 @@ var burgerApiResourceName = '${abbrs.webSitesFunctions}burger-api-${resourceToke
 var burgerMcpResourceName = '${abbrs.webSitesFunctions}burger-mcp-${resourceToken}'
 var agentApiResourceName = '${abbrs.webSitesFunctions}agent-api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
-var openAiUrl = 'https://${openAi.outputs.name}.openai.azure.com'
+var openAiUrl = 'https://${openAi.outputs.name}.openai.azure.com/openai/v1'
 var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 var burgerApiUrl = 'https://${burgerApiFunction.outputs.defaultHostname}'
 var burgerMcpUrl = 'https://${burgerMcpFunction.outputs.defaultHostname}/mcp'
@@ -265,10 +265,8 @@ module agentApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
     appName: agentApiFunction.outputs.name
     properties: {
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
-      AZURE_OPENAI_ENDPOINT: openAiUrl
-      AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: defaultModelName
-      AZURE_OPENAI_INSTANCE_NAME: openAi.outputs.name
-      AZURE_OPENAI_API_VERSION: openAiApiVersion
+      AZURE_OPENAI_API_ENDPOINT: openAiUrl
+      AZURE_OPENAI_MODEL: defaultModelName
       BURGER_MCP_ENDPOINT: burgerMcpUrl
     }
     storageAccountResourceId: storage.outputs.resourceId
@@ -444,7 +442,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.1' = {
   }
 }
 
-// TODO: migrate to Foundry
+// TODO: migrate to AI Foundry
 module openAi 'br/public:avm/res/cognitive-services/account:0.13.2' = {
   name: 'openai'
   scope: resourceGroup
@@ -625,9 +623,6 @@ output AZURE_STORAGE_CONTAINER_NAME string = blobContainerName
 output AZURE_COSMOSDB_NOSQL_ENDPOINT string = cosmosDb.outputs.endpoint
 
 output AZURE_OPENAI_API_ENDPOINT string = openAiUrl
-output AZURE_OPENAI_API_INSTANCE_NAME string = openAi.outputs.name
-output AZURE_OPENAI_API_DEPLOYMENT_NAME string = defaultModelName
-output AZURE_OPENAI_API_VERSION string = openAiApiVersion
 output AZURE_OPENAI_MODEL string = defaultModelName
 
 output GENAISCRIPT_DEFAULT_MODEL string = 'azure:${defaultModelName}'

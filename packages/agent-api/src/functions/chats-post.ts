@@ -2,7 +2,7 @@ import { Readable } from 'node:stream';
 import { randomUUID } from 'node:crypto';
 import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/functions';
 import { AIChatCompletionRequest, AIChatCompletionDelta } from '@microsoft/ai-chat-protocol';
-import { AzureChatOpenAI } from '@langchain/openai';
+import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
@@ -40,7 +40,7 @@ Make sure the last question ends with ">>".
 - When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
 `;
 
-const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes.`;
+const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes. The title should be concise, descriptive, and catchy. Respond with only the title, no other text.`;
 
 export async function postChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
@@ -83,14 +83,25 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       };
     }
 
-    const credentials = getCredentials();
-    const azureADTokenProvider = getAzureOpenAiTokenProvider();
-
-    const model = new AzureChatOpenAI({ azureADTokenProvider, streaming: true });
+    const model = new ChatOpenAI({
+      configuration: {
+        baseURL: azureOpenAiEndpoint,
+        async fetch(url, init = {}) {
+          const token = await getAzureOpenAiTokenProvider()();
+          const headers = new Headers(init.headers);
+          headers.set('Authorization', `Bearer ${token}`);
+          return fetch(url, { ...init, headers });
+        },
+      },
+      modelName: process.env.AZURE_OPENAI_MODEL ?? 'gpt-5-mini',
+      streaming: true,
+      useResponsesApi: true,
+      apiKey: 'not_used'
+    });
     const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
       sessionId,
       userId,
-      credentials,
+      credentials: getCredentials(),
       containerName: 'history',
       databaseName: 'historyDB',
     });
@@ -156,8 +167,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
         ['system', titleSystemPrompt],
         ['human', question],
       ]);
-      context.log(`Title for session: ${response.content as string}`);
-      chatHistory.setContext({ title: response.content });
+      context.log(`Title for session: ${response.text}`);
+      chatHistory.setContext({ title: response.text });
     }
 
     return {
@@ -186,16 +197,16 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
     const data = chunk.data;
     let responseChunk: AIChatCompletionDelta | undefined;
 
-    if (chunk.event === 'on_chain_end' && chunk.name === 'RunnableSequence') {
+    if (chunk.event === 'on_chain_end' && chunk.name === 'RunnableSequence' && data.output?.content.length > 0) {
       // End of our agentic chain
-      const content = data?.output?.content ?? '';
+      const content = data?.output.content[0].text ?? '';
       await onComplete(content);
 
     } else if (chunk.event === 'on_chat_model_stream' && data.chunk.content.length > 0) {
       // Streaming response from the LLM
       responseChunk = {
         delta: {
-          content: data.chunk.content,
+          content: data.chunk.content[0].text,
           role: 'assistant',
         },
         context: {
