@@ -8,7 +8,7 @@
     "agent-cli": "./bin/cli.js"
   },
   "scripts": {
-    "start": "tsx ./bin/cli.js --",
+    "start": "npm run build -s && ./bin/cli.js --",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist"
@@ -26,7 +26,6 @@
   },
   "devDependencies": {
     "@types/node": "^22",
-    "tsx": "^4",
     "typescript": "^5"
   }
 }

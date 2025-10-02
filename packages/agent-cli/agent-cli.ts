@@ -2,11 +2,8 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
-import { AzureChatOpenAI } from '@langchain/openai';
-import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { createToolCallingAgent } from 'langchain/agents';
-import { AgentExecutor } from 'langchain/agents';
+import { ChatOpenAI } from '@langchain/openai';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -120,11 +117,7 @@ async function saveSession(session: SessionData): Promise<void> {
 }
 
 function convertHistoryToMessages(history: SessionData['history']): BaseMessage[] {
-  return history.map(msg =>
-    msg.type === 'human'
-      ? new HumanMessage(msg.content)
-      : new AIMessage(msg.content)
-  );
+  return history.map((msg) => (msg.type === 'human' ? new HumanMessage(msg.content) : new AIMessage(msg.content)));
 }
 
 export async function run() {
@@ -136,8 +129,6 @@ export async function run() {
   let client: Client | undefined;
 
   try {
-    let model: BaseChatModel;
-
     if (!azureOpenAiEndpoint || !burgerMcpEndpoint) {
       const errorMessage = 'Missing required environment variables: AZURE_OPENAI_API_ENDPOINT or BURGER_MCP_URL';
       console.error(errorMessage);
@@ -155,11 +146,24 @@ export async function run() {
       }
     }
 
-    const azureADTokenProvider = getBearerTokenProvider(new DefaultAzureCredential(), 'https://cognitiveservices.azure.com/.default');;
-
-    model = new AzureChatOpenAI({
-      azureADTokenProvider,
-      azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
+    const getToken = getBearerTokenProvider(
+      new DefaultAzureCredential(),
+      'https://cognitiveservices.azure.com/.default',
+    );
+    const model = new ChatOpenAI({
+      configuration: {
+        baseURL: azureOpenAiEndpoint,
+        async fetch(url, init = {}) {
+          const token = await getToken();
+          const headers = new Headers(init.headers);
+          headers.set('Authorization', `Bearer ${token}`);
+          return fetch(url, { ...init, headers });
+        },
+      },
+      modelName: process.env.AZURE_OPENAI_MODEL ?? 'gpt-5-mini',
+      streaming: true,
+      useResponsesApi: true,
+      apiKey: 'not_used',
     });
 
     client = new Client({
@@ -173,49 +177,60 @@ export async function run() {
     const tools = await loadMcpTools('burger', client);
     console.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
-    const prompt = ChatPromptTemplate.fromMessages([
-      ['system', agentSystemPrompt + (session.userId ? `\n\nUser ID: ${session.userId}` : '')],
-      ['placeholder', '{chat_history}'],
-      ['human', '{input}'],
-      ['placeholder', '{agent_scratchpad}'],
-    ]);
-
-    const agent = createToolCallingAgent({
+    const agent = createReactAgent({
       llm: model,
       tools,
-      prompt,
-    });
-    const agentExecutor = new AgentExecutor({
-      agent,
-      tools,
-      returnIntermediateSteps: verbose,
+      prompt: agentSystemPrompt + (session.userId ? `\n\nUser ID: ${session.userId}` : ''),
     });
 
     const chatHistory = convertHistoryToMessages(session.history);
 
-    console.log(`Thinking...`);
-    const response = await agentExecutor.invoke({
-      input: question,
-      chat_history: chatHistory
-    });
+    console.log('Thinking...\n');
 
-    if (verbose && response.intermediateSteps && response.intermediateSteps.length > 0) {
-      console.log('--------------------\nIntermediate steps\n--------------------');
-      for (const [index, step] of response.intermediateSteps.entries()) {
-        console.log(`*** Step ${index + 1} ***`);
-        console.log(`Action: ${step.action.tool}`);
-        console.log(`Input: ${JSON.stringify(step.action.toolInput, null, 2)}`);
-        console.log(`Output: ${step.observation}`);
+    const eventStream = await agent.streamEvents(
+      {
+        messages: [...chatHistory, new HumanMessage(question)],
+      },
+      { version: 'v2' },
+    );
+
+    let step = 0;
+    for await (const event of eventStream) {
+      const data = event.data;
+      if (event.event === 'on_chat_model_stream' && data?.chunk?.content?.length > 0) {
+        const text = data.chunk.content[0].text;
+        process.stdout.write(text);
+      } else if (event.event === 'on_tool_end') {
+        if (verbose) {
+          if (step === 0) {
+            console.log('--------------------');
+            console.log('Intermediate steps');
+            console.log('--------------------');
+          }
+          step++;
+          console.log(`*** Step ${step} ***`);
+          console.log(`Tool: ${event.name}`);
+          if (data?.input?.input) {
+            console.log(`Input:`, data.input.input);
+          }
+          if (data?.output?.content) {
+            console.log(`Output:`, data.output.content);
+          }
+          console.log('--------------------\n');
+        }
+      } else if (
+        event.event === 'on_chain_end' &&
+        event.name === 'RunnableSequence' &&
+        data.output?.content.length > 0
+      ) {
+        const finalContent = data.output.content[0].text;
+        if (finalContent) {
+          session.history.push({ type: 'human', content: question });
+          session.history.push({ type: 'ai', content: data.output.content[0].text });
+          await saveSession(session);
+        }
       }
     }
-
-    console.log('--------------------\n' + response.output);
-
-    session.history.push({ type: 'human', content: question });
-    session.history.push({ type: 'ai', content: response.output });
-
-    await saveSession(session);
-
   } catch (_error: unknown) {
     const error = _error as Error;
     console.error(`Error when processing request: ${error.message}`);
