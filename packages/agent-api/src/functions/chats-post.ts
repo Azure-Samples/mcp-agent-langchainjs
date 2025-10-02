@@ -1,7 +1,6 @@
 import { Readable } from 'node:stream';
 import { randomUUID } from 'node:crypto';
 import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/functions';
-import { AIChatCompletionRequest, AIChatCompletionDelta } from '@microsoft/ai-chat-protocol';
 import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
@@ -11,6 +10,7 @@ import { StreamEvent } from '@langchain/core/tracers/log_stream.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
+import { type AIChatCompletionRequest, type AIChatCompletionDelta } from '../models.js';
 
 const agentSystemPrompt = `## Role
 You an expert assistant that helps users with managing burger orders. Use the provided tools to get the information you need and perform actions on behalf of the user.

@@ -1,10 +1,3 @@
-export type IntermediateStep = {
-  type: 'tool' | 'llm';
-  name: string;
-  input?: string;
-  output?: string;
-}
-
 export type AIChatRole = "user" | "assistant" | "system";
 
 export type AIChatContext = Record<string, any>;
@@ -28,10 +21,5 @@ export type AIChatCompletion = {
 
 export type AIChatCompletionDelta = {
   delta: AIChatMessageDelta;
-  context?: AIChatContext;
-}
-
-export type AIChatCompletionRequest = {
-  messages: AIChatMessage[];
   context?: AIChatContext;
 }

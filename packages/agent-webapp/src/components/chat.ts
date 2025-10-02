@@ -3,8 +3,8 @@ import { map } from 'lit/directives/map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { type AIChatCompletionDelta, type AIChatMessage } from '@microsoft/ai-chat-protocol';
 import { type ChatRequestOptions, getCompletion } from '../services/api.service.js';
+import { type AIChatMessage } from '../models.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/icons/send.svg?raw';
 import questionSvg from '../../assets/icons/question.svg?raw';
@@ -130,7 +130,7 @@ export class ChatComponent extends LitElement {
     this.isLoading = true;
     this.scrollToLastMessage();
     try {
-      const response = getCompletion({
+      const chunks = await getCompletion({
         ...this.options,
         messages: this.messages,
         context: {
@@ -138,7 +138,6 @@ export class ChatComponent extends LitElement {
           sessionId: this.sessionId,
         },
       });
-      const chunks = response as AsyncGenerator<AIChatCompletionDelta>;
       const { messages } = this;
       const message: AIChatMessage = {
         content: '',

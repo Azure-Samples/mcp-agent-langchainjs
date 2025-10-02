@@ -20,7 +20,6 @@
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
-    "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
     "dompurify": "^3.0.0",
     "lit": "^3.0.0",
     "marked": "^16.2.1"

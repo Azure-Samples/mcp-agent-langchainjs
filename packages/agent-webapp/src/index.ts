@@ -6,3 +6,4 @@ export * from './components/user-card.js';
 export * from './components/debug.js';
 export * from './components/history.js';
 export * from './message-parser.js';
+export * from './models.js';

@@ -2,7 +2,7 @@ import { type HTMLTemplateResult, html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { type AIChatMessage } from '@microsoft/ai-chat-protocol';
+import { type AIChatMessage } from './models';
 
 export type ParsedMessage = {
   content: string;
