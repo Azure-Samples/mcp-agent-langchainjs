@@ -496,6 +496,7 @@ export class ChatComponent extends LitElement {
       border-radius: var(--border-radius);
       padding: var(--space-xl);
       margin-bottom: var(--space-xl);
+
       &.user {
         animation-name: fade-in-up;
       }
@@ -504,6 +505,9 @@ export class ChatComponent extends LitElement {
       display: flex;
       flex-direction: column;
       gap: var(--space-md);
+      overflow-x: auto;
+      padding: 0 var(--space-xl);
+      margin: 0 calc(var(--space-xl) * -1);
     }
     .content {
       h1,
@@ -555,19 +559,48 @@ export class ChatComponent extends LitElement {
       }
       table {
         width: 100%;
-        border-collapse: collapse;
         margin-bottom: var(--space-md);
-        table-layout: fixed;
-        th,
-        td {
-          border: 1px solid var(--border-color);
-          padding: var(--space-xs);
-          text-align: left;
-          text-overflow: ellipsis;
-          overflow: hidden;
+        border: none;
+        border-bottom: 4px solid var(--primary);
+        border-radius: calc(var(--border-radius) / 1.6) calc(var(--border-radius) / 1.6) 0 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        background: var(--bot-message-bg);
+        box-shadow: 0 3px 8px rgba(0 0 0 / 12%), 0 1.5px 3px rgba(0 0 0 / 8%);
+
+        img {
+          max-height: 64px;
         }
-        th {
-          background: color-mix(in srgb, var(--bot-message-bg), #000 5%);
+      }
+      thead tr {
+        background: var(--primary);
+        color: var(--text-invert-color);
+      }
+      th,
+      td {
+        padding: calc(var(--space-xs) + 2px) var(--space-md);
+        text-align: left;
+      }
+      th {
+        font-weight: 600;
+        position: relative;
+
+        &:first-child {
+          border-top-left-radius: calc(var(--border-radius) / 1.6);
+        }
+        &:last-child {
+          border-top-right-radius: calc(var(--border-radius) / 1.6);
+        }
+      }
+      tr {
+        background: var(--bot-message-bg);
+
+        & + tr {
+          border-top: 1px solid var(--border-color);
+        }
+        &:nth-child(even) {
+          background: color-mix(in srgb, var(--bot-message-bg), #000 4%);
         }
       }
       hr {
