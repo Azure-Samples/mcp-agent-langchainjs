@@ -570,7 +570,7 @@ export class ChatComponent extends LitElement {
         box-shadow: 0 3px 8px rgba(0 0 0 / 12%), 0 1.5px 3px rgba(0 0 0 / 8%);
 
         img {
-          max-height: 64px;
+          max-height: 150px;
         }
       }
       thead tr {
