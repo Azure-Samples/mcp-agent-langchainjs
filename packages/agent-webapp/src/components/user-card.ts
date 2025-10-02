@@ -1,7 +1,7 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, state } from 'lit/decorators.js';
-import { getUserInfo } from '../auth.service.js';
+import { getUserInfo } from '../services/auth.service.js';
 import copySvg from '../../assets/icons/copy.svg?raw';
 import burgerOutlineSvg from '../../assets/icons/burger-outline.svg?raw';
 import cardSvg from '../../assets/icons/card.svg?raw';

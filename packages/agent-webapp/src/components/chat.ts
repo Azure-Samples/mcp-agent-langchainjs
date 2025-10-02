@@ -4,7 +4,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { type AIChatCompletionDelta, type AIChatMessage } from '@microsoft/ai-chat-protocol';
-import { type ChatRequestOptions, getCompletion } from '../api.service.js';
+import { type ChatRequestOptions, getCompletion } from '../services/api.service.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/icons/send.svg?raw';
 import questionSvg from '../../assets/icons/question.svg?raw';
