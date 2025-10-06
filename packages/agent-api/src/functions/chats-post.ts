@@ -142,6 +142,23 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       },
     );
 
+    // Create a short title for this chat session
+    const generateSessionTitle = async () => {
+      const { title } = await chatHistory.getContext();
+      if (!title) {
+        const response = await model.invoke([
+          ['system', titleSystemPrompt],
+          ['human', question],
+        ]);
+        context.log(`Title for session: ${response.text}`);
+        chatHistory.setContext({ title: response.text });
+      }
+    }
+
+    // We don't await this yet, to allow parallel execution.
+    // We'll await it later, after the response is fully sent.
+    const sessionTitlePromise = generateSessionTitle();
+
     // Update chat history when the response is complete
     const onResponseComplete = async (content: string) => {
       try {
@@ -152,24 +169,16 @@ export async function postChats(request: HttpRequest, context: InvocationContext
             new AIMessage(content),
           ]);
           context.log('Chat history updated successfully');
+
+          // Ensure the session title has finished generating
+          await sessionTitlePromise;
         }
       } catch (error) {
-        context.error('Error updating chat history:', error);
+        context.error('Error after response completion:', error);
       }
     }
 
     const jsonStream = Readable.from(createJsonStream(responseStream, sessionId, onResponseComplete));
-
-    // Create a short title for this chat session
-    const { title } = await chatHistory.getContext();
-    if (!title) {
-      const response = await model.invoke([
-        ['system', titleSystemPrompt],
-        ['human', question],
-      ]);
-      context.log(`Title for session: ${response.text}`);
-      chatHistory.setContext({ title: response.text });
-    }
 
     return {
       headers: {
