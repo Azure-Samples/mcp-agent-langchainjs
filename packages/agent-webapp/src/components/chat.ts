@@ -69,6 +69,7 @@ export const chatDefaultOptions: ChatComponentOptions = {
       get_topping_by_id: 'Retrieving topping details',
       get_topping_categories: 'Retrieving topping categories',
       get_orders: 'Retrieving orders list',
+      get_order_by_id: 'Retrieving order details',
       place_order: 'Placing a new order',
       delete_order_by_id: 'Deleting order',
     },
