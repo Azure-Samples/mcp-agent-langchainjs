@@ -343,7 +343,7 @@ export class ChatComponent extends LitElement {
         ${message.role === 'assistant' && this.options.enableDebug
           ? html`<azc-debug .message=${message}></azc-debug>`
           : nothing}
-        <div class="content">${message.html}</div>
+        <div class="content ${this.isStreaming ? 'streaming' : ''}">${message.html}</div>
       </div>
       <div class="message-role">
         ${message.role === 'user' ? this.options.strings.user : this.options.strings.assistant}
@@ -655,6 +655,10 @@ export class ChatComponent extends LitElement {
 
         img {
           max-height: 150px;
+        }
+
+        .streaming & {
+          table-layout: fixed;
         }
       }
       thead tr {
