@@ -1,6 +1,16 @@
+export type AgentStep = {
+  type: 'tool' | 'llm';
+  name: string;
+  input?: string;
+  output?: string;
+}
+
 export type AIChatRole = "user" | "assistant" | "system";
 
-export type AIChatContext = Record<string, any>;
+export type AIChatContext = {
+  currentStep?: AgentStep;
+  intermediateSteps?: AgentStep[];
+};
 
 export type AIChatMessage = {
   role: AIChatRole;
@@ -14,12 +24,9 @@ export type AIChatMessageDelta = {
   context?: AIChatContext;
 }
 
-export type AIChatCompletion = {
-  message: AIChatMessage;
-  context?: AIChatContext;
-}
-
 export type AIChatCompletionDelta = {
   delta: AIChatMessageDelta;
-  context?: AIChatContext;
+  context?: {
+    sessionId?: string;
+  };
 }

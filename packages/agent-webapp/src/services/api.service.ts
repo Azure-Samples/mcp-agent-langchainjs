@@ -5,7 +5,6 @@ export const apiBaseUrl: string = import.meta.env.VITE_API_URL || '';
 export type ChatRequestOptions = {
   messages: AIChatMessage[];
   context?: Record<string, unknown>;
-  chunkIntervalMs: number;
   apiUrl: string;
 };
 
@@ -30,7 +29,7 @@ export async function getCompletion(options: ChatRequestOptions) {
     throw new Error(error);
   }
 
-  return getChunksFromResponse<AIChatCompletionDelta>(response, options.chunkIntervalMs);
+  return getChunksFromResponse<AIChatCompletionDelta>(response);
 }
 
 class NdJsonParserStream extends TransformStream<string, JSON> {
@@ -57,7 +56,7 @@ class NdJsonParserStream extends TransformStream<string, JSON> {
   }
 }
 
-export async function* getChunksFromResponse<T>(response: Response, intervalMs: number): AsyncGenerator<T, void> {
+export async function* getChunksFromResponse<T>(response: Response): AsyncGenerator<T, void> {
   const reader = response.body?.pipeThrough(new TextDecoderStream()).pipeThrough(new NdJsonParserStream()).getReader();
   if (!reader) {
     throw new Error('No response body or body is not readable');
@@ -68,10 +67,6 @@ export async function* getChunksFromResponse<T>(response: Response, intervalMs: 
   // eslint-disable-next-line no-await-in-loop
   while ((({ value, done } = await reader.read()), !done)) {
     const chunk = value as T;
-    yield new Promise<T>((resolve) => {
-      setTimeout(() => {
-        resolve(chunk);
-      }, intervalMs);
-    });
+    yield chunk;
   }
 }

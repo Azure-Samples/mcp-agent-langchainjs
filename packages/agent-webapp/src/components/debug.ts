@@ -3,14 +3,8 @@ import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ParsedMessage } from '../message-parser';
+import { AgentStep } from '../models';
 import aiSvg from '../../assets/icons/ai.svg?raw';
-
-export type IntermediateStep = {
-  type: 'tool' | 'llm';
-  name: string;
-  input?: string;
-  output?: string;
-}
 
 @customElement('azc-debug')
 export class DebugComponent extends LitElement {
@@ -40,11 +34,11 @@ export class DebugComponent extends LitElement {
     }
   }
 
-  protected getStepType(step: IntermediateStep): 'tool' | 'llm' {
+  protected getStepType(step: AgentStep): 'tool' | 'llm' {
     return step.type;
   }
 
-  protected getStepSummary(step: IntermediateStep): string {
+  protected getStepSummary(step: AgentStep): string {
     return step.type === 'tool' ? `Tool: ${step.name}` : `LLM: ${step.name}`;
   }
 
@@ -79,7 +73,7 @@ export class DebugComponent extends LitElement {
     `;
   }
 
-  protected renderStep(step: IntermediateStep, index: number) {
+  protected renderStep(step: AgentStep, index: number) {
     const stepType = this.getStepType(step);
     const isExpanded = this.expandedSteps.has(index);
     const summary = this.getStepSummary(step);
@@ -117,7 +111,7 @@ export class DebugComponent extends LitElement {
   }
 
   protected override render() {
-    const intermediateSteps: IntermediateStep[] = (this.message?.context?.['intermediateSteps'] as IntermediateStep[] | undefined) ?? [];
+    const intermediateSteps: AgentStep[] = (this.message?.context?.['intermediateSteps'] as AgentStep[] | undefined) ?? [];
     return intermediateSteps.length === 0 ? nothing : html`
       <div class="debug-container">
       <button
@@ -136,7 +130,7 @@ export class DebugComponent extends LitElement {
           ${repeat(
           intermediateSteps,
           (_, index) => index,
-          (step, index) => this.renderStep(step as IntermediateStep, index)
+          (step, index) => this.renderStep(step as AgentStep, index)
           )}
         </div>
       ` : nothing}

@@ -4,7 +4,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { type ChatRequestOptions, getCompletion } from '../services/api.service.js';
-import { type AIChatMessage } from '../models.js';
+import { AgentStep, type AIChatMessage } from '../models.js';
 import { type ParsedMessage, parseMessageIntoHtml } from '../message-parser.js';
 import sendSvg from '../../assets/icons/send.svg?raw';
 import questionSvg from '../../assets/icons/question.svg?raw';
@@ -23,6 +23,7 @@ export type ChatComponentOptions = ChatRequestOptions & {
   enablePromptSuggestions: boolean;
   enableMarkdown?: boolean;
   enableDebug?: boolean;
+  minStepDisplayMs?: number;
   strings: {
     promptSuggestionsTitle: string;
     citationsTitle: string;
@@ -34,15 +35,16 @@ export type ChatComponentOptions = ChatRequestOptions & {
     errorMessage: string;
     newChatButton: string;
     retryButton: string;
+    tools: Record<string, string>;
   };
 };
 
 export const chatDefaultOptions: ChatComponentOptions = {
-  chunkIntervalMs: 30,
   apiUrl: '',
   enablePromptSuggestions: true,
   enableMarkdown: true,
   enableDebug: true,
+  minStepDisplayMs: 1000,
   promptSuggestions: [
     'What burgers do you have on the menu?',
     'What toppings are available?',
@@ -60,6 +62,16 @@ export const chatDefaultOptions: ChatComponentOptions = {
     errorMessage: 'We are currently experiencing an issue.',
     newChatButton: 'New chat',
     retryButton: 'Retry',
+    tools: {
+      get_burgers: 'Retrieving burgers list',
+      get_burger_by_id: 'Retrieving burger details',
+      get_toppings: 'Retrieving toppings list',
+      get_topping_by_id: 'Retrieving topping details',
+      get_topping_categories: 'Retrieving topping categories',
+      get_orders: 'Retrieving orders list',
+      place_order: 'Placing a new order',
+      delete_order_by_id: 'Deleting order',
+    },
   },
 };
 
@@ -88,9 +100,14 @@ export class ChatComponent extends LitElement {
   @state() protected hasError = false;
   @state() protected isLoading = false;
   @state() protected isStreaming = false;
+  @state() protected currentStep: AgentStep | undefined;
   @query('.chat-container') protected chatContainerElement!: HTMLElement;
   @query('.messages') protected messagesElement!: HTMLElement;
   @query('.chat-input') protected chatInputElement!: HTMLElement;
+
+  protected lastStepSetAt = 0;
+  protected stepQueue: AgentStep[] = [];
+  protected stepTimer: NodeJS.Timeout | undefined;
 
   async onSuggestionClicked(suggestion: string) {
     this.question = suggestion;
@@ -128,6 +145,12 @@ export class ChatComponent extends LitElement {
 
     this.question = '';
     this.isLoading = true;
+    this.currentStep = undefined;
+    this.stepQueue = [];
+    if (this.stepTimer) {
+      clearTimeout(this.stepTimer);
+      this.stepTimer = undefined;
+    }
     this.scrollToLastMessage();
     try {
       const chunks = await getCompletion({
@@ -147,22 +170,22 @@ export class ChatComponent extends LitElement {
         },
       };
       for await (const chunk of chunks) {
-        this.isStreaming = true;
-
         if (chunk.delta.content) {
+          this.isStreaming = true;
           message.content += chunk.delta.content;
-        } else if (chunk.delta.context?.['intermediateSteps']) {
+          this.messages = [...messages, message];
+        } else if (chunk.delta.context?.intermediateSteps) {
           // Only add intermediate steps when there is no content,
           // otherwise they will be duplicated
-          message.context!['intermediateSteps'] = [
-            ...message.context!['intermediateSteps'],
-            ...chunk.delta.context?.['intermediateSteps']
+          message.context!.intermediateSteps = [
+            ...message.context!.intermediateSteps!,
+            ...chunk.delta.context?.intermediateSteps,
           ];
+        } else if (chunk.delta.context?.currentStep) {
+          this.updateCurrentStep(chunk.delta.context.currentStep);
         }
 
-        this.messages = [...messages, message];
-
-        const sessionId = (chunk.context as any)?.sessionId;
+        const sessionId = chunk.context?.sessionId;
         if (!this.sessionId && sessionId) {
           this.sessionId = sessionId;
         }
@@ -177,6 +200,52 @@ export class ChatComponent extends LitElement {
       this.isStreaming = false;
       console.error(error);
     }
+  }
+
+  protected updateCurrentStep(step: AgentStep) {
+    // Make sure the step is displayed for a minimum time
+    // to avoid flickering
+    const min = this.options.minStepDisplayMs ?? 500;
+    const now = Date.now();
+    const elapsed = now - this.lastStepSetAt;
+
+    if (!this.currentStep || elapsed >= min) {
+      this.currentStep = step;
+      this.lastStepSetAt = now;
+      return;
+    }
+
+    // Queue the step to be displayed later
+    this.stepQueue.push(step);
+    this.scheduleNextStep(min);
+  }
+
+  protected scheduleNextStep(min: number) {
+    if (this.stepTimer || this.stepQueue.length === 0) {
+      return;
+    }
+    const elapsed = Date.now() - this.lastStepSetAt;
+    const waitTime = Math.max(0, min - elapsed);
+    this.stepTimer = setTimeout(() => {
+      this.stepTimer = undefined;
+      if (this.stepQueue.length > 0) {
+        const next = this.stepQueue.shift()!;
+        this.currentStep = next;
+        this.lastStepSetAt = Date.now();
+      }
+      if (this.stepQueue.length > 0) {
+        this.scheduleNextStep(min);
+      }
+    }, waitTime);
+  }
+
+  override disconnectedCallback(): void {
+    if (this.stepTimer) {
+      clearTimeout(this.stepTimer);
+      this.stepTimer = undefined;
+    }
+    this.stepQueue = [];
+    super.disconnectedCallback();
   }
 
   override requestUpdate(name?: string, oldValue?: any) {
@@ -217,6 +286,21 @@ export class ChatComponent extends LitElement {
     }, 0);
   }
 
+  protected getCurrentStepTitle() {
+    if (!this.currentStep) {
+      return '';
+    }
+    switch (this.currentStep.type) {
+      case 'llm':
+        return `Thinking...`;
+      case 'tool':
+        // Map tool name to a user-friendly message
+        return `${this.options.strings.tools[this.currentStep.name] ?? this.currentStep.name}...`;
+      default:
+        return '';
+    }
+  }
+
   protected renderSuggestions = (suggestions: string[]) => html`
     <section class="suggestions-container">
       <h2>${this.options.strings.promptSuggestionsTitle}</h2>
@@ -243,6 +327,7 @@ export class ChatComponent extends LitElement {
       ? html`
           <div class="message assistant loader">
             <div class="message-body">
+              ${this.currentStep ? html`<div class="current-step">${this.getCurrentStepTitle()}</div>` : nothing}
               <slot name="loader"><div class="loader-animation"></div></slot>
               <div class="message-role">${this.options.strings.assistant}</div>
             </div>
@@ -257,7 +342,6 @@ export class ChatComponent extends LitElement {
         ${message.role === 'assistant' && this.options.enableDebug
           ? html`<azc-debug .message=${message}></azc-debug>`
           : nothing}
-        ${!message.content ? html`<slot name="loader"><div class="loader-animation"></div></slot>` : nothing}
         <div class="content">${message.html}</div>
       </div>
       <div class="message-role">
@@ -335,9 +419,7 @@ export class ChatComponent extends LitElement {
   `;
 
   protected override render() {
-    const parsedMessages = this.messages.map((message) =>
-      parseMessageIntoHtml(message, this.options.enableMarkdown),
-    );
+    const parsedMessages = this.messages.map((message) => parseMessageIntoHtml(message, this.options.enableMarkdown));
     return html`
       <section class="chat-container">
         ${this.options.enablePromptSuggestions &&
@@ -566,7 +648,9 @@ export class ChatComponent extends LitElement {
         border-spacing: 0;
         overflow: hidden;
         background: var(--bot-message-bg);
-        box-shadow: 0 3px 8px rgba(0 0 0 / 12%), 0 1.5px 3px rgba(0 0 0 / 8%);
+        box-shadow:
+          0 3px 8px rgba(0 0 0 / 12%),
+          0 1.5px 3px rgba(0 0 0 / 8%);
 
         img {
           max-height: 150px;
@@ -766,6 +850,10 @@ export class ChatComponent extends LitElement {
       transform: scaleX(0);
       transform-origin: center left;
       animation: cubic-bezier(0.85, 0, 0.15, 1) 2s infinite load-animation;
+    }
+    .current-step {
+      font-size: 0.85rem;
+      opacity: 0.7;
     }
 
     @keyframes load-animation {

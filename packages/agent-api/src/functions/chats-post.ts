@@ -27,7 +27,7 @@ Enclose the follow-up questions in double angle brackets. Example:
 <<Am I allowed to invite friends for a party?>>
 <<How can I ask for a refund?>>
 <<What If I break something?>>
-Make sure the last question ends with ">>".
+Make sure the last question ends with ">>", and phrase the questions as if you were the user, not the assistant.
 
 ## Instructions
 - Always use the tools provided to get the information requested or perform any actions
@@ -194,10 +194,12 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 // Transform the response chunks into a JSON stream
 async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: string, onComplete: (responseContent: string) => Promise<void>) {
   for await (const chunk of chunks) {
+    console.log(chunk);
+
     const data = chunk.data;
     let responseChunk: AIChatCompletionDelta | undefined;
 
-    if (chunk.event === 'on_chain_end' && chunk.name === 'RunnableSequence' && data.output?.content.length > 0) {
+    if (chunk.event === 'on_chat_model_end' && data.output?.content.length > 0) {
       // End of our agentic chain
       const content = data?.output.content[0].text ?? '';
       await onComplete(content);
@@ -208,10 +210,21 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
         delta: {
           content: data.chunk.content[0].text,
           role: 'assistant',
-        },
-        context: {
-          sessionId,
-        },
+        }
+      };
+    } else if (chunk.event === 'on_chat_model_end') {
+      // Intermediate LLM response (no content)
+      responseChunk = {
+        delta: {
+          context: {
+            intermediateSteps: [{
+              type: 'llm',
+              name: chunk.name,
+              input: data.input ? JSON.stringify(data.input) : undefined,
+              output: data?.output.content.length > 0 ? JSON.stringify(data?.output.content) : JSON.stringify(data?.output.tool_calls),
+            }],
+          }
+        }
       };
     } else if (chunk.event === 'on_tool_end') {
       // Tool call completed
@@ -225,10 +238,34 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
               output: data?.output.content ? data?.output.content : undefined,
             }],
           }
+        }
+      };
+    } else if (chunk.event === 'on_chat_model_start') {
+      // Start of a new LLM call
+      responseChunk = {
+        delta: {
+          context: {
+            currentStep: {
+              type: 'llm',
+              name: chunk.name,
+              input: data?.input ? data.input : undefined,
+            }
+          }
         },
-        context: {
-          sessionId,
-        },
+        context: { sessionId }
+      };
+    } else if (chunk.event === 'on_tool_start') {
+      // Start of a new tool call
+      responseChunk = {
+        delta: {
+          context: {
+            currentStep: {
+              type: 'tool',
+              name: chunk.name,
+              input: data?.input?.input ? JSON.stringify(data.input?.input) : undefined,
+            }
+          }
+        }
       };
     }
 
