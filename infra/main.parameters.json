@@ -17,9 +17,6 @@
     "aiServicesLocation": {
       "value": "${AZURE_AI_LOCATION=eastus2}"
     },
-    "openAiApiVersion": {
-      "value": "${AZURE_OPENAI_API_VERSION=2025-04-01-preview}"
-    },
     "defaultModelName": {
       "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-5-mini}"
     },

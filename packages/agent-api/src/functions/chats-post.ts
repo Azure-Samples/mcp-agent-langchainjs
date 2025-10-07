@@ -110,9 +110,9 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       name: 'burger-mcp-client',
       version: '1.0.0',
     });
+    context.log(`Connecting to Burger MCP server at ${burgerMcpUrl}`);
     const transport = new StreamableHTTPClientTransport(new URL(burgerMcpUrl));
     await client.connect(transport);
-    context.log('Connected to Burger MCP server using Streamable HTTP transport');
 
     const tools = await loadMcpTools('burger', client);
     context.log(`Loaded ${tools.length} tools from Burger MCP server`);

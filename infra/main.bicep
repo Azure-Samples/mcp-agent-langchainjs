@@ -32,21 +32,19 @@ param agentApiServiceName string = 'agent-api'
 param agentWebappName string = 'agent-webapp'
 param blobContainerName string = 'blobs'
 
-@description('Location for the OpenAI resource group')
+@description('Location for the AI Foundry resource group')
 @allowed([
+  // Regions where gpt-5-mini is available,
+  // see https://learn.microsoft.com/azure/ai-foundry/foundry-models/concepts/models-sold-directly-by-azure?pivots=azure-openai&tabs=global-standard-aoai%2Cstandard-chat-completions%2Cglobal-standard#global-standard-model-availability
   'australiaeast'
-  'canadaeast'
   'eastus'
-  'westus2'
   'eastus2'
-  'westus3'
-  'francecentral'
   'japaneast'
-  'northcentralus'
+  'koreacentral'
+  'sounthindia'
   'swedencentral'
   'switzerlandnorth'
   'uksouth'
-  'westeurope'
 ])
 @metadata({
   azd: {
@@ -87,7 +85,7 @@ var burgerApiResourceName = '${abbrs.webSitesFunctions}burger-api-${resourceToke
 var burgerMcpResourceName = '${abbrs.webSitesFunctions}burger-mcp-${resourceToken}'
 var agentApiResourceName = '${abbrs.webSitesFunctions}agent-api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
-var openAiUrl = 'https://${openAi.outputs.name}.openai.azure.com/openai/v1'
+var openAiUrl = 'https://${aiFoundry.outputs.aiServicesName}.openai.azure.com/openai/v1'
 var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 var burgerApiUrl = 'https://${burgerApiFunction.outputs.defaultHostname}'
 var burgerMcpUrl = 'https://${burgerMcpFunction.outputs.defaultHostname}/mcp'
@@ -267,7 +265,7 @@ module agentApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
       AZURE_OPENAI_API_ENDPOINT: openAiUrl
       AZURE_OPENAI_MODEL: defaultModelName
-      BURGER_MCP_ENDPOINT: burgerMcpUrl
+      BURGER_MCP_URL: burgerMcpUrl
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
@@ -442,19 +440,28 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.1' = {
   }
 }
 
-// TODO: migrate to AI Foundry
-module openAi 'br/public:avm/res/cognitive-services/account:0.13.2' = {
-  name: 'openai'
+module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.4.0' = {
+  name: 'aiFoundry'
   scope: resourceGroup
   params: {
-    name: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    baseName: substring(resourceToken, 0, 12) // Max 12 chars
     tags: tags
     location: aiServicesLocation
-    kind: 'OpenAI'
-    disableLocalAuth: true
-    customSubDomainName: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
-    publicNetworkAccess: 'Enabled'
-    deployments: [
+    aiFoundryConfiguration: {
+      roleAssignments: [
+        {
+          principalId: principalId
+          principalType: principalType
+          roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
+        }
+        {
+          principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId!
+          principalType: 'ServicePrincipal'
+          roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
+       }
+      ]
+    }
+    aiModelDeployments: [
       {
         name: defaultModelName
         model: {
@@ -466,18 +473,6 @@ module openAi 'br/public:avm/res/cognitive-services/account:0.13.2' = {
           capacity: defaultModelCapacity
           name: 'GlobalStandard'
         }
-      }
-    ]
-    roleAssignments: [
-      {
-        principalId: principalId
-        principalType: principalType
-        roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
-      }
-      {
-        principalId: agentApiFunction.outputs.?systemAssignedMIPrincipalId!
-        principalType: 'ServicePrincipal'
-        roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
       }
     ]
   }
