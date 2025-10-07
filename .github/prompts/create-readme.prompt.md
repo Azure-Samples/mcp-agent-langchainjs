@@ -13,3 +13,4 @@ You're a senior expert software engineer with extensive experience in open sourc
 3. Do not overuse emojis, and keep the readme concice and to the point.
 4. Do not include sections like "LICENSE", "CONTRIBUTING", "CHANGELOG", etc. There are dedicated files for those sections.
 5. Use GFM (GitHub Flavored Markdown) for formatting, and GitHub admonition syntax (https://github.com/orgs/community/discussions/16925) where appropriate.
+6. If there's already an existing README.md file, make sure its content is up-to-date and relevant. If it is not, update it accordingly, and do not hesitate to restructure it if needed.
