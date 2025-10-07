@@ -28,7 +28,7 @@ console.log('Setting Azure AI service values...');
 settings = {
   ...settings,
   AZURE_OPENAI_API_ENDPOINT: process.env.AZURE_OPENAI_API_ENDPOINT,
-  AZURE_OPENAI_MODEL: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+  AZURE_OPENAI_MODEL: process.env.AZURE_OPENAI_MODEL,
 };
 
 console.log('Setting Cosmos DB service values...');
