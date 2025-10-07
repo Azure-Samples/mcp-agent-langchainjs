@@ -4,6 +4,8 @@
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Microsoft/open-hack-build-25?hide_repo_select=true&ref=main&quickstart=true)
 ![Node version](https://img.shields.io/badge/Node.js->=22-3c873a?style=flat-square)
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Express](https://img.shields.io/badge/Express-404d59?style=flat-square&logo=express&logoColor=white)](https://expressjs.com)
 
 [Overview](#overview) • [MCP tools](#mcp-tools) • [Development](#development)
 
@@ -20,6 +22,10 @@ This server supports the following transport types:
 - **Stdio** (currently only supported when starting the server locally with `npm start:local`)
 
 The remote server is deployed with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview).
+
+<div align="center">
+  <img src="../../docs/images/burger-architecture.drawio.png" alt="Service architecture" />
+</div>
 
 ## MCP tools
 
@@ -55,16 +61,9 @@ First, you need to start the Burger API and Burger MCP server locally.
 
 ## Development
 
-### Setup development environment
+### Getting started
 
-You can run this project directly in your browser by using GitHub Codespaces, which will open a web-based VS Code.
-
-1. [**Fork**](https://github.com/Microsoft/open-hack-build-25/fork) the project to create your own copy of this repository.
-2. On your forked repository, select the **Code** button, then the **Codespaces** tab, and clink on the button **Create codespace on main**.
-   ![Screenshot showing how to create a new codespace](../../docs/images/codespaces.png?raw=true)
-3. Wait for the Codespace to be created, it should take a few minutes.
-
-If you prefer to run the project locally, follow [these instructions](../../README.md#use-your-local-environment).
+Follow the instructions [here](../../README.md#getting-started) to set up the development environment for the entire Pizza MCP Agents project.
 
 ### Run the application
 
@@ -87,3 +86,23 @@ By default, the MCP server will connect to the Burger API instance set by the `B
 ```bash
 npm run start -- --local
 ```
+
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm start` | Start the MCP server with HTTP and SSE endpoints |
+| `npm run start:local` | Start the MCP server with STDIO transport |
+| `npm run dev` | Start the MCP server with hot reload |
+| `npm run dev:local` | Start the MCP server with hot reload and STDIO transport |
+| `npm run build` | Build the TypeScript source |
+| `npm run clean` | Clean build artifacts |
+| `npm run update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime |
+
+### Configuration
+
+The application uses environment variables for configuration:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BURGER_API_URL` | URL of the Pizza API server | `http://localhost:7071` |

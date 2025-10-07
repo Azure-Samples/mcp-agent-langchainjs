@@ -1,9 +1,10 @@
 <div align="center">
 
-# Azure Functions Burger API
+# Burger API (Azure Functions)
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Microsoft/mcp-agent-langchainjs?hide_repo_select=true&ref=main&quickstart=true)
 ![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
 [Overview](#overview) • [API Endpoints](#api-endpoints) • [Development](#development)
 
@@ -15,6 +16,10 @@ This is the Burger API, a serverless API that allows you to order delicious burg
 
 The API is built with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript).
 
+<div align="center">
+  <img src="../../docs/images/burger-architecture.drawio.png" alt="Service architecture" />
+</div>
+
 ## API Endpoints
 
 The Burger API provides the following endpoints:
@@ -25,14 +30,14 @@ The Burger API provides the following endpoints:
 | GET    | /api/openapi             | Returns the OpenAPI specification in YAML format (add `?format=json` for JSON)                                                               |
 | GET    | /api/burgers             | Returns a list of all burgers                                                                                                                |
 | GET    | /api/burgers/{id}        | Retrieves a specific burger by its ID                                                                                                        |
-| GET    | /api/toppings            | Returns a list of all toppings (can be filtered by category with ?category=X)                                                                |
+| GET    | /api/toppings            | Returns a list of all toppings (can be filtered by category with `?category=X`)                                                                |
 | GET    | /api/toppings/{id}       | Retrieves a specific topping by its ID                                                                                                       |
 | GET    | /api/toppings/categories | Returns a list of all topping categories                                                                                                     |
 | GET    | /api/orders              | Returns a list of all orders in the system                                                                                                   |
 | POST   | /api/orders              | Places a new order with burgers (requires `userId`)                                                                                          |
 | GET    | /api/orders/{orderId}    | Retrieves an order by its ID                                                                                                                 |
 | DELETE | /api/orders/{orderId}    | Cancels an order if it has not yet been started (status must be 'pending', requires `userId` as a query parameter (e.g., `?userId={userId}`) |
-| GET    | /api/images/{filepath}   | Retrieves image files (e.g., /api/images/burger-1.jpg)                                                                                       |
+| GET    | /api/images/{filepath}   | Retrieves image files (e.g., /api/images/burgers/burger-1.jpg)                                                                                       |
 
 ### Filtering orders
 
@@ -77,16 +82,9 @@ No manual API call is needed for these transitions.
 
 ## Development
 
-### Setup development environment
+### Getting started
 
-You can run this project directly in your browser by using GitHub Codespaces, which will open a web-based VS Code.
-
-1. [**Fork**](https://github.com/Microsoft/mcp-agent-langchainjs/fork) the project to create your own copy of this repository.
-2. On your forked repository, select the **Code** button, then the **Codespaces** tab, and clink on the button **Create codespace on main**.
-   ![Screenshot showing how to create a new codespace](../../docs/images/codespaces.png?raw=true)
-3. Wait for the Codespace to be created, it should take a few minutes.
-
-If you prefer to run the project locally, follow [these instructions](../../README.md#use-your-local-environment).
+Follow the instructions [here](../../README.md#getting-started) to set up the development environment for the entire Pizza MCP Agents project.
 
 ### Run the application
 
@@ -100,3 +98,27 @@ This command will start the Azure Functions application locally. You can test th
 
 > [!NOTE]
 > If you have not deployed the Azure resources, it will fall back to in-memory data. You can test the API without deploying it to Azure.
+
+
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm start` | Start the development server with hot reload and Azurite storage emulator |
+| `npm run build` | Build the TypeScript source |
+| `npm run clean` | Clean build artifacts |
+| `npm run start:storage` | Start local Azurite storage emulator |
+| `update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime |
+
+### Configuration
+
+The application uses environment variables for configuration:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AZURE_COSMOSDB_NOSQL_ENDPOINT` | Azure Cosmos DB endpoint | `""` (not set) |
+| `AZURE_STORAGE_URL` | Azure Storage URL for images | `""` (not set) |
+| `AZURE_STORAGE_CONTAINER_NAME` | Azure Storage container name for images | `""` (not set) |
+
+> [!NOTE]
+> When running locally without any configuration set, the API will automatically use in-memory storage for the database and file access for the images, and log this behavior.
