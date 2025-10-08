@@ -8,7 +8,8 @@
     "agent-cli": "./bin/cli.js"
   },
   "scripts": {
-    "start": "npm run build -s && ./bin/cli.js --",
+    "start": "./bin/cli.js --",
+    "prestart": "tsc",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist"
