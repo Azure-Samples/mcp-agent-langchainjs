@@ -56,7 +56,7 @@ Tool and LLM steps surface in `context.currentStep` / `context.intermediateSteps
 
 ### Getting started
 
-Follow the instructions [here](../../README.md#getting-started) to set up the development environment for the entire Pizza MCP Agents project.
+Follow the instructions [here](../../README.md#getting-started) to set up the development environment for the entire Burger MCP Agents project.
 
 ### Run the application
 

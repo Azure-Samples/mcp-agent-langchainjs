@@ -63,7 +63,7 @@ First, you need to start the Burger API and Burger MCP server locally.
 
 ### Getting started
 
-Follow the instructions [here](../../README.md#getting-started) to set up the development environment for the entire Pizza MCP Agents project.
+Follow the instructions [here](../../README.md#getting-started) to set up the development environment for the entire Burger MCP Agents project.
 
 ### Run the application
 
@@ -105,4 +105,4 @@ The application uses environment variables for configuration:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BURGER_API_URL` | URL of the Pizza API server | `http://localhost:7071` |
+| `BURGER_API_URL` | URL of the Burger API server | `http://localhost:7071` |
