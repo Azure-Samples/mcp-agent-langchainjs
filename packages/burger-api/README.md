@@ -88,17 +88,16 @@ Follow the instructions [here](../../README.md#getting-started) to set up the de
 
 ### Run the application
 
-You can run the following command to run the application locally:
+Use the following command to run the application locally:
 
 ```bash
 npm start
 ```
 
-This command will start the Azure Functions application locally. You can test the application by opening the file `api.http` and click on **Send Request** to test the endpoints.
+This command will start the Azure Functions application locally. You can test the endpoints by opening the file `api.http` and click on **Send Request** to test the endpoints.
 
 > [!NOTE]
 > If you have not deployed the Azure resources, it will fall back to in-memory data. You can test the API without deploying it to Azure.
-
 
 ### Available Scripts
 
