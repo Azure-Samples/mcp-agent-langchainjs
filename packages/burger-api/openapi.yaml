@@ -547,7 +547,7 @@ components:
           example: 'user123'
         nickname:
           type: string
-          description: Optional nickname for the order (first 8 characters will be displayed in the dashboard)
+          description: Optional nickname for the order (only first 10 chars displayed)
           example: 'John'
         items:
           type: array
