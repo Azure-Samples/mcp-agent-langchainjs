@@ -14,7 +14,7 @@
 
 ⭐ If you like this sample, star it on GitHub — it helps a lot!
 
-[Overview](#overview) • [Architecture](#architecture) • [Getting started](#getting-started) • [Local development](#local-development) • [MCP tools](#mcp-tools) • [Deploy to Azure](#deploy-to-azure) • [Resources](#resources) • [Troubleshooting](#troubleshooting)
+[Overview](#overview) • [Architecture](#architecture) • [Getting started](#getting-started) • [MCP tools](#mcp-tools) • [Deploy to Azure](#deploy-to-azure) • [Resources](#resources) • [Troubleshooting](#troubleshooting)
 
 ![Animation showing the agent in action](./docs/images/demo.gif)
 
@@ -107,7 +107,7 @@ Then you can get the project code:
 
 </details>
 
-## Local development
+### Local development
 
 After setting up your environment, you can run the entire application locally:
 
@@ -140,9 +140,11 @@ You can then open the Agent web app and ask things like:
 
 The agent will decide which MCP tool(s) to call, then come up with a response.
 
-### Available scripts
+#### Available scripts
 
-Common scripts (run from repo root unless noted):
+This project uses [npm workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) to manage multiple packages in a single repository. You can run scripts from the root folder that will apply to all packages, or you can run scripts for individual packages as indicated in their respective README files.
+
+Common scripts (run from repo root):
 
 | Action | Command |
 |--------|---------|
@@ -220,7 +222,7 @@ To use the MCP server in local mode with GitHub Copilot, create a local `.vscode
 }
 ```
 
-Make sure that you have the Burger services running locally by running `npm start` in the project root.
+If you open that file
 
 Then, you can use GitHub Copilot in **agent mode** to interact with the MCP server. For example, you can ask questions like "What burgers are available?" or "Place an order for a vegan burger" and Copilot will use the MCP server to provide answers or perform actions. 
 
