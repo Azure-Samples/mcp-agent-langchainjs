@@ -13,8 +13,9 @@ export class BlobService {
 
   public static async getInstance(): Promise<BlobService> {
     if (!BlobService.instance) {
-      BlobService.instance = new BlobService();
-      await BlobService.instance.initialize();
+      const instance = new BlobService();
+      await instance.initialize();
+      BlobService.instance = instance;
     }
 
     return BlobService.instance;

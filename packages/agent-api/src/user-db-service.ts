@@ -13,8 +13,9 @@ export class UserDbService {
 
   static async getInstance(): Promise<UserDbService> {
     if (!UserDbService.instance) {
-      UserDbService.instance = new UserDbService();
-      await UserDbService.instance.initializeCosmosDb();
+      const instance = new UserDbService();
+      await instance.initializeCosmosDb();
+      UserDbService.instance = instance;
     }
     return UserDbService.instance;
   }

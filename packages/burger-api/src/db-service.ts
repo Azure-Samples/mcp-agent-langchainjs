@@ -55,9 +55,10 @@ export class DbService {
 
   static async getInstance(): Promise<DbService> {
     if (!DbService.instance) {
-      DbService.instance = new DbService();
-      await DbService.instance.initializeCosmosDb();
-      DbService.instance.initializeLocalData();
+      const instance = new DbService();
+      await instance.initializeCosmosDb();
+      instance.initializeLocalData();
+      DbService.instance = instance;
     }
 
     return DbService.instance;
