@@ -112,6 +112,7 @@ export class BurgerDashboard extends LitElement {
 
   protected renderOrder = (order: BurgerOrder, isLeaving = false) => {
     const animClass = isLeaving ? 'fade-out' : '';
+    const displayId = order.nickname ? order.nickname.slice(0, 10) : `#${order.id.slice(-6)}`;
     return html`
       <div
         data-order-id="${order.id}"
@@ -119,7 +120,7 @@ export class BurgerDashboard extends LitElement {
         @animationend=${isLeaving ? () => this.handleFadeOutEnd(order.id) : undefined}
       >
         <div class="${this.getOrderBoxClass(order)}">
-          <div class="order-id">#${order.id.slice(-6)}</div>
+          <div class="order-id">${displayId}</div>
           <div class="order-status">
             <div class="order-status-inner">${this.getOrderDisplayStatus(order)}</div>
           </div>

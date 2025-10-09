@@ -79,6 +79,7 @@ export const tools = [
     description: 'Place a new order with burgers (requires userId)',
     schema: z.object({
       userId: z.string().describe('ID of the user placing the order'),
+      nickname: z.string().optional().describe('Optional nickname for the order (only first 10 chars displayed)'),
       items: z
         .array(
           z.object({

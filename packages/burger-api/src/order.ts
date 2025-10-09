@@ -20,6 +20,7 @@ export interface Order {
   estimatedCompletionAt: string; // ISO date string for estimated completion time
   totalPrice: number;
   status: OrderStatus;
+  nickname?: string; // Optional nickname for the order
   readyAt?: string; // ISO date string for when the order was ready (undefined until ready)
   completedAt?: string; // ISO date string for when the order was completed (undefined until completed)
 }
