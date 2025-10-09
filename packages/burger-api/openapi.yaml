@@ -486,6 +486,10 @@ components:
           format: date-time
           description: ISO date string for when the order was ready (undefined until ready)
           example: '2025-04-10T15:05:00Z'
+        nickname:
+          type: string
+          description: Optional nickname for the order
+          example: 'John'
         totalPrice:
           type: number
           format: float
@@ -520,6 +524,9 @@ components:
           type: string
           format: date-time
           description: ISO date string for when the order was completed (undefined until completed)
+        nickname:
+          type: string
+          description: Optional nickname for the order
         totalPrice:
           type: number
           format: float
@@ -538,6 +545,10 @@ components:
         userId:
           type: string
           example: 'user123'
+        nickname:
+          type: string
+          description: Optional nickname for the order (first 8 characters will be displayed in the dashboard)
+          example: 'John'
         items:
           type: array
           description: List of burger items (maximum 50 burgers total across all items)

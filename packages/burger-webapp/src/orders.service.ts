@@ -9,6 +9,7 @@ export interface BurgerOrder {
   estimatedCompletionAt: string;
   totalPrice: number;
   status: string;
+  nickname?: string;
   readyAt?: string;
   completedAt?: string;
 }

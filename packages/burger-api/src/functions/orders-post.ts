@@ -10,6 +10,7 @@ interface CreateOrderRequest {
     quantity: number;
     extraToppingIds?: string[];
   }>;
+  nickname?: string;
 }
 
 // Helper function for topping validation
@@ -176,6 +177,7 @@ app.http('orders-post', {
         estimatedCompletionAt: estimatedCompletionAt.toISOString(),
         totalPrice,
         status: OrderStatus.Pending,
+        nickname: requestBody.nickname,
         completedAt: undefined,
       });
 
