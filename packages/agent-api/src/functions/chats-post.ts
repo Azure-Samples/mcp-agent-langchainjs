@@ -203,8 +203,6 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 // Transform the response chunks into a JSON stream
 async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: string, onComplete: (responseContent: string) => Promise<void>) {
   for await (const chunk of chunks) {
-    console.log(chunk);
-
     const data = chunk.data;
     let responseChunk: AIChatCompletionDelta | undefined;
 

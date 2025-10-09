@@ -27,7 +27,6 @@ export function createMcpTool<T extends z.ZodTypeAny>(
   if (!options.schema) {
     server.tool(options.name, options.description, async () => {
       try {
-        // console.log("Executing MCP tool:", toolArguments.name);
         const result = await options.handler(undefined as any);
         return {
           content: [
@@ -54,8 +53,6 @@ export function createMcpTool<T extends z.ZodTypeAny>(
   } else {
     server.tool(options.name, options.description, options.schema.shape, async (args: z.ZodRawShape) => {
       try {
-        // console.log("Executing MCP tool:", toolArguments.name);
-        // console.log("Tool arguments:", args);
         const result = await options.handler(args);
         return {
           content: [
