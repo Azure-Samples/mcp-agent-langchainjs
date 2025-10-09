@@ -34,7 +34,7 @@ The Burger API provides the following endpoints:
 | GET    | /api/toppings/{id}       | Retrieves a specific topping by its ID                                                                                                       |
 | GET    | /api/toppings/categories | Returns a list of all topping categories                                                                                                     |
 | GET    | /api/orders              | Returns a list of all orders in the system                                                                                                   |
-| POST   | /api/orders              | Places a new order with burgers (requires `userId`)                                                                                          |
+| POST   | /api/orders              | Places a new order with burgers (requires `userId`, optional `nickname`)                                                                                          |
 | GET    | /api/orders/{orderId}    | Retrieves an order by its ID                                                                                                                 |
 | DELETE | /api/orders/{orderId}    | Cancels an order if it has not yet been started (status must be 'pending', requires `userId` as a query parameter (e.g., `?userId={userId}`) |
 | GET    | /api/images/{filepath}   | Retrieves image files (e.g., /api/images/burgers/burger-1.jpg)                                                                                       |

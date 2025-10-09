@@ -40,7 +40,7 @@ The Burger MCP server provides the following tools:
 | get_topping_categories | Get a list of all topping categories                                                         |
 | get_orders             | Get a list of all orders in the system                                                       |
 | get_order_by_id        | Get a specific order by its ID                                                               |
-| place_order            | Place a new order with burgers (requires `userId`)                                           |
+| place_order            | Place a new order with burgers (requires `userId`, optional `nickname`)                                           |
 | delete_order_by_id     | Cancel an order if it has not yet been started (status must be `pending`, requires `userId`) |
 
 ## Test with MCP inspector
