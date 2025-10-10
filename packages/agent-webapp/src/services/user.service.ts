@@ -1,20 +1,25 @@
+import { ChatComponent } from "../components/chat";
+import { HistoryComponent } from "../components/history";
+
+// Chat and History components are defined in index.html
+// with their respective ids so we can access them here
 declare global {
   interface Window {
-    chatHistory: any;
-    chat: any;
+    chatHistory: HistoryComponent;
+    chat: ChatComponent;
   }
 }
 
-let userId: string | undefined;
+let userIdPromise: Promise<string | undefined> | undefined;
 
 export async function getUserId(refresh = false): Promise<string | undefined> {
-  if (userId && !refresh) {
-    return userId;
-  }
-  const response = await fetch(`/api/me`);
-  const payload = await response.json();
-  userId = payload?.id;
-  return userId;
+  if (!refresh && userIdPromise) return userIdPromise;
+  userIdPromise = (async () => {
+    const response = await fetch(`/api/me`);
+    const payload = await response.json();
+    return payload?.id;
+  })();
+  return userIdPromise;
 }
 
 export async function initUserSession() {
@@ -27,7 +32,7 @@ export async function initUserSession() {
     // Set up user ID for chat history and chat components
     window.chatHistory.userId = userId;
     window.chatHistory.addEventListener('loadSession', (e) => {
-      const { id, messages } = e.detail;
+      const { id, messages } = (e as CustomEvent).detail;
       window.chat.sessionId = id;
       window.chat.messages = messages;
     });

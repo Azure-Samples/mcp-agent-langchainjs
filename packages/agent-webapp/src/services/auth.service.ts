@@ -7,14 +7,18 @@ export type AuthDetails = {
 };
 
 const userDetailsRoute = '/.auth/me';
-let authDetails: AuthDetails | undefined;
+let authDetailsPromise: Promise<AuthDetails | undefined> | undefined;
 
 export async function getUserInfo(refresh = false): Promise<AuthDetails | undefined> {
-  if (authDetails && !refresh) {
-    return authDetails;
+  if (!refresh && authDetailsPromise) {
+    return authDetailsPromise;
   }
-  const response = await fetch(userDetailsRoute);
-  const payload = await response.json();
-  authDetails = payload?.clientPrincipal;
-  return authDetails;
+
+  authDetailsPromise = (async () => {
+    const response = await fetch(userDetailsRoute);
+    const payload = await response.json();
+    return payload?.clientPrincipal;
+  })();
+
+  return authDetailsPromise;
 }

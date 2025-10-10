@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { getUserInfo, AuthDetails } from '../services/auth.service.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import personSvg from '../../assets/icons/person.svg?raw';
@@ -9,15 +10,6 @@ import githubSvg from '../../assets/providers/github.svg?inline';
 
 const loginRoute = '/.auth/login';
 const logoutRoute = '/.auth/logout';
-const userDetailsRoute = '/.auth/me';
-
-export type AuthDetails = {
-  identityProvider: string;
-  userId: string;
-  userDetails: string;
-  userRoles: string[];
-  claims: { typ: string; val: string }[];
-};
 
 export type AuthComponentOptions = {
   strings: {
@@ -100,7 +92,7 @@ export class AuthComponent extends LitElement {
 
   constructor() {
     super();
-    this.getUserInfo().then((userDetails) => {
+    getUserInfo().then((userDetails) => {
       this._userDetails = userDetails;
       this.loaded = true;
     });
@@ -114,12 +106,6 @@ export class AuthComponent extends LitElement {
   onLogoutClicked() {
     const redirect = `${logoutRoute}?post_logout_redirect_uri=${encodeURIComponent(this.logoutRedirect)}`;
     window.location.href = redirect;
-  }
-
-  protected async getUserInfo() {
-    const response = await fetch(userDetailsRoute);
-    const payload = await response.json();
-    return payload?.clientPrincipal;
   }
 
   protected renderStatus = () =>
