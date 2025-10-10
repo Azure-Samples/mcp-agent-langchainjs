@@ -10,8 +10,13 @@
     "rootDir": ".",
     "sourceMap": true,
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "lib": ["ESNext"]
-  }
+  },
+  "include": ["src/**/*.ts"]
 }
