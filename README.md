@@ -91,7 +91,7 @@ You will also need to have [Docker](https://www.docker.com/get-started/) install
 You need to install following tools to work on your local machine:
 
 - [Node.js LTS](https://nodejs.org/en/download)
-- [Azure Developer CLI](https://aka.ms/azure-dev/install)
+- [Azure Developer CLI 1.19+](https://aka.ms/azure-dev/install)
 - [Git](https://git-scm.com/downloads)
 - [PowerShell 7+](https://github.com/powershell/powershell) _(for Windows users only)_
   - **Important**: Ensure you can run `pwsh.exe` from a PowerShell command. If this fails, you likely need to upgrade PowerShell.
