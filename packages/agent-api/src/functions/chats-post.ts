@@ -208,14 +208,14 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
 
     if (chunk.event === 'on_chat_model_end' && data.output?.content.length > 0) {
       // End of our agentic chain
-      const content = data?.output.content[0].text ?? '';
+      const content = data?.output.content[0].text ?? data.output.content ?? '';
       await onComplete(content);
 
     } else if (chunk.event === 'on_chat_model_stream' && data.chunk.content.length > 0) {
       // Streaming response from the LLM
       responseChunk = {
         delta: {
-          content: data.chunk.content[0].text,
+          content: data.chunk.content[0].text ?? data.chunk.content,
           role: 'assistant',
         }
       };
