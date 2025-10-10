@@ -182,7 +182,9 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 
     return {
       headers: {
-        'Content-Type': 'application/x-ndjson',
+        // This content type is needed for streaming responses
+        // when using a SWA linked backend API
+        'Content-Type': 'text/event-stream',
         'Transfer-Encoding': 'chunked',
       },
       body: jsonStream,
