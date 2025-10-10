@@ -18,7 +18,7 @@ export function getAzureOpenAiTokenProvider() {
   return getBearerTokenProvider(getCredentials(), azureOpenAiScope);
 }
 
-export function getAuthenticationUserId(request: HttpRequest, body?: any): string | undefined {
+export function getAuthenticationUserId(request: HttpRequest): string | undefined {
   let userId: string | undefined;
 
   // Get the user ID from Azure easy auth
@@ -33,7 +33,7 @@ export function getAuthenticationUserId(request: HttpRequest, body?: any): strin
 
 export async function getInternalUserId(request: HttpRequest, body?: any): Promise<string | undefined> {
   // Get the user ID from Azure easy auth if it's available,
-  let authUserId = getAuthenticationUserId(request, body);
+  let authUserId = getAuthenticationUserId(request);
   if (authUserId) {
     // Exchange the auth user ID to the internal user ID
     const db = await UserDbService.getInstance();
