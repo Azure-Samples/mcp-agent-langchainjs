@@ -26,8 +26,8 @@
     "@langchain/langgraph": "^0.4.9",
     "@langchain/mcp-adapters": "^0.6.0",
     "@langchain/openai": "^0.6.13",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.205.0",
-    "@opentelemetry/instrumentation": "^0.205.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.206.0",
+    "@opentelemetry/instrumentation": "^0.206.0",
     "@opentelemetry/sdk-trace-base": "^2.1.0",
     "@opentelemetry/sdk-trace-node": "^2.0.1",
     "langchain": "^0.3.34"
