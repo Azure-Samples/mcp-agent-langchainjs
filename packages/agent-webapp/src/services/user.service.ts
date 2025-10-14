@@ -1,5 +1,5 @@
-import { ChatComponent } from "../components/chat";
-import { HistoryComponent } from "../components/history";
+import { ChatComponent } from '../components/chat';
+import { HistoryComponent } from '../components/history';
 
 // Chat and History components are defined in index.html
 // with their respective ids so we can access them here

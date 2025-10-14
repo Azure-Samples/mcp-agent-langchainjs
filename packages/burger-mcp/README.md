@@ -40,7 +40,7 @@ The Burger MCP server provides the following tools:
 | get_topping_categories | Get a list of all topping categories                                                         |
 | get_orders             | Get a list of all orders in the system                                                       |
 | get_order_by_id        | Get a specific order by its ID                                                               |
-| place_order            | Place a new order with burgers (requires `userId`, optional `nickname`)                                           |
+| place_order            | Place a new order with burgers (requires `userId`, optional `nickname`)                      |
 | delete_order_by_id     | Cancel an order if it has not yet been started (status must be `pending`, requires `userId`) |
 
 ## Test with MCP inspector
@@ -89,20 +89,20 @@ npm run start -- --local
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start the MCP server with HTTP and SSE endpoints |
-| `npm run start:local` | Start the MCP server with STDIO transport |
-| `npm run dev` | Start the MCP server with hot reload |
-| `npm run dev:local` | Start the MCP server with hot reload and STDIO transport |
-| `npm run build` | Build the TypeScript source |
-| `npm run clean` | Clean build artifacts |
+| Script                          | Description                                                            |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| `npm start`                     | Start the MCP server with HTTP and SSE endpoints                       |
+| `npm run start:local`           | Start the MCP server with STDIO transport                              |
+| `npm run dev`                   | Start the MCP server with hot reload                                   |
+| `npm run dev:local`             | Start the MCP server with hot reload and STDIO transport               |
+| `npm run build`                 | Build the TypeScript source                                            |
+| `npm run clean`                 | Clean build artifacts                                                  |
 | `npm run update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime |
 
 ### Configuration
 
 The application uses environment variables for configuration:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable         | Description                  | Default                 |
+| ---------------- | ---------------------------- | ----------------------- |
 | `BURGER_API_URL` | URL of the Burger API server | `http://localhost:7071` |

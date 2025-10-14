@@ -19,7 +19,7 @@ export class DebugComponent extends LitElement {
 
   protected toggleStepExpanded(index: number) {
     if (this.expandedSteps.has(index)) {
-      this.expandedSteps = new Set([...this.expandedSteps].filter(i => i !== index));
+      this.expandedSteps = new Set([...this.expandedSteps].filter((i) => i !== index));
     } else {
       this.expandedSteps = new Set([...this.expandedSteps, index]);
     }
@@ -28,7 +28,7 @@ export class DebugComponent extends LitElement {
   protected toggleOutputExpanded(stepIndex: number, section: string) {
     const key = `${stepIndex}-${section}`;
     if (this.expandedOutputs.has(key)) {
-      this.expandedOutputs = new Set([...this.expandedOutputs].filter(k => k !== key));
+      this.expandedOutputs = new Set([...this.expandedOutputs].filter((k) => k !== key));
     } else {
       this.expandedOutputs = new Set([...this.expandedOutputs, key]);
     }
@@ -47,7 +47,13 @@ export class DebugComponent extends LitElement {
     return text.substring(0, maxLength) + '...';
   }
 
-  protected renderDetailSection(title: string, content: string, stepIndex: number, section: string, isTruncated: boolean = false) {
+  protected renderDetailSection(
+    title: string,
+    content: string,
+    stepIndex: number,
+    section: string,
+    isTruncated: boolean = false,
+  ) {
     const key = `${stepIndex}-${section}`;
     const isExpanded = this.expandedOutputs.has(key);
     const displayContent = isTruncated && !isExpanded ? this.truncateText(content, 500) : content;
@@ -56,17 +62,19 @@ export class DebugComponent extends LitElement {
       <div class="detail-section">
         <div class="detail-header">
           <h4>${title}</h4>
-          ${isTruncated ? html`
-            <div class="detail-actions">
-              <button
-                class="action-button expand-button"
-                @click=${() => this.toggleOutputExpanded(stepIndex, section)}
-                title=${isExpanded ? 'Show less' : 'Show full content'}
-              >
-                ${isExpanded ? 'Less' : 'More'}
-              </button>
-            </div>
-          ` : nothing}
+          ${isTruncated
+            ? html`
+                <div class="detail-actions">
+                  <button
+                    class="action-button expand-button"
+                    @click=${() => this.toggleOutputExpanded(stepIndex, section)}
+                    title=${isExpanded ? 'Show less' : 'Show full content'}
+                  >
+                    ${isExpanded ? 'Less' : 'More'}
+                  </button>
+                </div>
+              `
+            : nothing}
         </div>
         <pre class="detail-content">${displayContent}</pre>
       </div>
@@ -81,61 +89,60 @@ export class DebugComponent extends LitElement {
     return html`
       <div class="step ${stepType}">
         <div class="step-content">
-          <button
-            class="step-header"
-            @click=${() => this.toggleStepExpanded(index)}
-            aria-expanded=${isExpanded}
-          >
-            <div class="step-indicator ${stepType}">
-              ${stepType === 'tool' ? 'T' : 'L'}
-            </div>
+          <button class="step-header" @click=${() => this.toggleStepExpanded(index)} aria-expanded=${isExpanded}>
+            <div class="step-indicator ${stepType}">${stepType === 'tool' ? 'T' : 'L'}</div>
             <div class="step-summary">
               <span class="step-title">${summary}</span>
             </div>
             <div class="step-toggle ${isExpanded ? 'expanded' : ''}">▼</div>
           </button>
 
-          ${isExpanded ? html`
-            <div class="step-details">
-              ${step.input !== undefined
-                ? this.renderDetailSection('Input', step.input, index, 'input', step.input.length > 500)
-                : nothing}
-              ${step.output !== undefined
-                ? this.renderDetailSection('Output', step.output, index, 'output', step.output.length > 500)
-                : nothing}
-            </div>
-          ` : nothing}
+          ${isExpanded
+            ? html`
+                <div class="step-details">
+                  ${step.input !== undefined
+                    ? this.renderDetailSection('Input', step.input, index, 'input', step.input.length > 500)
+                    : nothing}
+                  ${step.output !== undefined
+                    ? this.renderDetailSection('Output', step.output, index, 'output', step.output.length > 500)
+                    : nothing}
+                </div>
+              `
+            : nothing}
         </div>
       </div>
     `;
   }
 
   protected override render() {
-    const intermediateSteps: AgentStep[] = (this.message?.context?.['intermediateSteps'] as AgentStep[] | undefined) ?? [];
-    return intermediateSteps.length === 0 ? nothing : html`
-      <div class="debug-container">
-      <button
-        class="debug-toggle ${this.isExpanded ? 'expanded' : ''}"
-        @click=${this.toggleExpanded}
-        aria-expanded=${this.isExpanded}
-      >
-        <span class="toggle-icon">
-          ${unsafeSVG(aiSvg)}
-        </span>
-        ${this.isExpanded ? 'Hide intermediate steps' : 'Show intermediate steps'} (${intermediateSteps.length})
-      </button>
+    const intermediateSteps: AgentStep[] =
+      (this.message?.context?.['intermediateSteps'] as AgentStep[] | undefined) ?? [];
+    return intermediateSteps.length === 0
+      ? nothing
+      : html`
+          <div class="debug-container">
+            <button
+              class="debug-toggle ${this.isExpanded ? 'expanded' : ''}"
+              @click=${this.toggleExpanded}
+              aria-expanded=${this.isExpanded}
+            >
+              <span class="toggle-icon"> ${unsafeSVG(aiSvg)} </span>
+              ${this.isExpanded ? 'Hide intermediate steps' : 'Show intermediate steps'} (${intermediateSteps.length})
+            </button>
 
-      ${this.isExpanded ? html`
-        <div class="steps-timeline">
-          ${repeat(
-          intermediateSteps,
-          (_, index) => index,
-          (step, index) => this.renderStep(step as AgentStep, index)
-          )}
-        </div>
-      ` : nothing}
-      </div>
-    `;
+            ${this.isExpanded
+              ? html`
+                  <div class="steps-timeline">
+                    ${repeat(
+                      intermediateSteps,
+                      (_, index) => index,
+                      (step, index) => this.renderStep(step as AgentStep, index),
+                    )}
+                  </div>
+                `
+              : nothing}
+          </div>
+        `;
   }
 
   static override styles = css`
@@ -157,7 +164,7 @@ export class DebugComponent extends LitElement {
       --card-bg: var(--azc-card-bg, #fff);
       --border-color: var(--azc-border-color, #ccc);
 
-      display: contents
+      display: contents;
     }
 
     *:focus-visible {
@@ -260,7 +267,7 @@ export class DebugComponent extends LitElement {
         background: color-mix(in srgb, var(--card-bg), var(--text-color) 4%);
       }
 
-      &[aria-expanded="true"] {
+      &[aria-expanded='true'] {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         border-bottom-color: transparent;

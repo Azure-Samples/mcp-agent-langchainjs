@@ -15,6 +15,7 @@ This package contains [GenAIScript](https://aka.ms/genaiscript)-powered tools fo
 ## Overview
 
 The data generated includes:
+
 - Burger menu data (names, descriptions, prices, toppings)
 - High-quality food images for burgers and toppings
 
@@ -22,8 +23,10 @@ The data generated includes:
 
 1. Run `npm install` to install the necessary dependencies.
 2. Make sure you have access to a large language model (LLM) like `gpt-4o`, `gpt-4.1` or `gpt-5` on either OpenAI or Azure OpenAI for the text data generation, to a model like `gpt-image-1` or `dall-e-3` for image generation.
-  * See this [guide](https://learn.microsoft.com/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal) for deploying a text generation model on Azure OpenAI.
-  * See this [guide](https://learn.microsoft.com/azure/ai-foundry/openai/how-to/dall-e?tabs=gpt-image-1) for deploying an image generation model on Azure OpenAI.
+
+- See this [guide](https://learn.microsoft.com/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal) for deploying a text generation model on Azure OpenAI.
+- See this [guide](https://learn.microsoft.com/azure/ai-foundry/openai/how-to/dall-e?tabs=gpt-image-1) for deploying an image generation model on Azure OpenAI.
+
 3. Set these environment variables or add them to a `.env` file:
 
 ```bash
@@ -45,6 +48,7 @@ OPENAI_API_KEY="your-openai-api-key"
 ```bash
 npm run generate:burgers
 ```
+
 Generates a complete burger menu with original burgers and toppings.
 
 ### Generate food images
@@ -52,6 +56,7 @@ Generates a complete burger menu with original burgers and toppings.
 ```bash
 npm run generate:images
 ```
+
 Generates realistic food images for the menu items using AI image generation.
 
 > [!NOTE]

@@ -27,13 +27,13 @@ The Agent API hosts the LangChain.js powered burger ordering agent. It:
 
 ## API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /api/me | Returns (and lazily creates) the internal hashed user id for the authenticated user |
-| GET | /api/chats | Lists all chat sessions for the current user |
-| GET | /api/chats/{sessionId} | Returns messages for a specific session |
-| DELETE | /api/chats/{sessionId} | Deletes a chat session and its messages |
-| POST | /api/chats/stream | Streams an agent response for provided messages; creates/updates session |
+| Method | Path                   | Description                                                                         |
+| ------ | ---------------------- | ----------------------------------------------------------------------------------- |
+| GET    | /api/me                | Returns (and lazily creates) the internal hashed user id for the authenticated user |
+| GET    | /api/chats             | Lists all chat sessions for the current user                                        |
+| GET    | /api/chats/{sessionId} | Returns messages for a specific session                                             |
+| DELETE | /api/chats/{sessionId} | Deletes a chat session and its messages                                             |
+| POST   | /api/chats/stream      | Streams an agent response for provided messages; creates/updates session            |
 
 ### Streaming format
 
@@ -75,31 +75,31 @@ The agent API needs the Burger MCP server (and Burger API if running everything 
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start the development server with hot reload |
-| `npm run build` | Build the TypeScript source |
-| `npm run clean` | Clean build artifacts |
+| Script                  | Description                                                            |
+| ----------------------- | ---------------------------------------------------------------------- |
+| `npm start`             | Start the development server with hot reload                           |
+| `npm run build`         | Build the TypeScript source                                            |
+| `npm run clean`         | Clean build artifacts                                                  |
 | `update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime |
 
 ## Configuration
 
 The application uses environment variables for configuration:
 
-| Variable | Required | Purpose | Default / Fallback |
-|----------|----------|---------|--------------------|
-| `AZURE_OPENAI_API_ENDPOINT` | Yes | Azure OpenAI endpoint used for chat completions | – |
-| `AZURE_OPENAI_MODEL` | No | Model name passed to LangChain.js | `gpt-5-mini` |
-| `BURGER_MCP_URL` | Yes* | Streamable HTTP endpoint of Burger MCP server | `http://localhost:3000/mcp` |
-| `AZURE_COSMOSDB_NOSQL_ENDPOINT` | No | Enables persistent chat + session titles | In‑memory fallback |
-| `APPLICATIONINSIGHTS_CONNECTION_STRING` | No | Sends traces to Azure Monitor | Local OTLP exporter |
+| Variable                                | Required | Purpose                                         | Default / Fallback          |
+| --------------------------------------- | -------- | ----------------------------------------------- | --------------------------- |
+| `AZURE_OPENAI_API_ENDPOINT`             | Yes      | Azure OpenAI endpoint used for chat completions | –                           |
+| `AZURE_OPENAI_MODEL`                    | No       | Model name passed to LangChain.js               | `gpt-5-mini`                |
+| `BURGER_MCP_URL`                        | Yes\*    | Streamable HTTP endpoint of Burger MCP server   | `http://localhost:3000/mcp` |
+| `AZURE_COSMOSDB_NOSQL_ENDPOINT`         | No       | Enables persistent chat + session titles        | In‑memory fallback          |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | No       | Sends traces to Azure Monitor                   | Local OTLP exporter         |
 
-> <sup>*</sup>The code defaults `BURGER_MCP_URL` to the local dev port; production must set this.
+> <sup>\*</sup>The code defaults `BURGER_MCP_URL` to the local dev port; production must set this.
 
 ### Local OpenTelemetry traces
 
 When running locally, spans are exported to `http://localhost:4318/v1/traces` and you can capture traces by running a local collector.
 
-For example, you can use the [AI Toolkit VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) which includes a local OpenTelemetry collector. 
+For example, you can use the [AI Toolkit VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) which includes a local OpenTelemetry collector.
 
 After installing the extension, open the **I Toolkit** panel in the sidebar, go to the **Tracing** tool under **Agent and workflow tools**, and select **Start Collector**. When calling the agent API, you should see traces appear in the panel. You will then be able to inspect each trace in detail: The one named `LangGraph` contains the full sequence of LLM calls and tool invocations, allowing you to see how the agent arrived at its final response.

@@ -30,14 +30,14 @@ The Burger API provides the following endpoints:
 | GET    | /api/openapi             | Returns the OpenAPI specification in YAML format (add `?format=json` for JSON)                                                               |
 | GET    | /api/burgers             | Returns a list of all burgers                                                                                                                |
 | GET    | /api/burgers/{id}        | Retrieves a specific burger by its ID                                                                                                        |
-| GET    | /api/toppings            | Returns a list of all toppings (can be filtered by category with `?category=X`)                                                                |
+| GET    | /api/toppings            | Returns a list of all toppings (can be filtered by category with `?category=X`)                                                              |
 | GET    | /api/toppings/{id}       | Retrieves a specific topping by its ID                                                                                                       |
 | GET    | /api/toppings/categories | Returns a list of all topping categories                                                                                                     |
 | GET    | /api/orders              | Returns a list of all orders in the system                                                                                                   |
-| POST   | /api/orders              | Places a new order with burgers (requires `userId`, optional `nickname`)                                                                                          |
+| POST   | /api/orders              | Places a new order with burgers (requires `userId`, optional `nickname`)                                                                     |
 | GET    | /api/orders/{orderId}    | Retrieves an order by its ID                                                                                                                 |
 | DELETE | /api/orders/{orderId}    | Cancels an order if it has not yet been started (status must be 'pending', requires `userId` as a query parameter (e.g., `?userId={userId}`) |
-| GET    | /api/images/{filepath}   | Retrieves image files (e.g., /api/images/burgers/burger-1.jpg)                                                                                       |
+| GET    | /api/images/{filepath}   | Retrieves image files (e.g., /api/images/burgers/burger-1.jpg)                                                                               |
 
 ### Filtering orders
 
@@ -101,23 +101,23 @@ This command will start the Azure Functions application locally. You can test th
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start the development server with hot reload and Azurite storage emulator |
-| `npm run build` | Build the TypeScript source |
-| `npm run clean` | Clean build artifacts |
-| `npm run start:storage` | Start local Azurite storage emulator |
-| `update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime |
+| Script                  | Description                                                               |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `npm start`             | Start the development server with hot reload and Azurite storage emulator |
+| `npm run build`         | Build the TypeScript source                                               |
+| `npm run clean`         | Clean build artifacts                                                     |
+| `npm run start:storage` | Start local Azurite storage emulator                                      |
+| `update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime    |
 
 ### Configuration
 
 The application uses environment variables for configuration:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `AZURE_COSMOSDB_NOSQL_ENDPOINT` | Azure Cosmos DB endpoint | `""` (not set) |
-| `AZURE_STORAGE_URL` | Azure Storage URL for images | `""` (not set) |
-| `AZURE_STORAGE_CONTAINER_NAME` | Azure Storage container name for images | `""` (not set) |
+| Variable                        | Description                             | Default        |
+| ------------------------------- | --------------------------------------- | -------------- |
+| `AZURE_COSMOSDB_NOSQL_ENDPOINT` | Azure Cosmos DB endpoint                | `""` (not set) |
+| `AZURE_STORAGE_URL`             | Azure Storage URL for images            | `""` (not set) |
+| `AZURE_STORAGE_CONTAINER_NAME`  | Azure Storage container name for images | `""` (not set) |
 
 > [!NOTE]
 > When running locally without any configuration set, the API will automatically use in-memory storage for the database and file access for the images, and log this behavior.

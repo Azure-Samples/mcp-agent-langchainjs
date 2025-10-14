@@ -28,7 +28,7 @@ All tool interactions are delegated to the MCP server through the API; the web a
 
 ### Features
 
-- **Reusable Web **Components** (`<azc-chat>`, `<azc-auth>` `<azc-history>`, `<azc-user-card>`, `<azc-debug>`): building blocks that you can customize and integrate in your own apps
+- **Reusable Web Components** (`<azc-chat>`, `<azc-auth>` `<azc-history>`, `<azc-user-card>`, `<azc-debug>`): building blocks that you can customize and integrate in your own apps
 - **User authentication**: integrates with Azure Static Web Apps easy auth
 - **NDJSON streaming parser**: process JSON streams with incremental DOM updates
 - **Safe markdown rendering**: use DOMPurify and marked to safely render user and agent content
@@ -55,19 +55,19 @@ This command will start the [Azure Static Web Apps CLI](https://learn.microsoft.
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start web app + local Functions API via SWA CLI (recommended full dev) |
-| `npm run start:mock` | Start web app + mock API responses (from `mocks/`) |
-| `npm run dev` | Vite dev server only (no API auto‑start) |
-| `npm run build` | Production build to `dist` (code‑split + sourcemaps) |
-| `npm run clean` | Remove `dist` |
+| Script               | Description                                                            |
+| -------------------- | ---------------------------------------------------------------------- |
+| `npm start`          | Start web app + local Functions API via SWA CLI (recommended full dev) |
+| `npm run start:mock` | Start web app + mock API responses (from `mocks/`)                     |
+| `npm run dev`        | Vite dev server only (no API auto‑start)                               |
+| `npm run build`      | Production build to `dist` (code‑split + sourcemaps)                   |
+| `npm run clean`      | Remove `dist`                                                          |
 
 ### Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `AGENT_API_URL_OVERRIDE` | Override base URL for Agent API (useful when pointing at a remote deployment) | `` (relative `/api`) |
+| Variable                 | Description                                                                   | Default            |
+| ------------------------ | ----------------------------------------------------------------------------- | ------------------ |
+| `AGENT_API_URL_OVERRIDE` | Override base URL for Agent API (useful when pointing at a remote deployment) | ``(relative`/api`) |
 
 ### Debugging intermediate agent steps
 

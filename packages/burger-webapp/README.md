@@ -43,21 +43,21 @@ This command will start the [Vite](https://vitejs.dev/) development server and t
 
 ### Available scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm start` | Start the web app server and the Functions emulator for the Burger API |
+| Command              | Description                                                                    |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `npm start`          | Start the web app server and the Functions emulator for the Burger API         |
 | `npm run start:mock` | Start the web app server with mocked data (useful for testing without the API) |
-| `npm run dev` | Start only the Vite development server |
-| `npm run build` | Build the application for production |
-| `npm run preview` | Preview the production build locally |
-| `npm run serve` | Start both the web app and API in development mode |
+| `npm run dev`        | Start only the Vite development server                                         |
+| `npm run build`      | Build the application for production                                           |
+| `npm run preview`    | Preview the production build locally                                           |
+| `npm run serve`      | Start both the web app and API in development mode                             |
 
 ### Configuration
 
 The application uses environment variables for configuration:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable         | Description         | Default              |
+| ---------------- | ------------------- | -------------------- |
 | `BURGER_API_URL` | Burger API base URL | `""` (auto-detected) |
 
 For local development, this doesn't need to be set thanks to Vite development server proxying.

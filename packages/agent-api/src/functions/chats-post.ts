@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/functions';
 import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamEvent } from '@langchain/core/tracers/log_stream.js';
@@ -57,7 +57,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
         jsonBody: {
           error: 'Invalid or missing userId in the request',
         },
-      }
+      };
     }
 
     if (!messages || messages.length === 0 || !messages.at(-1)?.content) {
@@ -96,7 +96,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       modelName: process.env.AZURE_OPENAI_MODEL ?? 'gpt-5-mini',
       streaming: true,
       useResponsesApi: true,
-      apiKey: 'not_used'
+      apiKey: 'not_used',
     });
     const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
       sessionId,
@@ -120,7 +120,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const agent = createReactAgent({
       llm: model,
       tools,
-      prompt: agentSystemPrompt
+      prompt: agentSystemPrompt,
     });
 
     const question = messages.at(-1)!.content;
@@ -130,15 +130,11 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     // Start the agent and stream the response events
     const responseStream = await agent.streamEvents(
       {
-        messages: [
-          ['human', `userId: ${userId}`],
-          ...previousMessages,
-          ['human', question]
-        ]
+        messages: [['human', `userId: ${userId}`], ...previousMessages, ['human', question]],
       },
       {
         configurable: { sessionId },
-        version: 'v2'
+        version: 'v2',
       },
     );
 
@@ -153,7 +149,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
         context.log(`Title for session: ${response.text}`);
         chatHistory.setContext({ title: response.text });
       }
-    }
+    };
 
     // We don't await this yet, to allow parallel execution.
     // We'll await it later, after the response is fully sent.
@@ -164,10 +160,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       try {
         if (content) {
           // When no content is generated, do not update the history as it's likely an error
-          await chatHistory.addMessages([
-            new HumanMessage(question),
-            new AIMessage(content),
-          ]);
+          await chatHistory.addMessages([new HumanMessage(question), new AIMessage(content)]);
           context.log('Chat history updated successfully');
 
           // Ensure the session title has finished generating
@@ -176,7 +169,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       } catch (error) {
         context.error('Error after response completion:', error);
       }
-    }
+    };
 
     const jsonStream = Readable.from(createJsonStream(responseStream, sessionId, onResponseComplete));
 
@@ -203,7 +196,11 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 }
 
 // Transform the response chunks into a JSON stream
-async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: string, onComplete: (responseContent: string) => Promise<void>) {
+async function* createJsonStream(
+  chunks: AsyncIterable<StreamEvent>,
+  sessionId: string,
+  onComplete: (responseContent: string) => Promise<void>,
+) {
   for await (const chunk of chunks) {
     const data = chunk.data;
     let responseChunk: AIChatCompletionDelta | undefined;
@@ -212,42 +209,48 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
       // End of our agentic chain
       const content = data?.output.content[0].text ?? data.output.content ?? '';
       await onComplete(content);
-
     } else if (chunk.event === 'on_chat_model_stream' && data.chunk.content.length > 0) {
       // Streaming response from the LLM
       responseChunk = {
         delta: {
           content: data.chunk.content[0].text ?? data.chunk.content,
           role: 'assistant',
-        }
+        },
       };
     } else if (chunk.event === 'on_chat_model_end') {
       // Intermediate LLM response (no content)
       responseChunk = {
         delta: {
           context: {
-            intermediateSteps: [{
-              type: 'llm',
-              name: chunk.name,
-              input: data.input ? JSON.stringify(data.input) : undefined,
-              output: data?.output.content.length > 0 ? JSON.stringify(data?.output.content) : JSON.stringify(data?.output.tool_calls),
-            }],
-          }
-        }
+            intermediateSteps: [
+              {
+                type: 'llm',
+                name: chunk.name,
+                input: data.input ? JSON.stringify(data.input) : undefined,
+                output:
+                  data?.output.content.length > 0
+                    ? JSON.stringify(data?.output.content)
+                    : JSON.stringify(data?.output.tool_calls),
+              },
+            ],
+          },
+        },
       };
     } else if (chunk.event === 'on_tool_end') {
       // Tool call completed
       responseChunk = {
         delta: {
           context: {
-            intermediateSteps: [{
-              type: 'tool',
-              name: chunk.name,
-              input: data?.input?.input ? data.input?.input : undefined,
-              output: data?.output.content ? data?.output.content : undefined,
-            }],
-          }
-        }
+            intermediateSteps: [
+              {
+                type: 'tool',
+                name: chunk.name,
+                input: data?.input?.input ? data.input?.input : undefined,
+                output: data?.output.content ? data?.output.content : undefined,
+              },
+            ],
+          },
+        },
       };
     } else if (chunk.event === 'on_chat_model_start') {
       // Start of a new LLM call
@@ -258,10 +261,10 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
               type: 'llm',
               name: chunk.name,
               input: data?.input ? data.input : undefined,
-            }
-          }
+            },
+          },
         },
-        context: { sessionId }
+        context: { sessionId },
       };
     } else if (chunk.event === 'on_tool_start') {
       // Start of a new tool call
@@ -272,9 +275,9 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>, sessionId: 
               type: 'tool',
               name: chunk.name,
               input: data?.input?.input ? JSON.stringify(data.input?.input) : undefined,
-            }
-          }
-        }
+            },
+          },
+        },
       };
     }
 

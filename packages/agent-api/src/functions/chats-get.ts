@@ -14,7 +14,7 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
       jsonBody: {
         error: 'Invalid or missing userId in the request',
       },
-    }
+    };
   }
 
   try {
@@ -46,7 +46,7 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
         role: message.getType() === 'human' ? 'user' : 'assistant',
         content: message.content,
       }));
-      return { jsonBody: chatMessages }
+      return { jsonBody: chatMessages };
     }
 
     const sessions = await chatHistory.getAllSessions();
@@ -64,7 +64,7 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
       jsonBody: {
         error: 'Session not found',
       },
-    }
+    };
   }
 }
 

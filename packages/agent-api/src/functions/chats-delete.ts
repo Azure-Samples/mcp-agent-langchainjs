@@ -14,7 +14,7 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
       jsonBody: {
         error: 'Invalid or missing userId in the request',
       },
-    }
+    };
   }
 
   if (!sessionId) {
@@ -23,7 +23,7 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
       jsonBody: {
         error: 'Invalid or missing sessionId in the request',
       },
-    }
+    };
   }
 
   try {
@@ -60,7 +60,7 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
       jsonBody: {
         error: 'Session not found',
       },
-    }
+    };
   }
 }
 

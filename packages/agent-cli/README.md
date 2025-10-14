@@ -76,13 +76,13 @@ npm start "status of my recent orders" -- --userId user123 --verbose
 
 ### Options
 
-| Flag | Description |
-|------|-------------|
+| Flag            | Description                                                           |
+| --------------- | --------------------------------------------------------------------- |
 | `--userId <id>` | Specify the user identity (required for placing or cancelling orders) |
-| `--new` | Start a fresh session (ignores prior conversation) |
-| `--verbose` | Print intermediate LLM + tool invocation steps |
-| `--local` | Force `http://localhost:3000/mcp` instead of `BURGER_MCP_URL` |
-| `--help` | Display usage information |
+| `--new`         | Start a fresh session (ignores prior conversation)                    |
+| `--verbose`     | Print intermediate LLM + tool invocation steps                        |
+| `--local`       | Force `http://localhost:3000/mcp` instead of `BURGER_MCP_URL`         |
+| `--help`        | Display usage information                                             |
 
 ### Conversation history
 
@@ -96,14 +96,14 @@ Delete that file or use `--new` to reset context.
 
 ### Environment Variables
 
-| Variable | Required | Purpose | Default |
-|----------|----------|---------|---------|
-| `AZURE_OPENAI_API_ENDPOINT` | Yes | Azure OpenAI endpoint used for chat completions | – |
-| `AZURE_OPENAI_MODEL` | No | Model name for the LLM | `gpt-5-mini` |
-| `BURGER_MCP_URL` | No* | Streamable HTTP MCP endpoint | `http://localhost:3000/mcp` |
-| `AGENT_WEBAPP_URL` | No | Used in prompt to guide users where to retrieve their user ID | `http://localhost:4280` |
+| Variable                    | Required | Purpose                                                       | Default                     |
+| --------------------------- | -------- | ------------------------------------------------------------- | --------------------------- |
+| `AZURE_OPENAI_API_ENDPOINT` | Yes      | Azure OpenAI endpoint used for chat completions               | –                           |
+| `AZURE_OPENAI_MODEL`        | No       | Model name for the LLM                                        | `gpt-5-mini`                |
+| `BURGER_MCP_URL`            | No\*     | Streamable HTTP MCP endpoint                                  | `http://localhost:3000/mcp` |
+| `AGENT_WEBAPP_URL`          | No       | Used in prompt to guide users where to retrieve their user ID | `http://localhost:4280`     |
 
-<sup>*</sup>When not set the CLI falls back to the local development endpoint. Set this when targeting a deployed MCP server.
+<sup>\*</sup>When not set the CLI falls back to the local development endpoint. Set this when targeting a deployed MCP server.
 
 Authentication to Azure OpenAI uses `DefaultAzureCredential`. Ensure you are logged in by running either `azd auth login` or `az login`.
 
@@ -111,16 +111,15 @@ Authentication to Azure OpenAI uses `DefaultAzureCredential`. Ensure you are log
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Build then run a single agent interaction |
-| `npm run build` | Compile TypeScript to `dist` |
-| `npm run watch` | Incremental compile in watch mode |
-| `npm run clean` | Remove build artifacts |
+| Script          | Description                               |
+| --------------- | ----------------------------------------- |
+| `npm start`     | Build then run a single agent interaction |
+| `npm run build` | Compile TypeScript to `dist`              |
+| `npm run watch` | Incremental compile in watch mode         |
+| `npm run clean` | Remove build artifacts                    |
 
 ## Troubleshooting
 
 - Missing `AZURE_OPENAI_API_ENDPOINT`: set it in the root `.env` or export it in your shell
 - Repeated auth failures: re-run `az login` or clear cached Azure credential tokens
 - MCP connection issues: ensure the MCP server is running and `BURGER_MCP_URL` is correct
-

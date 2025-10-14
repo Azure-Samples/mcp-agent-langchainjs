@@ -41,7 +41,7 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
     const safe = DOMPurify.sanitize(md, { USE_PROFILES: { html: true } });
     result = html`${unsafeHTML(safe)}`;
   } else {
-    result =  html`${text}`;
+    result = html`${text}`;
   }
 
   return {

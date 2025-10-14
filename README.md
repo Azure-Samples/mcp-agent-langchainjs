@@ -45,21 +45,21 @@ Building AI applications can be complex and time-consuming, but using LangChain.
 
 The application is made from these main components:
 
-| Component | Folder | Purpose |
-|-------|--------|---------|
-| Agent Web App | [`packages/agent-webapp`](./packages/agent-webapp) | Chat interface + conversation rendering |
-| Agent API | [`packages/agent-api`](./packages/agent-api) | LangChain.js agent + chat state + MCP client |
-| Burger API | [`packages/burger-api`](./packages/burger-api) | Core burger & order management web API |
-| Burger MCP Server | [`packages/burger-mcp`](./packages/burger-mcp) | Exposes burger API as MCP tools |
-| Burger Web App | [`packages/burger-webapp`](./packages/burger-webapp) | Live orders visualization |
-| Infrastructure | [`infra`](./infra) | Bicep templates (IaC) |
+| Component         | Folder                                               | Purpose                                      |
+| ----------------- | ---------------------------------------------------- | -------------------------------------------- |
+| Agent Web App     | [`packages/agent-webapp`](./packages/agent-webapp)   | Chat interface + conversation rendering      |
+| Agent API         | [`packages/agent-api`](./packages/agent-api)         | LangChain.js agent + chat state + MCP client |
+| Burger API        | [`packages/burger-api`](./packages/burger-api)       | Core burger & order management web API       |
+| Burger MCP Server | [`packages/burger-mcp`](./packages/burger-mcp)       | Exposes burger API as MCP tools              |
+| Burger Web App    | [`packages/burger-webapp`](./packages/burger-webapp) | Live orders visualization                    |
+| Infrastructure    | [`infra`](./infra)                                   | Bicep templates (IaC)                        |
 
 Additionally, these support components are included:
 
-| Component | Folder | Purpose |
-|-------|--------|---------|
-| Agent CLI | [`packages/agent-cli`](./packages/agent-cli) | Command-line interface LangChain.js agent and MCP client |
-| Data generation | [`packages/burger-data`](./packages/burger-data) | Scripts to (re)generate burgers data & images |
+| Component       | Folder                                           | Purpose                                                  |
+| --------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| Agent CLI       | [`packages/agent-cli`](./packages/agent-cli)     | Command-line interface LangChain.js agent and MCP client |
+| Data generation | [`packages/burger-data`](./packages/burger-data) | Scripts to (re)generate burgers data & images            |
 
 ## Getting started
 
@@ -103,6 +103,7 @@ Then you can get the project code:
 2. On your forked repository, select the **Code** button, then the **Local** tab, and copy the URL of your forked repository.
 
    ![Screenshot showing how to copy the repository URL](./docs/images/clone-url.png)
+
 3. Open a terminal and run this command to clone the repo: `git clone <your-repo-url>`
 
 </details>
@@ -122,8 +123,9 @@ npm start
 Starting the different services may take some time, you need to wait until you see the following message in the terminal: `🚀 All services ready 🚀`
 
 This will start:
+
 - **Agent Web App**: http://localhost:4280
-- **Agent API**: http://localhost:7072  
+- **Agent API**: http://localhost:7072
 - **Burger Web App**: http://localhost:5173
 - **Burger API**: http://localhost:7071
 - **Burger MCP Server**: http://localhost:3000
@@ -134,9 +136,9 @@ This will start:
 
 You can then open the Agent web app and ask things like:
 
-- *What spicy burgers do you have?*
-- *Order two Classic Cheeseburgers with extra bacon.*
-- *Show my recent orders*
+- _What spicy burgers do you have?_
+- _Order two Classic Cheeseburgers with extra bacon._
+- _Show my recent orders_
 
 The agent will decide which MCP tool(s) to call, then come up with a response.
 
@@ -146,13 +148,13 @@ This project uses [npm workspaces](https://docs.npmjs.com/cli/v9/using-npm/works
 
 Common scripts (run from repo root):
 
-| Action | Command |
-|--------|---------|
-| Start everything | `npm start` |
-| Build all | `npm run build` |
-| Lint | `npm run lint` |
-| Fix lint | `npm run lint:fix` |
-| Format | `npm run format` |
+| Action           | Command            |
+| ---------------- | ------------------ |
+| Start everything | `npm start`        |
+| Build all        | `npm run build`    |
+| Lint             | `npm run lint`     |
+| Fix lint         | `npm run lint:fix` |
+| Format           | `npm run format`   |
 
 Per-package development (examples):
 
@@ -184,7 +186,7 @@ The Burger MCP server provides these tools for AI agents:
 | `get_topping_categories` | Get a list of all topping categories                                                         |
 | `get_orders`             | Get a list of all orders in the system                                                       |
 | `get_order_by_id`        | Get a specific order by its ID                                                               |
-| `place_order`            | Place a new order with burgers (requires `userId`, optional `nickname`)                                           |
+| `place_order`            | Place a new order with burgers (requires `userId`, optional `nickname`)                      |
 | `delete_order_by_id`     | Cancel an order if it has not yet been started (status must be `pending`, requires `userId`) |
 
 ### Testing the MCP Server
@@ -194,6 +196,7 @@ The Burger MCP server provides these tools for AI agents:
 You can test the MCP server using the MCP Inspector:
 
 1. Install and start MCP Inspector:
+
    ```bash
    npx -y @modelcontextprotocol/inspector
    ```
@@ -224,7 +227,7 @@ To use the MCP server in local mode with GitHub Copilot, create a local `.vscode
 
 If you open that file
 
-Then, you can use GitHub Copilot in **agent mode** to interact with the MCP server. For example, you can ask questions like "What burgers are available?" or "Place an order for a vegan burger" and Copilot will use the MCP server to provide answers or perform actions. 
+Then, you can use GitHub Copilot in **agent mode** to interact with the MCP server. For example, you can ask questions like "What burgers are available?" or "Place an order for a vegan burger" and Copilot will use the MCP server to provide answers or perform actions.
 
 > [!TIP]
 > Copilot models can behave differently regarding tools usage, so if you don't see it calling the `burger-mcp` tools, you can explicitly mention using the Bruger MCP server by adding `#burger-mcp` in your prompt.
