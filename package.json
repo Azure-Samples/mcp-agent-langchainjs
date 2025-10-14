@@ -56,59 +56,66 @@
     "node": ">=22",
     "npm": ">=10"
   },
-  "xo": {
-    "space": true,
-    "semicolon": true,
-    "prettier": true,
-    "rules": {
-      "@typescript-eslint/triple-slash-reference": "off",
-      "@typescript-eslint/naming-convention": "off",
-      "@typescript-eslint/consistent-type-definitions": "off",
-      "@typescript-eslint/member-ordering": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/consistent-type-imports": "off",
-      "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/ban-types": "off",
-      "@typescript-eslint/no-restricted-types": "off",
-      "@typescript-eslint/switch-exhaustiveness-check": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-dynamic-delete": "off",
-      "@typescript-eslint/dot-notation": "off",
-      "@typescript-eslint/no-base-to-string": "off",
-      "@typescript-eslint/restrict-template-expressions": "off",
-      "import-x/no-unassigned-import": "off",
-      "import/extensions": "off",
-      "n/prefer-global/process": "off",
-      "no-new-func": "off",
-      "unicorn/no-process-exit": "off",
-      "unicorn/prefer-add-event-listener": "off",
-      "unicorn/prefer-switch": "off",
-      "unicorn/prefer-global-this": "off",
-      "unicorn/prefer-module": "off",
-      "unicorn/no-new-array": "off",
-      "unicorn/no-array-callback-reference": "off",
-      "unicorn/prevent-abbreviations": [
-        "error",
-        {
-          "allowList": {
-            "combineDocsChain": true,
-            "env": true,
-            "Db": true,
-            "db": true,
-            "auth": true,
-            "args": true,
-            "Args": true,
-            "arg": true,
-            "i": true
-          }
-        }
+  "xo": [
+    {
+      "ignores": [
+        "**/*.genai.mjs"
       ]
+    },
+    {
+      "space": true,
+      "semicolon": true,
+      "prettier": true,
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-restricted-types": "off",
+        "@typescript-eslint/switch-exhaustiveness-check": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-dynamic-delete": "off",
+        "@typescript-eslint/dot-notation": "off",
+        "@typescript-eslint/no-base-to-string": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "import-x/no-unassigned-import": "off",
+        "import/extensions": "off",
+        "n/prefer-global/process": "off",
+        "no-new-func": "off",
+        "unicorn/no-process-exit": "off",
+        "unicorn/prefer-add-event-listener": "off",
+        "unicorn/prefer-switch": "off",
+        "unicorn/prefer-global-this": "off",
+        "unicorn/prefer-module": "off",
+        "unicorn/no-new-array": "off",
+        "unicorn/no-array-callback-reference": "off",
+        "unicorn/prevent-abbreviations": [
+          "error",
+          {
+            "allowList": {
+              "combineDocsChain": true,
+              "env": true,
+              "Db": true,
+              "db": true,
+              "auth": true,
+              "args": true,
+              "Args": true,
+              "arg": true,
+              "i": true
+            }
+          }
+        ]
+      }
     }
-  },
+  ],
   "prettier": {
     "tabWidth": 2,
     "semi": true,
