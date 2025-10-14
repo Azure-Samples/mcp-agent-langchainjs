@@ -4,7 +4,6 @@
 //
 // Note that you need to set GENAISCRIPT_IMAGE_MODEL env variable to either
 // "openai:gpt-image-1" or "azure:gpt-image-1" to run this script.
-/* eslint-disable */
 
 import sharp from 'sharp';
 import burgersData from '../data/burgers.json' with { type: 'json' };

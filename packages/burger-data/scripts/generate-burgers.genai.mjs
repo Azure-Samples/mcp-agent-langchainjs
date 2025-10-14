@@ -1,6 +1,5 @@
 // This script uses GenAIScript (https://aka.ms/genaiscript)
 // to generate the menu for a burger restaurant.
-/* eslint-disable */
 
 import { z } from '@genaiscript/runtime';
 
