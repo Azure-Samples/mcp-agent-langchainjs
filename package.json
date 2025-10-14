@@ -50,7 +50,7 @@
     "rimraf": "^6",
     "run-on-output": "^1.0.1",
     "typescript": "^5",
-    "xo": "^1.1.1"
+    "xo": "^1.2.3"
   },
   "engines": {
     "node": ">=22",
@@ -75,10 +75,18 @@
       "@typescript-eslint/ban-types": "off",
       "@typescript-eslint/no-restricted-types": "off",
       "@typescript-eslint/switch-exhaustiveness-check": "off",
-      "import/no-unassigned-import": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-dynamic-delete": "off",
+      "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/no-base-to-string": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "import-x/no-unassigned-import": "off",
       "import/extensions": "off",
       "n/prefer-global/process": "off",
       "no-new-func": "off",
+      "unicorn/no-process-exit": "off",
+      "unicorn/prefer-add-event-listener": "off",
+      "unicorn/prefer-switch": "off",
       "unicorn/prefer-global-this": "off",
       "unicorn/prefer-module": "off",
       "unicorn/no-new-array": "off",
@@ -91,7 +99,11 @@
             "env": true,
             "Db": true,
             "db": true,
-            "auth": true
+            "auth": true,
+            "args": true,
+            "Args": true,
+            "arg": true,
+            "i": true
           }
         }
       ]

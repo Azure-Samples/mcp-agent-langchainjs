@@ -9,10 +9,10 @@ import cardSvg from '../../assets/icons/card.svg?raw';
 
 @customElement('azc-user-card')
 export class UserCard extends LitElement {
-  @state() protected userId: string = '';
+  @state() protected userId = '';
   @state() protected isLoading = false;
   @state() protected hasError = false;
-  @state() protected username: string = '';
+  @state() protected username = '';
   @state() protected isOpen = false;
 
   constructor() {
@@ -34,14 +34,14 @@ export class UserCard extends LitElement {
     this.openModal();
   };
 
-  protected handleOverlayClick = (e: Event) => {
-    if (e.target === e.currentTarget) {
+  protected handleOverlayClick = (event: Event) => {
+    if (event.target === event.currentTarget) {
       this.closeModal();
     }
   };
 
-  protected handleEscapeKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
+  protected handleEscapeKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
       this.closeModal();
     }
   };
@@ -74,8 +74,8 @@ export class UserCard extends LitElement {
             selection.addRange(range);
           }
         }
-      } catch (err) {
-        console.error('Failed to copy user ID:', err);
+      } catch (error) {
+        console.error('Failed to copy user ID:', error);
       }
     }
   };
@@ -120,6 +120,7 @@ export class UserCard extends LitElement {
       if (!id) {
         throw new Error('Unable to retrieve user ID');
       }
+
       this.userId = id;
     } catch (error) {
       console.error('Error fetching user ID:', error);

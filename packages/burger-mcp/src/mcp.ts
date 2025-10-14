@@ -10,6 +10,7 @@ export function getMcpServer() {
   for (const tool of tools) {
     createMcpTool(server, tool);
   }
+
   return server;
 }
 
@@ -24,10 +25,10 @@ export function createMcpTool<T extends z.ZodTypeAny>(
     handler: (args: z.infer<z.ZodObject<z.ZodRawShape, any, T>>) => Promise<string>;
   },
 ) {
-  if (!options.schema) {
-    server.tool(options.name, options.description, async () => {
+  if (options.schema) {
+    server.tool(options.name, options.description, options.schema.shape, async (args: z.ZodRawShape) => {
       try {
-        const result = await options.handler(undefined as any);
+        const result = await options.handler(args);
         return {
           content: [
             {
@@ -51,9 +52,9 @@ export function createMcpTool<T extends z.ZodTypeAny>(
       }
     });
   } else {
-    server.tool(options.name, options.description, options.schema.shape, async (args: z.ZodRawShape) => {
+    server.tool(options.name, options.description, async () => {
       try {
-        const result = await options.handler(args);
+        const result = await options.handler(undefined as any);
         return {
           content: [
             {

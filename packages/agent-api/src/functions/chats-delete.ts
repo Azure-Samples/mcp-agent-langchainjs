@@ -27,8 +27,6 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
   }
 
   try {
-    let chatHistory;
-
     if (!azureCosmosDbEndpoint) {
       const errorMessage = 'Missing required environment variable: AZURE_COSMOSDB_NOSQL_ENDPOINT';
       context.error(errorMessage);
@@ -41,7 +39,7 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
     }
 
     const credentials = getCredentials();
-    chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
+    const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
       sessionId,
       userId,
       credentials,

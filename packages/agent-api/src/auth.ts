@@ -1,6 +1,7 @@
+import { Buffer } from 'node:buffer';
 import { HttpRequest } from '@azure/functions';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
-import { UserDbService } from './user-db-service';
+import { UserDbService } from './user-db-service.js';
 
 const azureOpenAiScope = 'https://cognitiveservices.azure.com/.default';
 
@@ -33,11 +34,11 @@ export function getAuthenticationUserId(request: HttpRequest): string | undefine
 
 export async function getInternalUserId(request: HttpRequest, body?: any): Promise<string | undefined> {
   // Get the user ID from Azure easy auth if it's available,
-  let authUserId = getAuthenticationUserId(request);
+  const authUserId = getAuthenticationUserId(request);
   if (authUserId) {
     // Exchange the auth user ID to the internal user ID
     const db = await UserDbService.getInstance();
-    let user = await db.getUserById(authUserId);
+    const user = await db.getUserById(authUserId);
     if (user) {
       return user.id;
     }

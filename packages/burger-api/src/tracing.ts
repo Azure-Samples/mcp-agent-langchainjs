@@ -7,7 +7,7 @@ import { useAzureMonitor } from '@azure/monitor-opentelemetry';
 let isTracingInitialized = false;
 if (!isTracingInitialized) {
   // Initialize tracing and export to Azure Monitor
-  const appInsightsConnectionString = process.env['APPLICATIONINSIGHTS_CONNECTION_STRING'];
+  const appInsightsConnectionString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING;
   if (appInsightsConnectionString) {
     useAzureMonitor({
       azureMonitorExporterOptions: { connectionString: appInsightsConnectionString },

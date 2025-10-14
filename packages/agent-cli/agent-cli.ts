@@ -92,15 +92,15 @@ function parseArgs(): CliArgs {
 }
 
 async function getSessionPath(): Promise<string> {
-  const userDataDir = path.join(os.homedir(), '.burger-agent-cli');
-  await fs.mkdir(userDataDir, { recursive: true });
-  return path.join(userDataDir, 'burger-agent-cli.json');
+  const userDataDirectory = path.join(os.homedir(), '.burger-agent-cli');
+  await fs.mkdir(userDataDirectory, { recursive: true });
+  return path.join(userDataDirectory, 'burger-agent-cli.json');
 }
 
 async function loadSession(): Promise<SessionData> {
   try {
     const sessionPath = await getSessionPath();
-    const content = await fs.readFile(sessionPath, 'utf-8');
+    const content = await fs.readFile(sessionPath, 'utf8');
     return JSON.parse(content);
   } catch {
     return { history: [] };
@@ -117,7 +117,9 @@ async function saveSession(session: SessionData): Promise<void> {
 }
 
 function convertHistoryToMessages(history: SessionData['history']): BaseMessage[] {
-  return history.map((msg) => (msg.type === 'human' ? new HumanMessage(msg.content) : new AIMessage(msg.content)));
+  return history.map((message) =>
+    message.type === 'human' ? new HumanMessage(message.content) : new AIMessage(message.content),
+  );
 }
 
 export async function run() {
@@ -187,7 +189,7 @@ export async function run() {
 
     console.log('Thinking...\n');
 
-    const eventStream = await agent.streamEvents(
+    const eventStream = agent.streamEvents(
       {
         messages: [...chatHistory, new HumanMessage(question)],
       },
@@ -196,9 +198,9 @@ export async function run() {
 
     let step = 0;
     for await (const event of eventStream) {
-      const data = event.data;
+      const { data } = event;
       if (event.event === 'on_chat_model_stream' && data?.chunk?.content?.length > 0) {
-        const text = data.chunk.content[0].text;
+        const { text } = data.chunk.content[0];
         process.stdout.write(text);
       } else if (event.event === 'on_tool_end') {
         if (verbose) {
@@ -207,15 +209,18 @@ export async function run() {
             console.log('Intermediate steps');
             console.log('--------------------');
           }
+
           step++;
           console.log(`*** Step ${step} ***`);
           console.log(`Tool: ${event.name}`);
           if (data?.input?.input) {
             console.log(`Input:`, data.input.input);
           }
+
           if (data?.output?.content) {
             console.log(`Output:`, data.output.content);
           }
+
           console.log('--------------------\n');
         }
       } else if (
@@ -225,8 +230,10 @@ export async function run() {
       ) {
         const finalContent = data.output.content[0].text;
         if (finalContent) {
-          session.history.push({ type: 'human', content: question });
-          session.history.push({ type: 'ai', content: data.output.content[0].text });
+          session.history.push(
+            { type: 'human', content: question },
+            { type: 'ai', content: data.output.content[0].text },
+          );
           await saveSession(session);
         }
       }
@@ -244,5 +251,6 @@ export async function run() {
       console.error('Error closing MCP client:', error);
     }
   }
+
   process.exitCode = 0;
 }

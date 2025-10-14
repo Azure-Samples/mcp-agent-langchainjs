@@ -17,16 +17,16 @@ app.http('me-get', {
         };
       }
 
-      const id = createHash('sha256').update(authenticationUserId).digest('hex').substring(0, 32);
+      const id = createHash('sha256').update(authenticationUserId).digest('hex').slice(0, 32);
       context.log(`User ID ${id}`);
 
       const db = await UserDbService.getInstance();
       let user = await db.getUserById(id);
-      if (!user) {
+      if (user) {
+        context.log(`User exists, returning ID: ${user.id}`);
+      } else {
         user = await db.createUser(id);
         context.log(`Created new user with ID: ${id}`);
-      } else {
-        context.log(`User exists, returning ID: ${user.id}`);
       }
 
       return {

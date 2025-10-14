@@ -2,8 +2,7 @@ import { LitElement, css, html, nothing } from 'lit';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { customElement, state } from 'lit/decorators.js';
-import { fetchOrders } from '../orders.service.js';
-import type { BurgerOrder } from '../orders.service.js';
+import { fetchOrders, type BurgerOrder } from '../orders.service.js';
 import burgerOutlineSvg from '../../assets/burger-outline.svg?raw';
 import burgerSvg from '../../assets/burger.svg?raw';
 
@@ -18,12 +17,12 @@ export class BurgerDashboard extends LitElement {
 
   private prevInProgressOrders: BurgerOrder[] = [];
   private prevCompletedOrders: BurgerOrder[] = [];
-  private leavingOrders: Map<string, BurgerOrder> = new Map();
+  private readonly leavingOrders = new Map<string, BurgerOrder>();
 
   connectedCallback() {
     super.connectedCallback();
     this.loadOrders();
-    this.refreshTimer = window.setInterval(() => this.loadOrders(), 10000);
+    this.refreshTimer = window.setInterval(async () => this.loadOrders(), 10_000);
   }
 
   disconnectedCallback() {
@@ -46,6 +45,7 @@ export class BurgerDashboard extends LitElement {
         this.hasError = true;
         return;
       }
+
       // Sort latest first
       this.inProgressOrders = [...inProgress].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 50);
       this.completedOrders = [...completed]
@@ -56,9 +56,9 @@ export class BurgerDashboard extends LitElement {
     }
   }
 
-  protected updated(changedProps: Map<string, unknown>) {
-    super.updated(changedProps);
-    if (changedProps.has('inProgressOrders') || changedProps.has('completedOrders')) {
+  protected updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('inProgressOrders') || changedProperties.has('completedOrders')) {
       this.handleOrderAnimations(this.inProgressOrders, this.prevInProgressOrders);
       this.handleOrderAnimations(this.completedOrders, this.prevCompletedOrders);
       this.prevInProgressOrders = [...this.inProgressOrders];
@@ -66,26 +66,27 @@ export class BurgerDashboard extends LitElement {
     }
   }
 
-  private handleOrderAnimations(currentOrders: BurgerOrder[], prevOrders: BurgerOrder[]) {
+  private handleOrderAnimations(currentOrders: BurgerOrder[], previousOrders: BurgerOrder[]) {
     const currentIds = new Set(currentOrders.map((o) => o.id));
     // Animate new orders (fade-in)
-    currentOrders.forEach((order) => {
-      if (!prevOrders.some((o) => o.id === order.id)) {
+    for (const order of currentOrders) {
+      if (!previousOrders.some((o) => o.id === order.id)) {
         const node = this.renderRoot.querySelector(`[data-order-id='${order.id}']`);
         if (node) {
           node.classList.add('fade-in');
         }
       }
-    });
+    }
+
     // Animate removed orders (fade-out only if not present in either column)
-    prevOrders.forEach((order) => {
+    for (const order of previousOrders) {
       const isNowInOtherColumn =
         this.inProgressOrders.some((o) => o.id === order.id) || this.completedOrders.some((o) => o.id === order.id);
       if (!currentIds.has(order.id) && !isNowInOtherColumn && !this.leavingOrders.has(order.id)) {
         this.leavingOrders.set(order.id, order);
         this.requestUpdate();
       }
-    });
+    }
   }
 
   protected getOrderDisplayStatus(order: BurgerOrder): string {
@@ -93,7 +94,7 @@ export class BurgerDashboard extends LitElement {
     if (order.status === 'in-preparation') return 'in preparation';
     if (order.status === 'ready') return 'ready';
     if (order.status === 'completed') return 'completed';
-    return order.status.replace(/-/g, ' ');
+    return order.status.replaceAll('-', ' ');
   }
 
   protected getOrderBoxClass(order: BurgerOrder): string {
@@ -117,7 +118,11 @@ export class BurgerDashboard extends LitElement {
       <div
         data-order-id="${order.id}"
         class="order-anim ${animClass}"
-        @animationend=${isLeaving ? () => this.handleFadeOutEnd(order.id) : undefined}
+        @animationend=${isLeaving
+          ? () => {
+              this.handleFadeOutEnd(order.id);
+            }
+          : undefined}
       >
         <div class="${this.getOrderBoxClass(order)}">
           <div class="order-id">${displayId}</div>
@@ -154,10 +159,10 @@ export class BurgerDashboard extends LitElement {
     // Merge current and leaving orders for each column
     const inProgressIds = new Set(this.inProgressOrders.map((o) => o.id));
     const completedIds = new Set(this.completedOrders.map((o) => o.id));
-    const leavingInProgress = Array.from(this.leavingOrders.values()).filter(
+    const leavingInProgress = [...this.leavingOrders.values()].filter(
       (o) => !inProgressIds.has(o.id) && (o.status === 'pending' || o.status === 'in-preparation'),
     );
-    const leavingCompleted = Array.from(this.leavingOrders.values()).filter(
+    const leavingCompleted = [...this.leavingOrders.values()].filter(
       (o) => !completedIds.has(o.id) && (o.status === 'completed' || o.status === 'ready'),
     );
     return html`
@@ -191,7 +196,7 @@ export class BurgerDashboard extends LitElement {
                 : repeat(
                     [...this.inProgressOrders, ...leavingInProgress],
                     (order) => order.id,
-                    (order) => this.renderOrder(order, !!this.leavingOrders.get(order.id)),
+                    (order) => this.renderOrder(order, Boolean(this.leavingOrders.get(order.id))),
                   )}
             </div>
           </div>
@@ -203,7 +208,7 @@ export class BurgerDashboard extends LitElement {
                 : repeat(
                     [...this.completedOrders, ...leavingCompleted],
                     (order) => order.id,
-                    (order) => this.renderOrder(order, !!this.leavingOrders.get(order.id)),
+                    (order) => this.renderOrder(order, Boolean(this.leavingOrders.get(order.id))),
                   )}
             </div>
           </div>

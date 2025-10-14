@@ -1,5 +1,7 @@
 // This script uses GenAIScript (https://aka.ms/genaiscript)
 // to generate the menu for a burger restaurant.
+/* eslint-disable */
+
 import { z } from '@genaiscript/runtime';
 
 const role = `## Role
@@ -95,10 +97,12 @@ for (const burger of parsedBurgers) {
       throw new Error(`Invalid topping ID ${topping} in burger ${burger.name}`);
     }
   }
+
   // Check that the burger has at least one topping
   if (burger.toppings.length === 0) {
     throw new Error(`Burger ${burger.name} has no toppings`);
   }
+
   // Check that the burger has a valid price
   if (burger.price <= 0) {
     throw new Error(`Burger ${burger.name} has an invalid price`);

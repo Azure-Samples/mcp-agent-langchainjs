@@ -152,6 +152,7 @@ export class ChatComponent extends LitElement {
       clearTimeout(this.stepTimer);
       this.stepTimer = undefined;
     }
+
     this.scrollToLastMessage();
     try {
       const chunks = await getCompletion({
@@ -180,7 +181,7 @@ export class ChatComponent extends LitElement {
           // otherwise they will be duplicated
           message.context!.intermediateSteps = [
             ...message.context!.intermediateSteps!,
-            ...chunk.delta.context?.intermediateSteps,
+            ...chunk.delta.context.intermediateSteps,
           ];
         } else if (chunk.delta.context?.currentStep) {
           this.updateCurrentStep(chunk.delta.context.currentStep);
@@ -225,6 +226,7 @@ export class ChatComponent extends LitElement {
     if (this.stepTimer || this.stepQueue.length === 0) {
       return;
     }
+
     const elapsed = Date.now() - this.lastStepSetAt;
     const waitTime = Math.max(0, min - elapsed);
     this.stepTimer = setTimeout(() => {
@@ -234,6 +236,7 @@ export class ChatComponent extends LitElement {
         this.currentStep = next;
         this.lastStepSetAt = Date.now();
       }
+
       if (this.stepQueue.length > 0) {
         this.scheduleNextStep(min);
       }
@@ -245,6 +248,7 @@ export class ChatComponent extends LitElement {
       clearTimeout(this.stepTimer);
       this.stepTimer = undefined;
     }
+
     this.stepQueue = [];
     super.disconnectedCallback();
   }
@@ -291,14 +295,20 @@ export class ChatComponent extends LitElement {
     if (!this.currentStep) {
       return '';
     }
+
     switch (this.currentStep.type) {
-      case 'llm':
+      case 'llm': {
         return `Thinking...`;
-      case 'tool':
+      }
+
+      case 'tool': {
         // Map tool name to a user-friendly message
         return `${this.options.strings.tools[this.currentStep.name] ?? this.currentStep.name}...`;
-      default:
+      }
+
+      default: {
         return '';
+      }
     }
   }
 

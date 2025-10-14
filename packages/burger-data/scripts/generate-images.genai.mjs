@@ -4,10 +4,11 @@
 //
 // Note that you need to set GENAISCRIPT_IMAGE_MODEL env variable to either
 // "openai:gpt-image-1" or "azure:gpt-image-1" to run this script.
+/* eslint-disable */
 
+import sharp from 'sharp';
 import burgersData from '../data/burgers.json' with { type: 'json' };
 import toppingsData from '../data/toppings.json' with { type: 'json' };
-import sharp from 'sharp';
 
 const toppingsMap = new Map(toppingsData.map((topping) => [topping.id, topping.name]));
 

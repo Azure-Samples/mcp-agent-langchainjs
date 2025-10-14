@@ -24,13 +24,13 @@ export async function fetchOrders({
   lastMinutes?: number;
 }): Promise<BurgerOrder[] | undefined> {
   try {
-    const params = new URLSearchParams();
-    if (status) params.append('status', status);
-    if (lastMinutes) params.append('last', `${lastMinutes}m`);
-    const url = `${apiBaseUrl}/api/orders?${params.toString()}`;
-    const res = await fetch(url);
-    if (!res.ok) return undefined;
-    return await res.json();
+    const parameters = new URLSearchParams();
+    if (status) parameters.append('status', status);
+    if (lastMinutes) parameters.append('last', `${lastMinutes}m`);
+    const url = `${apiBaseUrl}/api/orders?${parameters.toString()}`;
+    const response = await fetch(url);
+    if (!response.ok) return undefined;
+    return await response.json();
   } catch {
     return undefined;
   }

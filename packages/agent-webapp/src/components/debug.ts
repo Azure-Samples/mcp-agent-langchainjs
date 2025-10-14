@@ -2,8 +2,8 @@ import { LitElement, css, html, nothing } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ParsedMessage } from '../message-parser';
-import { AgentStep } from '../models';
+import { ParsedMessage } from '../message-parser.js';
+import { AgentStep } from '../models.js';
 import aiSvg from '../../assets/icons/ai.svg?raw';
 
 @customElement('azc-debug')
@@ -18,20 +18,16 @@ export class DebugComponent extends LitElement {
   }
 
   protected toggleStepExpanded(index: number) {
-    if (this.expandedSteps.has(index)) {
-      this.expandedSteps = new Set([...this.expandedSteps].filter((i) => i !== index));
-    } else {
-      this.expandedSteps = new Set([...this.expandedSteps, index]);
-    }
+    this.expandedSteps = this.expandedSteps.has(index)
+      ? new Set([...this.expandedSteps].filter((index_) => index_ !== index))
+      : new Set([...this.expandedSteps, index]);
   }
 
   protected toggleOutputExpanded(stepIndex: number, section: string) {
     const key = `${stepIndex}-${section}`;
-    if (this.expandedOutputs.has(key)) {
-      this.expandedOutputs = new Set([...this.expandedOutputs].filter((k) => k !== key));
-    } else {
-      this.expandedOutputs = new Set([...this.expandedOutputs, key]);
-    }
+    this.expandedOutputs = this.expandedOutputs.has(key)
+      ? new Set([...this.expandedOutputs].filter((k) => k !== key))
+      : new Set([...this.expandedOutputs, key]);
   }
 
   protected getStepType(step: AgentStep): 'tool' | 'llm' {
@@ -42,9 +38,9 @@ export class DebugComponent extends LitElement {
     return step.type === 'tool' ? `Tool: ${step.name}` : `LLM: ${step.name}`;
   }
 
-  protected truncateText(text: string, maxLength: number = 100): string {
+  protected truncateText(text: string, maxLength = 100): string {
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return text.slice(0, Math.max(0, maxLength)) + '...';
   }
 
   protected renderDetailSection(
@@ -52,7 +48,7 @@ export class DebugComponent extends LitElement {
     content: string,
     stepIndex: number,
     section: string,
-    isTruncated: boolean = false,
+    isTruncated = false,
   ) {
     const key = `${stepIndex}-${section}`;
     const isExpanded = this.expandedOutputs.has(key);
@@ -67,7 +63,9 @@ export class DebugComponent extends LitElement {
                 <div class="detail-actions">
                   <button
                     class="action-button expand-button"
-                    @click=${() => this.toggleOutputExpanded(stepIndex, section)}
+                    @click=${() => {
+                      this.toggleOutputExpanded(stepIndex, section);
+                    }}
                     title=${isExpanded ? 'Show less' : 'Show full content'}
                   >
                     ${isExpanded ? 'Less' : 'More'}
@@ -89,7 +87,13 @@ export class DebugComponent extends LitElement {
     return html`
       <div class="step ${stepType}">
         <div class="step-content">
-          <button class="step-header" @click=${() => this.toggleStepExpanded(index)} aria-expanded=${isExpanded}>
+          <button
+            class="step-header"
+            @click=${() => {
+              this.toggleStepExpanded(index);
+            }}
+            aria-expanded=${isExpanded}
+          >
             <div class="step-indicator ${stepType}">${stepType === 'tool' ? 'T' : 'L'}</div>
             <div class="step-summary">
               <span class="step-title">${summary}</span>
@@ -100,12 +104,12 @@ export class DebugComponent extends LitElement {
           ${isExpanded
             ? html`
                 <div class="step-details">
-                  ${step.input !== undefined
-                    ? this.renderDetailSection('Input', step.input, index, 'input', step.input.length > 500)
-                    : nothing}
-                  ${step.output !== undefined
-                    ? this.renderDetailSection('Output', step.output, index, 'output', step.output.length > 500)
-                    : nothing}
+                  ${step.input === undefined
+                    ? nothing
+                    : this.renderDetailSection('Input', step.input, index, 'input', step.input.length > 500)}
+                  ${step.output === undefined
+                    ? nothing
+                    : this.renderDetailSection('Output', step.output, index, 'output', step.output.length > 500)}
                 </div>
               `
             : nothing}
@@ -136,7 +140,7 @@ export class DebugComponent extends LitElement {
                     ${repeat(
                       intermediateSteps,
                       (_, index) => index,
-                      (step, index) => this.renderStep(step as AgentStep, index),
+                      (step, index) => this.renderStep(step, index),
                     )}
                   </div>
                 `

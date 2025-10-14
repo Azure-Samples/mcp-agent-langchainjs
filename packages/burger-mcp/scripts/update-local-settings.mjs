@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let settings = {
+const settings = {
   FUNCTIONS_WORKER_RUNTIME: 'custom',
 };
 const settingsFilePath = path.join(__dirname, '../local.settings.json');

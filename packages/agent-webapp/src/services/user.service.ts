@@ -1,5 +1,5 @@
-import { ChatComponent } from '../components/chat';
-import { HistoryComponent } from '../components/history';
+import { ChatComponent } from '../components/chat.js';
+import { HistoryComponent } from '../components/history.js';
 
 // Chat and History components are defined in index.html
 // with their respective ids so we can access them here
@@ -31,8 +31,8 @@ export async function initUserSession() {
 
     // Set up user ID for chat history and chat components
     window.chatHistory.userId = userId;
-    window.chatHistory.addEventListener('loadSession', (e) => {
-      const { id, messages } = (e as CustomEvent).detail;
+    window.chatHistory.addEventListener('loadSession', (event) => {
+      const { id, messages } = (event as CustomEvent).detail;
       window.chat.sessionId = id;
       window.chat.messages = messages;
     });

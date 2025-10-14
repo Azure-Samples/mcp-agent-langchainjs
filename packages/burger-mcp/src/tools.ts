@@ -5,7 +5,7 @@ export const tools = [
   {
     name: 'get_burgers',
     description: 'Get a list of all burgers in the menu',
-    handler: async () => {
+    async handler() {
       return fetchBurgerApi('/api/burgers');
     },
   },
@@ -15,7 +15,7 @@ export const tools = [
     schema: z.object({
       id: z.string().describe('ID of the burger to retrieve'),
     }),
-    handler: async (args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi(`/api/burgers/${args.id}`);
     },
   },
@@ -25,7 +25,7 @@ export const tools = [
     schema: z.object({
       category: z.string().optional().describe('Category of toppings to filter by (can be empty)'),
     }),
-    handler: async (args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi(`/api/toppings?category=${args.category ?? ''}`);
     },
   },
@@ -35,14 +35,14 @@ export const tools = [
     schema: z.object({
       id: z.string().describe('ID of the topping to retrieve'),
     }),
-    handler: async (args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi(`/api/toppings/${args.id}`);
     },
   },
   {
     name: 'get_topping_categories',
     description: 'Get a list of all topping categories',
-    handler: async (_args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi('/api/toppings/categories');
     },
   },
@@ -54,12 +54,12 @@ export const tools = [
       status: z.string().optional().describe('Filter by order status. Comma-separated list allowed.'),
       last: z.string().optional().describe("Filter orders created in the last X minutes or hours (e.g. '60m', '2h')"),
     }),
-    handler: async (args: { userId?: string; status?: string; last?: string }) => {
-      const params = new URLSearchParams();
-      if (args.userId) params.append('userId', args.userId);
-      if (args.status) params.append('status', args.status);
-      if (args.last) params.append('last', args.last);
-      const query = params.toString();
+    async handler(args: { userId?: string; status?: string; last?: string }) {
+      const parameters = new URLSearchParams();
+      if (args.userId) parameters.append('userId', args.userId);
+      if (args.status) parameters.append('status', args.status);
+      if (args.last) parameters.append('last', args.last);
+      const query = parameters.toString();
       const url = query ? `/api/orders?${query}` : '/api/orders';
       return fetchBurgerApi(url);
     },
@@ -70,7 +70,7 @@ export const tools = [
     schema: z.object({
       id: z.string().describe('ID of the order to retrieve'),
     }),
-    handler: async (args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi(`/api/orders/${args.id}`);
     },
   },
@@ -91,7 +91,7 @@ export const tools = [
         .nonempty()
         .describe('List of items in the order'),
     }),
-    handler: async (args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi('/api/orders', {
         method: 'POST',
         body: JSON.stringify(args),
@@ -105,7 +105,7 @@ export const tools = [
       id: z.string().describe('ID of the order to cancel'),
       userId: z.string().describe('ID of the user that placed the order'),
     }),
-    handler: async (args: z.ZodRawShape) => {
+    async handler(args: z.ZodRawShape) {
       return fetchBurgerApi(`/api/orders/${args.id}?userId=${args.userId}`, {
         method: 'DELETE',
       });
@@ -129,9 +129,11 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<s
     if (!response.ok) {
       throw new Error(`Error fetching ${fullUrl}: ${response.statusText}`);
     }
+
     if (response.status === 204) {
       return 'Operation completed successfully. No content returned.';
     }
+
     return JSON.stringify(await response.json());
   } catch (error: any) {
     console.error(`Error fetching ${fullUrl}:`, error);

@@ -3,7 +3,7 @@ export type AuthDetails = {
   userId: string;
   userDetails: string;
   userRoles: string[];
-  claims: { typ: string; val: string }[];
+  claims: Array<{ typ: string; val: string }>;
 };
 
 const userDetailsRoute = '/.auth/me';

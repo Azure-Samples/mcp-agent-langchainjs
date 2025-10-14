@@ -18,8 +18,6 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
   }
 
   try {
-    let chatHistory;
-
     if (!azureCosmosDbEndpoint) {
       const errorMessage = 'Missing required environment variable: AZURE_COSMOSDB_NOSQL_ENDPOINT';
       context.error(errorMessage);
@@ -32,7 +30,7 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
     }
 
     const credentials = getCredentials();
-    chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
+    const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
       sessionId,
       userId,
       credentials,

@@ -15,7 +15,7 @@ if (!isTracingInitialized) {
   // When running locally, you can use a local OpenTelemetry collector to receive the traces,
   // for example VS Code AI Toolkit's extension trace collector:
   // https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio
-  const appInsightsConnectionString = process.env['APPLICATIONINSIGHTS_CONNECTION_STRING'];
+  const appInsightsConnectionString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING;
   if (appInsightsConnectionString) {
     useAzureMonitor({
       azureMonitorExporterOptions: { connectionString: appInsightsConnectionString },

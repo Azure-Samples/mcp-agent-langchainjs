@@ -8,7 +8,7 @@ export class UserDbService {
   private database: Database | undefined = undefined;
   private usersContainer: Container | undefined = undefined;
   private isCosmosDbInitialized = false;
-  private inMemoryStorage: Map<string, any> = new Map();
+  private readonly inMemoryStorage = new Map<string, any>();
   private useInMemoryStorage = false;
 
   static async getInstance(): Promise<UserDbService> {
@@ -17,6 +17,7 @@ export class UserDbService {
       await instance.initializeCosmosDb();
       UserDbService.instance = instance;
     }
+
     return UserDbService.instance;
   }
 
@@ -28,6 +29,7 @@ export class UserDbService {
         this.useInMemoryStorage = true;
         return;
       }
+
       const credential = new DefaultAzureCredential();
       this.client = new CosmosClient({ endpoint, aadCredentials: credential });
       const databaseId = 'userDB';

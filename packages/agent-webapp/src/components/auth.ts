@@ -1,8 +1,8 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { getUserInfo, AuthDetails } from '../services/auth.service.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { getUserInfo, AuthDetails } from '../services/auth.service.js';
 import personSvg from '../../assets/icons/person.svg?raw';
 import logoutSvg from '../../assets/icons/logout.svg?raw';
 import microsoftSvg from '../../assets/providers/microsoft.svg?inline';
@@ -33,7 +33,7 @@ export const authDefaultOptions: AuthComponentOptions = {
   providers: [
     { id: 'aad', label: 'Log in with Microsoft', icon: microsoftSvg, color: '#00A4EF', textColor: '#fff' },
     { id: 'github', label: 'Log in with GitHub', icon: githubSvg, color: '#181717', textColor: '#fff' },
-    /*{
+    /* {
       id: 'google',
       label: 'Log in with Google',
       icon: 'https://cdn.simpleicons.org/google/white',
@@ -67,7 +67,7 @@ export const authDefaultOptions: AuthComponentOptions = {
       icon: 'https://cdn.simpleicons.org/openid/white',
       color: '#333',
       textColor: '#fff',
-    },*/
+    }, */
   ],
 };
 
@@ -80,22 +80,15 @@ export class AuthComponent extends LitElement {
     converter: (value) => ({ ...authDefaultOptions, ...JSON.parse(value || '{}') }),
   })
   options: AuthComponentOptions = authDefaultOptions;
+
   @property() type: AuthButtonType = 'login';
   @property() loginRedirect = '/';
   @property() logoutRedirect = '/';
   @state() protected _userDetails: AuthDetails | undefined;
-  @state() protected loaded: boolean = false;
+  @state() protected loaded = false;
 
   get userDetails() {
     return this._userDetails;
-  }
-
-  constructor() {
-    super();
-    getUserInfo().then((userDetails) => {
-      this._userDetails = userDetails;
-      this.loaded = true;
-    });
   }
 
   onLoginClicked(provider: string) {
@@ -117,14 +110,14 @@ export class AuthComponent extends LitElement {
         : nothing}
     </section>`;
 
-  protected renderGuard = () => (Boolean(this.loaded && this._userDetails) ? html`<slot></slot>` : nothing);
+  protected renderGuard = () => (this.loaded && this._userDetails ? html`<slot></slot>` : nothing);
 
   protected renderLogin = () =>
-    !this.loaded
-      ? html`<slot name="loader"></slot>`
-      : this.userDetails
+    this.loaded
+      ? this.userDetails
         ? html`<slot></slot>`
-        : this.renderLoginOptions();
+        : this.renderLoginOptions()
+      : html`<slot name="loader"></slot>`;
 
   protected renderLoginOptions = () =>
     html`<section class="auth-login">
@@ -136,7 +129,9 @@ export class AuthComponent extends LitElement {
           };
           return html`<button
             class="login"
-            @click=${() => this.onLoginClicked(provider.id)}
+            @click=${() => {
+              this.onLoginClicked(provider.id);
+            }}
             style=${styleMap(providerStyle)}
           >
             <img src="${provider.icon}" alt="" />
@@ -147,9 +142,22 @@ export class AuthComponent extends LitElement {
     </section>`;
 
   protected renderLogout = () =>
-    html`<button class="logout" @click=${() => this.onLogoutClicked()} title="log out">
+    html`<button
+      class="logout"
+      @click=${() => {
+        this.onLogoutClicked();
+      }}
+      title="log out"
+    >
       ${unsafeSVG(logoutSvg)}
     </button>`;
+
+  protected override async connectedCallback() {
+    super.connectedCallback();
+    const userDetails = await getUserInfo();
+    this._userDetails = userDetails;
+    this.loaded = true;
+  }
 
   protected override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
@@ -163,14 +171,21 @@ export class AuthComponent extends LitElement {
 
   protected override render() {
     switch (this.type) {
-      case 'status':
+      case 'status': {
         return this.renderStatus();
-      case 'guard':
+      }
+
+      case 'guard': {
         return this.renderGuard();
-      case 'logout':
+      }
+
+      case 'logout': {
         return this.renderLogout();
-      default:
+      }
+
+      default: {
         return this.renderLogin();
+      }
     }
   }
 

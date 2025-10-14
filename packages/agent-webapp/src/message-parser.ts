@@ -2,7 +2,7 @@ import { type HTMLTemplateResult, html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { type AIChatMessage } from './models';
+import { type AIChatMessage } from './models.js';
 
 export type ParsedMessage = {
   content: string;
@@ -37,7 +37,7 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
   let result;
   if (enableMarkdown) {
     // Render markdown after sanitizing
-    const md = marked.parse(text, { async: false, gfm: true }) as string;
+    const md = marked.parse(text, { async: false, gfm: true });
     const safe = DOMPurify.sanitize(md, { USE_PROFILES: { html: true } });
     result = html`${unsafeHTML(safe)}`;
   } else {

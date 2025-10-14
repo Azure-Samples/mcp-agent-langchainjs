@@ -60,7 +60,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       };
     }
 
-    if (!messages || messages.length === 0 || !messages.at(-1)?.content) {
+    if (messages?.length === 0 || !messages.at(-1)?.content) {
       return {
         status: 400,
         jsonBody: {
@@ -128,7 +128,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     context.log(`Previous messages in history: ${previousMessages.length}`);
 
     // Start the agent and stream the response events
-    const responseStream = await agent.streamEvents(
+    const responseStream = agent.streamEvents(
       {
         messages: [['human', `userId: ${userId}`], ...previousMessages, ['human', question]],
       },
@@ -202,7 +202,7 @@ async function* createJsonStream(
   onComplete: (responseContent: string) => Promise<void>,
 ) {
   for await (const chunk of chunks) {
-    const data = chunk.data;
+    const { data } = chunk;
     let responseChunk: AIChatCompletionDelta | undefined;
 
     if (chunk.event === 'on_chat_model_end' && data.output?.content.length > 0) {
@@ -245,8 +245,8 @@ async function* createJsonStream(
               {
                 type: 'tool',
                 name: chunk.name,
-                input: data?.input?.input ? data.input?.input : undefined,
-                output: data?.output.content ? data?.output.content : undefined,
+                input: data?.input?.input ?? undefined,
+                output: data?.output.content ?? undefined,
               },
             ],
           },
@@ -260,7 +260,7 @@ async function* createJsonStream(
             currentStep: {
               type: 'llm',
               name: chunk.name,
-              input: data?.input ? data.input : undefined,
+              input: data?.input ?? undefined,
             },
           },
         },
