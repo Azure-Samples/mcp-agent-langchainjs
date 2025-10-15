@@ -6,6 +6,7 @@
 
 [![Open in Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/mcp-agent-langchainjs?hide_repo_select=true&ref=main&quickstart=true)
 [![Join Azure AI Community Discord](https://img.shields.io/badge/Discord-Azure_AI_Community-blue?style=flat-square&logo=discord&color=5865f2&logoColor=fff)](https://discord.gg/kzRShWzttr)
+[![Deployment time](https://img.shields.io/badge/Time%20to%20deploy-15min-teal?style=flat-square)](#deploy-to-azure)
 <br>
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/mcp-agent-langchainjs/build-test.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/mcp-agent-langchainjs/actions)
 ![Node version](https://img.shields.io/badge/Node.js->=22-3c873a?style=flat-square)
@@ -239,7 +240,7 @@ Then, you can use GitHub Copilot in **agent mode** to interact with the MCP serv
 - **Azure account**: If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free) to get free Azure credits to get started
 - **Azure account permissions**: Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner)
 
-### Deploy to Azure
+### Deploy with Azure Developer CLI
 
 1. Open a terminal and navigate to the root of the project
 2. Authenticate with Azure by running `azd auth login`
