@@ -1,10 +1,9 @@
 import { Readable } from 'node:stream';
 import { randomUUID } from 'node:crypto';
 import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/functions';
+import { createAgent, AIMessage, HumanMessage } from 'langchain';
 import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
-import { createReactAgent } from '@langchain/langgraph/prebuilt';
-import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamEvent } from '@langchain/core/tracers/log_stream.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
@@ -117,10 +116,10 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const tools = await loadMcpTools('burger', client);
     context.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
-    const agent = createReactAgent({
-      llm: model,
+    const agent = createAgent({
+      model,
       tools,
-      prompt: agentSystemPrompt,
+      systemPrompt: agentSystemPrompt,
     });
 
     const question = messages.at(-1)!.content;
