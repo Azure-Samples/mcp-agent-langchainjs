@@ -29,6 +29,7 @@
         "humao.rest-client",
         "hediet.vscode-drawio",
         "EditorConfig.EditorConfig",
+        "runem.lit-plugin",
         "genaiscript.genaiscript-vscode"
       ]
     }
