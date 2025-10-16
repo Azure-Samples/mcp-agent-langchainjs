@@ -166,6 +166,9 @@ export async function postChats(request: HttpRequest, context: InvocationContext
           // Ensure the session title has finished generating
           await sessionTitlePromise;
         }
+
+        // Close MCP client connection
+        await client.close();
       } catch (error) {
         context.error('Error after response completion:', error);
       }
