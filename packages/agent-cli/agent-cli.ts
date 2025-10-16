@@ -2,12 +2,11 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { createAgent, BaseMessage, HumanMessage, AIMessage } from 'langchain';
 import { ChatOpenAI } from '@langchain/openai';
-import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { BaseMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: path.join(process.cwd(), '../../.env'), quiet: true });
@@ -179,10 +178,10 @@ export async function run() {
     const tools = await loadMcpTools('burger', client);
     console.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
-    const agent = createReactAgent({
-      llm: model,
+    const agent = createAgent({
+      model,
       tools,
-      prompt: agentSystemPrompt + (session.userId ? `\n\nUser ID: ${session.userId}` : ''),
+      systemPrompt: agentSystemPrompt + (session.userId ? `\n\nUser ID: ${session.userId}` : ''),
     });
 
     const chatHistory = convertHistoryToMessages(session.history);
