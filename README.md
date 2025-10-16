@@ -5,7 +5,7 @@
 # AI Agent with MCP tools using LangChain.js
 
 [![Open in Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/mcp-agent-langchainjs?hide_repo_select=true&ref=main&quickstart=true)
-[![Join Azure AI Community Discord](https://img.shields.io/badge/Discord-Azure_AI_Community-blue?style=flat-square&logo=discord&color=5865f2&logoColor=fff)](https://discord.gg/kzRShWzttr)
+[![Join Azure AI Community Discord](https://img.shields.io/badge/Discord-Azure_AI_Community-blue?style=flat-square&logo=discord&color=5865f2&logoColor=fff)](https://aka.ms/foundry/discord)
 [![Deployment time](https://img.shields.io/badge/Time%20to%20deploy-15min-teal?style=flat-square)](#deploy-to-azure)
 <br>
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/mcp-agent-langchainjs/build-test.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/mcp-agent-langchainjs/actions)
@@ -284,3 +284,13 @@ If you encounter issues while running or deploying this sample:
 4. **Node.js version**: Ensure you're using Node.js 22 or higher
 
 For more detailed troubleshooting, check the individual README files in each service directory.
+
+## Getting Help
+
+If you get stuck or have any questions about building AI apps, join:
+
+[![Azure AI Foundry Discord](https://img.shields.io/badge/Discord-Azure_AI_Foundry_Community_Discord-blue?style=for-the-badge&logo=discord&color=5865f2&logoColor=fff)](https://aka.ms/foundry/discord)
+
+If you have product feedback or errors while building visit:
+
+[![Azure AI Foundry Developer Forum](https://img.shields.io/badge/GitHub-Azure_AI_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
