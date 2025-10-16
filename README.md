@@ -186,23 +186,6 @@ Common scripts (run from repo root):
 | Fix lint         | `npm run lint:fix` |
 | Format           | `npm run format`   |
 
-Per-package development (examples):
-
-```bash
-npm run start --workspace=burger-api      # Burger API (Functions)
-npm run start --workspace=agent-api       # Agent API (Functions)
-npm run start --workspace=burger-mcp      # MCP server (HTTP /mcp & /sse)
-npm run start --workspace=agent-webapp    # Agent chat UI
-npm run start --workspace=burger-webapp   # Orders dashboard
-```
-
-Use mock data where available:
-
-```bash
-npm run start:mock --workspace=agent-webapp
-npm run start:mock --workspace=burger-webapp
-```
-
 ## MCP tools
 
 The Burger MCP server provides these tools for AI agents:
