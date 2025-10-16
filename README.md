@@ -15,7 +15,7 @@
 
 ⭐ If you like this sample, star it on GitHub — it helps a lot!
 
-[Overview](#overview) • [Architecture](#architecture) • [Getting started](#getting-started) • [MCP tools](#mcp-tools) • [Deploy to Azure](#deploy-to-azure) • [Resources](#resources) • [Troubleshooting](#troubleshooting)
+[Overview](#overview) • [Architecture](#architecture) • [Getting started](#getting-started) • [Deploy to Azure](#deploy-to-azure) • [Run locally](#run-locally) • [MCP tools](#mcp-tools) • [Resources](#resources)
 
 ![Animation showing the agent in action](./docs/images/demo.gif)
 
@@ -109,9 +109,38 @@ Then you can get the project code:
 
 </details>
 
-### Local development
+## Deploy to Azure
 
-After setting up your environment, you can run the entire application locally:
+### Prerequisites
+
+- **Azure account**: If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free) to get free Azure credits to get started
+- **Azure account permissions**: Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner)
+
+### Deploy with Azure Developer CLI
+
+1. Open a terminal and navigate to the root of the project
+2. Authenticate with Azure by running `azd auth login`
+3. Run `azd up` to deploy the application to Azure. This will provision Azure resources and deploy all services
+   - You will be prompted to select a base location for the resources
+   - The deployment process will take a few minutes
+
+Once deployment is complete, you'll see the URLs of all deployed services in the terminal.
+
+### Cost estimation
+
+Pricing varies per region and usage, so it isn't possible to predict exact costs for your usage. However, you can use the Azure pricing calculator with pre-configured estimations to get an idea of the costs: [Azure Pricing Calculator](https://azure.com/e/0ddf5e6a4c654576a74b7199c85413b9).
+
+### Clean up resources
+
+To clean up all the Azure resources created by this sample:
+
+```bash
+azd down --purge
+```
+
+## Run locally
+
+After setting up your environment and provisioned the Azure resources, you can run the entire application locally:
 
 ```bash
 # Install dependencies for all services
@@ -143,7 +172,7 @@ You can then open the Agent web app and ask things like:
 
 The agent will decide which MCP tool(s) to call, then come up with a response.
 
-#### Available scripts
+### Available scripts
 
 This project uses [npm workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) to manage multiple packages in a single repository. You can run scripts from the root folder that will apply to all packages, or you can run scripts for individual packages as indicated in their respective README files.
 
@@ -232,35 +261,6 @@ Then, you can use GitHub Copilot in **agent mode** to interact with the MCP serv
 
 > [!TIP]
 > Copilot models can behave differently regarding tools usage, so if you don't see it calling the `burger-mcp` tools, you can explicitly mention using the Bruger MCP server by adding `#burger-mcp` in your prompt.
-
-## Deploy to Azure
-
-### Prerequisites
-
-- **Azure account**: If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free) to get free Azure credits to get started
-- **Azure account permissions**: Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner)
-
-### Deploy with Azure Developer CLI
-
-1. Open a terminal and navigate to the root of the project
-2. Authenticate with Azure by running `azd auth login`
-3. Run `azd up` to deploy the application to Azure. This will provision Azure resources and deploy all services
-   - You will be prompted to select a base location for the resources
-   - The deployment process will take a few minutes
-
-Once deployment is complete, you'll see the URLs of all deployed services in the terminal.
-
-### Cost estimation
-
-Pricing varies per region and usage, so it isn't possible to predict exact costs for your usage. However, you can use the Azure pricing calculator with pre-configured estimations to get an idea of the costs: [Azure Pricing Calculator](https://azure.com/e/0ddf5e6a4c654576a74b7199c85413b9).
-
-### Clean up resources
-
-To clean up all the Azure resources created by this sample:
-
-```bash
-azd down --purge
-```
 
 ## Resources
 
