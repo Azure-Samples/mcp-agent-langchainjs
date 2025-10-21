@@ -59,7 +59,8 @@
   "xo": [
     {
       "ignores": [
-        "**/*.genai.mjs"
+        "**/*.genai.mjs",
+        "**/vite.config.ts"
       ]
     },
     {
