@@ -268,6 +268,17 @@ If you encounter issues while running or deploying this sample:
 
 For more detailed troubleshooting, check the individual README files in each service directory.
 
+## Built for AI Agents
+
+This project has been optimized for use with AI agents like [GitHub Copilot](https://github.com/features/copilot). This includes:
+
+- Built-in context engineering provided with [AGENTS.md](https://agents.md/) files to help AI agents understand and extend the codebase.
+- [Reusable prompts](./.github/prompts/) for common tasks.
+- [Custom instructions](./.github/instructions/) tailored for each service of the project.
+- Custom **Codebase Explorer** chat mode for Copilot, to help you explore and understand the codebase.
+
+To learn how to set up and use GitHub Copilot with this repository, check out the [docs/copilot.md](./docs/copilot.md) guide.
+
 ## Getting Help
 
 If you get stuck or have any questions about building AI apps, join:
