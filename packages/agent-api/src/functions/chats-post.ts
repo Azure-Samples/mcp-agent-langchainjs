@@ -5,7 +5,7 @@ import { createAgent, AIMessage, HumanMessage } from 'langchain';
 import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import { loadMcpTools } from '@langchain/mcp-adapters';
-import { StreamEvent } from '@langchain/core/tracers/log_stream.js';
+import { StreamEvent } from '@langchain/core/dist/tracers/log_stream.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
@@ -159,7 +159,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       try {
         if (content) {
           // When no content is generated, do not update the history as it's likely an error
-          await chatHistory.addMessages([new HumanMessage(question), new AIMessage(content)]);
+          await chatHistory.addMessage(new HumanMessage(question));
+          await chatHistory.addMessage(new AIMessage(content));
           context.log('Chat history updated successfully');
 
           // Ensure the session title has finished generating
