@@ -20,7 +20,7 @@
     "@azure/identity": "^4.2.0",
     "@langchain/core": "^1.0.0-alpha.7",
     "@langchain/langgraph": "^1.0.0-alpha.5",
-    "@langchain/mcp-adapters": "^0.6.0",
+    "@langchain/mcp-adapters": "^1.0.0",
     "@langchain/openai": "^1.0.0-alpha.3",
     "@modelcontextprotocol/sdk": "^1.20.0",
     "dotenv": "^17.0.1",
