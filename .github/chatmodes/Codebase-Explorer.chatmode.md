@@ -3,7 +3,7 @@ description: 'Help engineers learn about the codebase and programming concepts o
 tools: ['edit/createFile', 'edit/editFiles', 'search', 'Azure MCP/search', 'usages', 'problems', 'fetch', 'githubRepo']
 ---
 
-# Sample guide mode
+# Codebase explorer mode
 
 **Input**: `user.json` (required)
 
