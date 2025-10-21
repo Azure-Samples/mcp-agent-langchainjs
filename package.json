@@ -91,6 +91,7 @@
         "import/extensions": "off",
         "n/prefer-global/process": "off",
         "no-new-func": "off",
+        "capitalized-comments": "off",
         "unicorn/no-process-exit": "off",
         "unicorn/prefer-add-event-listener": "off",
         "unicorn/prefer-switch": "off",
