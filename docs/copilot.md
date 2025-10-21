@@ -46,9 +46,13 @@ Try selecting the "Codebase Explorer" chat mode from the chat modes selector, an
 
 - "How does the agent-webapp service communicate with the agent-api service?"
 
+## Extending or customizing the sample
+
+Once you're comfortable with the codebase, you can explore how to extend or customize the sample to fit your own use cases. You can modify existing code, add new features, or integrate with other services or APIs. **Agent mode** is the recommended chat mode for making such changes.
+
 ## Advanced usage
 
-Once you're more familiar with Copilot, you can explore more advanced features, such as customizing prompts, instructions or creating your own chat modes to suit your specific needs.
+After you're more familiar with Copilot, you can explore more advanced features, such as customizing prompts, instructions or creating your own chat modes to suit your specific needs.
 
 You can also explore the [Awesome Copilot repository](https://github.com/github/awesome-copilot) for community-created reusable prompts, chat modes, and other resources to enhance your Copilot experience.
 
