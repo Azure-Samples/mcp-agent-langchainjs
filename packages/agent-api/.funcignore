@@ -7,7 +7,6 @@ docs/
 infra/
 node_modules/
 *.js.map
-*.yaml
 .git*
 *.env*
 TODO
