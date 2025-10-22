@@ -6,9 +6,10 @@
 
 [![Open in Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/mcp-agent-langchainjs?hide_repo_select=true&ref=main&quickstart=true)
 [![Join Azure AI Community Discord](https://img.shields.io/badge/Discord-Azure_AI_Community-blue?style=flat-square&logo=discord&color=5865f2&logoColor=fff)](https://aka.ms/foundry/discord)
-[![Deployment time](https://img.shields.io/badge/Time%20to%20deploy-15min-teal?style=flat-square)](#deploy-to-azure)
+[![Deployment time](https://img.shields.io/badge/Deployment-15min-teal?style=flat-square)](#deploy-to-azure)
 <br>
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/mcp-agent-langchainjs/build-test.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/mcp-agent-langchainjs/actions)
+[![dev.to blog post walkthrough](https://img.shields.io/badge/Blog%20post-black?style=flat-square&logo=dev.to)](https://dev.to/azure/serverless-mcp-agent-with-langchainjs-v1-burgers-tools-and-traces-25oo)
 ![Node version](https://img.shields.io/badge/Node.js->=22-3c873a?style=flat-square)
 [![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
