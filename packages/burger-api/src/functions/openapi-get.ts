@@ -15,10 +15,14 @@ app.http('openapi-get', {
       const openapiPath = path.join(process.cwd(), 'openapi.yaml');
       const openapiContent = await fs.readFile(openapiPath, 'utf8');
 
+      const requestUrl = new URL(request.url);
+      const defaultPort = requestUrl.protocol === 'https:' ? '443' : '80';
+      const portSegment = requestUrl.port && requestUrl.port !== defaultPort ? `:${requestUrl.port}` : '';
+      const burgerApiHost = `${requestUrl.protocol}//${requestUrl.hostname}${portSegment}`;
+      console.log('Burger API host:', burgerApiHost);
+
       // Replace BURGER_API_HOST placeholder with actual host URL
-      console.log('BURGER_API_URL:', process.env.BURGER_API_URL);
       context.log('Replacing <BURGER_API_HOST> in OpenAPI specification...');
-      const burgerApiHost = process.env.BURGER_API_URL || 'http://localhost:7071';
       const processedContent = openapiContent.replace('<BURGER_API_HOST>', burgerApiHost);
 
       const url = new URL(request.url);
