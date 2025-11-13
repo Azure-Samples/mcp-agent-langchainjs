@@ -27,37 +27,38 @@ From there, you attach files or folders from the repository to the chat context,
 
 - "Explain me like I'm five what Agent API does, under 100 words."
 
-### Using the different chat modes
+### Using the different agents
 
-Copilot chat supports different chat modes that can help you get more specific answers or actions based on your needs. You can switch between chat modes by clicking on the mode selector in the chat window.
+Copilot chat supports different agents roles that can help you get more specific answers or actions based on your needs. You can switch between agents by clicking on the mode selector in the chat window.
 
-![Chat modes selector](./images/copilot-chat-modes.png)
+![Agent mode picker](./images/copilot-modes.png)
 
-Copilot comes with some built-in chat modes, such as:
+Copilot comes with some built-in agents, such as:
 
-- **Agent mode (default)**: Agent mode is optimized for making autonomous edits across multiple files in your project.
-- **Ask mode**: Ask mode is optimized for answering questions about your codebase, coding, and general technology concepts.
+- **Agent (default)**: Default agent is optimized for making autonomous edits across multiple files in your project.
+- **Ask**: Ask agent is optimized for answering questions about your codebase, coding, and general technology concepts.
+- **Plan**: Plan agent researches and drafts plans for a given task without making any changes to your codebase.
 
-### Codebase Explorer chat mode
+### Codebase Explorer agent
 
-In addition to the built-in chat modes, you can also create custom chat modes to tailor the experience to your specific needs. For example, we have created a custom chat mode called **"Codebase Explorer"** that is optimized for exploring and understanding the codebase of this repository. This modes may also first ask you some questions to better understand your skill level and adapt the answers accordingly.
+In addition to the built-in agents, you can also create custom agents to tailor the experience to your specific needs. For example, we have created a custom agent called **"Codebase Explorer"** that is optimized for exploring and understanding the codebase of this repository. This mode may also first ask you some questions to better understand your skill level and adapt the answers accordingly.
 
-Try selecting the "Codebase Explorer" chat mode from the chat modes selector, and then ask questions like:
+Try selecting the "Codebase Explorer" agent from the agent selector, and then ask questions like:
 
 - "How does the agent-webapp service communicate with the agent-api service?"
 
 ## Extending or customizing the sample
 
-Once you're comfortable with the codebase, you can explore how to extend or customize the sample to fit your own use cases. You can modify existing code, add new features, or integrate with other services or APIs. **Agent mode** is the recommended chat mode for making such changes.
+Once you're comfortable with the codebase, you can explore how to extend or customize the sample to fit your own use cases. You can modify existing code, add new features, or integrate with other services or APIs. **Agent** is the recommended mode for making such changes.
 
 ## Advanced usage
 
-After you're more familiar with Copilot, you can explore more advanced features, such as customizing prompts, instructions or creating your own chat modes to suit your specific needs.
+After you're more familiar with Copilot, you can explore more advanced features, such as customizing prompts, instructions or creating your own custom agents to suit your specific needs.
 
-You can also explore the [Awesome Copilot repository](https://github.com/github/awesome-copilot) for community-created reusable prompts, chat modes, and other resources to enhance your Copilot experience.
+You can also explore the [Awesome Copilot repository](https://github.com/github/awesome-copilot) for community-created reusable prompts, custom agents, and other resources to enhance your Copilot experience.
 
 ## Resources
 
 - [GitHub Copilot documentation](https://docs.github.com/copilot)
-- [Use chat modes in VS Code](https://code.visualstudio.com/docs/copilot/customization/custom-chat-modes)
+- [Custom agents in VS Code](https://code.visualstudio.com/docs/copilot/customization/custom-agents)
 - [Tutorial: Getting started with GitHub Copilot](https://github.com/skills/getting-started-with-github-copilot)
