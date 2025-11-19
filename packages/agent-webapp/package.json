@@ -22,7 +22,7 @@
   "dependencies": {
     "dompurify": "^3.0.0",
     "lit": "^3.0.0",
-    "marked": "^16.2.1"
+    "marked": "^17.0.0"
   },
   "devDependencies": {
     "@types/dompurify": "^3.0.0",
