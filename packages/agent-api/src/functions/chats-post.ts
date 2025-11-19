@@ -5,7 +5,7 @@ import { createAgent, AIMessage, HumanMessage } from 'langchain';
 import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import { loadMcpTools } from '@langchain/mcp-adapters';
-import { StreamEvent } from '@langchain/core/dist/tracers/log_stream.js';
+import { StreamEvent } from '@langchain/core/tracers/log_stream';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';

@@ -16,6 +16,7 @@
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
+    "@arizeai/openinference-instrumentation-langchain": "^4.0.0",
     "@azure/cosmos": "^4.6.0",
     "@azure/functions": "^4.0.0",
     "@azure/identity": "^4.2.0",
