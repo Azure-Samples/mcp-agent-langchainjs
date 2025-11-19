@@ -26,56 +26,69 @@ export function createMcpTool<T extends z.ZodTypeAny>(
   },
 ) {
   if (options.schema) {
-    server.tool(options.name, options.description, options.schema.shape, async (args: z.ZodRawShape) => {
-      try {
-        const result = await options.handler(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: result,
-            },
-          ],
-        };
-      } catch (error: any) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error('Error executing MCP tool:', errorMessage);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Error: ${errorMessage}`,
-            },
-          ],
-          isError: true,
-        };
-      }
-    });
+    server.registerTool(
+      options.name,
+      {
+        description: options.description,
+        inputSchema: options.schema,
+      },
+      async (args: z.ZodRawShape) => {
+        try {
+          const result = await options.handler(args);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: result,
+              },
+            ],
+          };
+        } catch (error: any) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.error('Error executing MCP tool:', errorMessage);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: `Error: ${errorMessage}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      },
+    );
   } else {
-    server.tool(options.name, options.description, async () => {
-      try {
-        const result = await options.handler(undefined as any);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: result,
-            },
-          ],
-        };
-      } catch (error: any) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error('Error executing MCP tool:', errorMessage);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Error: ${errorMessage}`,
-            },
-          ],
-          isError: true,
-        };
-      }
-    });
+    server.registerTool(
+      options.name,
+      {
+        description: options.description,
+      },
+      async () => {
+        try {
+          const result = await options.handler(undefined as any);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: result,
+              },
+            ],
+          };
+        } catch (error: any) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.error('Error executing MCP tool:', errorMessage);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: `Error: ${errorMessage}`,
+              },
+            ],
+            isError: true,
+          };
+        }
+      },
+    );
   }
 }
