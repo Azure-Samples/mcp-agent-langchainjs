@@ -41,7 +41,7 @@ async function getChats(request: HttpRequest, context: InvocationContext): Promi
     if (sessionId) {
       const messages = await chatHistory.getMessages();
       const chatMessages = messages.map((message) => ({
-        role: message.getType() === 'human' ? 'user' : 'assistant',
+        role: message.type === 'human' ? 'user' : 'assistant',
         content: message.content,
       }));
       return { jsonBody: chatMessages };
