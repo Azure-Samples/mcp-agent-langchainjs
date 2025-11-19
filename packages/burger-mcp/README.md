@@ -18,7 +18,6 @@ This is the Burger MCP server, exposing the Burger API as a Model Context Protoc
 This server supports the following transport types:
 
 - **Streamable HTTP**
-- **SSE** (legacy protocol, for backward compatibility)
 - **Stdio** (currently only supported when starting the server locally with `npm start:local`)
 
 The remote server is deployed with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview).
@@ -56,9 +55,6 @@ First, you need to start the Burger API and Burger MCP server locally.
 4. Put `http://localhost:3000/mcp` in the URL field and click on the **Connect** button.
 5. In the **Tools** tab, select **List Tools**. Click on a tool and select **Run Tool**.
 
-> [!NOTE]
-> This application also provides an SSE endpoint if you use `/sse` instead of `/mcp` in the URL field.
-
 ## Development
 
 ### Getting started
@@ -73,7 +69,7 @@ You can run the following command to run the application server:
 npm start
 ```
 
-This will start the application server. The MCP server is then available at `http://localhost:3000/mcp` or `http://localhost:3000/sse` for the streamable HTTP and SSE endpoints, respectively.
+This will start the application server. The MCP server is then available at `http://localhost:3000/mcp` for the streamable HTTP endpoints.
 
 Alternatively, you can run the MCP server with stdio transport using:
 

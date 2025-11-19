@@ -63,7 +63,7 @@ Before we play a bit with the sample, let's have a look at the main services imp
 | ------- | ---- | ---- |
 | Agent Web App (`agent-webapp`) | Chat UI + streaming + session history | Azure Static Web Apps, Lit web components |
 | Agent API (`agent-api`) | LangChain.js v1 agent orchestration + auth + history | Azure Functions, Node.js |
-| Burger MCP Server (`burger-mcp`) | Exposes burger API as tools over MCP (Streamable HTTP + SSE) | Azure Functions, Express, MCP SDK |
+| Burger MCP Server (`burger-mcp`) | Exposes burger API as tools over MCP (Streamable HTTP) | Azure Functions, Express, MCP SDK |
 | Burger API (`burger-api`) | Business logic: burgers, toppings, orders lifecycle | Azure Functions, Cosmos DB |
 
 Here's a simplified view of how they interact:

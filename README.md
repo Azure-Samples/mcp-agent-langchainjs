@@ -218,8 +218,8 @@ You can test the MCP server using the MCP Inspector:
 2. In your browser, open the MCP Inspector (the URL will be shown in the terminal)
 
 3. Configure the connection:
-   - **Transport**: Streamable HTTP or SSE
-   - **URL**: `http://localhost:3000/mcp` (for Streamable HTTP) or `http://localhost:3000/sse` (for legacy SSE)
+   - **Transport**: Streamable HTTP
+   - **URL**: `http://localhost:3000/mcp`
 
 4. Click **Connect** and explore the available tools
 
