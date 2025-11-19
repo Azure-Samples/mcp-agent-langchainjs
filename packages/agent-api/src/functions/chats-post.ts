@@ -83,19 +83,11 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     }
 
     const model = new ChatOpenAI({
-      configuration: {
-        baseURL: azureOpenAiEndpoint,
-        async fetch(url, init = {}) {
-          const token = await getAzureOpenAiTokenProvider()();
-          const headers = new Headers(init.headers);
-          headers.set('Authorization', `Bearer ${token}`);
-          return fetch(url, { ...init, headers });
-        },
-      },
+      configuration: { baseURL: azureOpenAiEndpoint },
       modelName: process.env.AZURE_OPENAI_MODEL ?? 'gpt-5-mini',
       streaming: true,
       useResponsesApi: true,
-      apiKey: 'not_used',
+      apiKey: getAzureOpenAiTokenProvider(),
     });
     const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
       sessionId,
