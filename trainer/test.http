@@ -1,0 +1,83 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:3000
+@model = gpt-5-mini
+@api-version = 2024-02-01
+
+# OpenAI completion
+POST {{api_host}}/openai/v1/chat/completions
+Content-Type: application/json
+Authorization: Bearer toto
+
+{
+  "model": "{{model}}",
+  "messages": [{
+    "content": "Test",
+    "role": "user"
+  }]
+}
+
+###
+
+# OpenAI completion with streaming
+POST {{api_host}}/openai/v1/chat/completions
+content-type: application/json
+Authorization: Bearer toto
+
+{
+  "model": "{{model}}",
+  "messages": [{
+    "content": "Test",
+    "role": "user"
+  }],
+  "stream": true
+}
+
+###
+
+# OpenAI responses api
+POST {{api_host}}/openai/v1/responses
+Content-Type: application/json
+Authorization: Bearer toto
+
+{
+  "model": "gpt-5-mini",
+  "input": "Hello in French"
+}
+
+###
+
+# Azure OpenAI completion
+POST {{api_host}}/openai/deployments/{{model}}/chat/completions?api-version={{api-version}}
+Content-Type: application/json
+api-key: toto
+
+{
+  "messages": [{
+    "content": "Test",
+    "role": "user"
+  }]
+}
+
+###
+
+# Azure OpenAI completion completion with streaming
+POST {{api_host}}/openai/deployments/{{model}}/chat/completions?api-version={{api-version}}
+content-type: application/json
+api-key: toto
+
+{
+  "messages": [{
+    "content": "Test",
+    "role": "user"
+  }],
+  "stream": true
+}
+
+###
+
+# Server up check
+GET {{api_host}}

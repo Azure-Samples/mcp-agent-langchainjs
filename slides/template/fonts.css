@@ -1,0 +1,18 @@
+@font-face {
+  font-family: 'Saira';
+  font-style: normal;
+  font-weight: 500;
+  src: url(Saira-Variable.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 300 500;
+  src: url(Archivo-Variable.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 400;
+  src: url(Inconsolata-Regular.ttf) format('truetype');
+}
