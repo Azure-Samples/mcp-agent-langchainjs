@@ -1,14 +1,17 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { getUserInfo } from '../services/auth.service.js';
 import { getUserId } from '../services/user.service.js';
 import copySvg from '../../assets/icons/copy.svg?raw';
 import burgerOutlineSvg from '../../assets/icons/burger-outline.svg?raw';
 import cardSvg from '../../assets/icons/card.svg?raw';
 
+export type UserCardType = 'button' | 'full';
+
 @customElement('azc-user-card')
 export class UserCard extends LitElement {
+  @property() type: UserCardType = 'button';
   @state() protected userId = '';
   @state() protected isLoading = false;
   @state() protected hasError = false;
@@ -26,6 +29,7 @@ export class UserCard extends LitElement {
   }
 
   closeModal() {
+    if (this.type === 'full') return;
     this.isOpen = false;
     document.body.style.overflow = '';
   }
@@ -49,6 +53,10 @@ export class UserCard extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     document.addEventListener('keydown', this.handleEscapeKey);
+
+    if (this.type === 'full') {
+      this.openModal();
+    }
   }
 
   override disconnectedCallback() {
@@ -81,7 +89,7 @@ export class UserCard extends LitElement {
   };
 
   protected renderError = () =>
-    html`<p class="message error">An error during while loading your membership details. Please retry later.</p>`;
+    html`<p class="message error">An error occurred while loading your membership details. Please retry later.</p>`;
 
   protected renderRegistrationCard = () => html`
     <div class="card card-shine">
@@ -138,9 +146,11 @@ export class UserCard extends LitElement {
   `;
 
   protected renderModal = () => html`
-    <div class="modal-overlay" @click="${this.handleOverlayClick}">
+    <div class="${this.type === 'button' ? 'modal-overlay' : ''}" @click="${this.handleOverlayClick}">
       <div class="modal-content">
-        <button class="close-button" @click="${this.closeModal}" aria-label="Close modal">×</button>
+        ${this.type === 'button'
+          ? html`<button class="close-button" @click="${this.closeModal}" aria-label="Close modal">×</button>`
+          : nothing}
         ${this.isLoading
           ? this.renderLoading()
           : !this.username || this.hasError
@@ -151,13 +161,16 @@ export class UserCard extends LitElement {
   `;
 
   protected override render() {
-    return html` ${this.renderNavLink()} ${this.isOpen ? this.renderModal() : nothing} `;
+    return html`
+      ${this.type === 'button' ? this.renderNavLink() : nothing} ${this.isOpen ? this.renderModal() : nothing}
+    `;
   }
 
   static override styles = css`
     :host {
       --azc-primary: linear-gradient(135deg, #de471d 0%, #ff6b3d 100%);
       --azc-border-radius: 16px;
+      color: #fff;
     }
     .member-card-link {
       background: none;

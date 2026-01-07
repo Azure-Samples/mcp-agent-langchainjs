@@ -120,26 +120,27 @@ export class AuthComponent extends LitElement {
       : html`<slot name="loader"></slot>`;
 
   protected renderLoginOptions = () =>
-    html`<section class="auth-login">
-      <div class="login-buttons">
-        ${this.options.providers.map((provider) => {
-          const providerStyle = {
-            '--button-bg': provider.color,
-            '--button-color': provider.textColor,
-          };
-          return html`<button
-            class="login"
-            @click=${() => {
-              this.onLoginClicked(provider.id);
-            }}
-            style=${styleMap(providerStyle)}
-          >
-            <img src="${provider.icon}" alt="" />
-            <span>${provider.label}</span>
-          </button>`;
-        })}
-      </div>
-    </section>`;
+    html`<slot name="login-title"></slot>
+      <section class="auth-login">
+        <div class="login-buttons">
+          ${this.options.providers.map((provider) => {
+            const providerStyle = {
+              '--button-bg': provider.color,
+              '--button-color': provider.textColor,
+            };
+            return html`<button
+              class="login"
+              @click=${() => {
+                this.onLoginClicked(provider.id);
+              }}
+              style=${styleMap(providerStyle)}
+            >
+              <img src="${provider.icon}" alt="" />
+              <span>${provider.label}</span>
+            </button>`;
+          })}
+        </div>
+      </section>`;
 
   protected renderLogout = () =>
     html`<button
