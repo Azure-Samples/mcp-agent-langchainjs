@@ -93,7 +93,6 @@ npm run start -- --local
 | `npm run dev:local`             | Start the MCP server with hot reload and STDIO transport               |
 | `npm run build`                 | Build the TypeScript source                                            |
 | `npm run clean`                 | Clean build artifacts                                                  |
-| `npm run update:local-settings` | Create or update `local.settings.json` needed by the Functions runtime |
 
 ### Configuration
 

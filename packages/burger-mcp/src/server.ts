@@ -1,11 +1,12 @@
 import process from 'node:process';
+import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { burgerApiUrl } from './config.js';
 import { getMcpServer } from './mcp.js';
 
-const app = express();
-app.use(express.json());
+// Create the Express app with DNS rebinding protection
+const app = createMcpExpressApp();
 
 app.get('/', (_request: Request, response: Response) => {
   response.send({ status: 'up', message: `Burger MCP server running (Using burger API URL: ${burgerApiUrl})` });
@@ -15,7 +16,7 @@ app.get('/', (_request: Request, response: Response) => {
 app.all('/mcp', async (request: Request, response: Response) => {
   console.log(`Received ${request.method} request to /mcp`);
 
-  // Reject unsupported methods (these are only needed for stateful sessions)
+  // Reject unsupported methods (GET/DELETE are only needed for stateful sessions)
   if (request.method === 'GET' || request.method === 'DELETE') {
     response.writeHead(405).end(
       JSON.stringify({

@@ -4,16 +4,13 @@
   "description": "Model Context Protocol (MCP) server for Contoso Burgers API",
   "private": true,
   "type": "module",
-  "exports": "./lib/local.js",
   "scripts": {
     "start": "tsx src/server.ts",
     "start:local": "tsx src/local.ts",
     "dev": "tsx watch src/server.ts",
     "dev:local": "tsx watch src/local.ts",
     "build": "tsc",
-    "clean": "rimraf lib",
-    "update:local-settings": "node ./scripts/update-local-settings.mjs",
-    "postinstall": "npm run update:local-settings"
+    "clean": "rimraf lib"
   },
   "keywords": [],
   "author": "Microsoft",

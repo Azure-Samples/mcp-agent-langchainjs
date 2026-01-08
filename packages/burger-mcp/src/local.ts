@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { burgerApiUrl } from './config.js';
 import { getMcpServer } from './mcp.js';
