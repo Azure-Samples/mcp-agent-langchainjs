@@ -1,0 +1,26 @@
+name: Build workshop docs
+on:
+  push:
+    branches: [main, workshop]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install tools
+        run: npm i -g @moaw/cli
+      - name: Build and update docs
+        run: |
+          git config --global user.name "sinedied"
+          git config --global user.email "noda@free.fr"
+          .github/scripts/build-docs.sh
