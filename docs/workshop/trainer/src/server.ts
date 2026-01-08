@@ -20,45 +20,42 @@ const endpointBase = new URL(targetEndpoint);
 const app = express();
 app.disable('x-powered-by');
 
-async function forwardRequest(req: Request, res: Response) {
-  const targetUrl = new URL(req.originalUrl, endpointBase);
-  const headers = await forwardRequestHeaders(req, targetUrl);
+async function forwardRequest(request: Request, response: Response) {
+  const targetUrl = new URL(request.originalUrl, endpointBase);
+  const headers = await forwardRequestHeaders(request, targetUrl);
 
   const requestOptions: RequestOptions = {
     protocol: targetUrl.protocol,
     hostname: targetUrl.hostname,
     port: targetUrl.port || undefined,
-    method: req.method,
+    method: request.method,
     path: `${targetUrl.pathname}${targetUrl.search}`,
     headers,
   };
 
-  const proxyRequest = (targetUrl.protocol === 'https:' ? https : http).request(
-    requestOptions,
-    (proxyResponse) => {
-      res.status(proxyResponse.statusCode ?? 502);
+  const proxyRequest = (targetUrl.protocol === 'https:' ? https : http).request(requestOptions, (proxyResponse) => {
+    response.status(proxyResponse.statusCode ?? 502);
 
-      applyProxyResponseHeaders(res, proxyResponse.headers);
+    applyProxyResponseHeaders(response, proxyResponse.headers);
 
-      proxyResponse.pipe(res);
-    },
-  );
+    proxyResponse.pipe(response);
+  });
 
   proxyRequest.on('error', (error) => {
     console.error('Azure OpenAI proxy request failed', error);
 
-    if (!res.headersSent) {
-      res.status(502).json({ error: 'Failed to forward request to Azure OpenAI.' });
+    if (response.headersSent) {
+      response.end();
     } else {
-      res.end();
+      response.status(502).json({ error: 'Failed to forward request to Azure OpenAI.' });
     }
   });
 
-  req.pipe(proxyRequest);
+  request.pipe(proxyRequest);
 }
 
-app.get('/', (_req: Request, res: Response) => {
-  res.send('Azure OpenAI Proxy is running.');
+app.get('/', (_request: Request, response: Response) => {
+  response.send('Azure OpenAI Proxy is running.');
 });
 
 app.all('/*path', forwardRequest);
@@ -97,12 +94,12 @@ function shouldSkipHeader(name: string, connectionTokens: Set<string>): boolean 
   return HOP_BY_HOP_HEADERS.has(normalized) || connectionTokens.has(normalized);
 }
 
-async function forwardRequestHeaders(req: Request, targetUrl: URL): Promise<OutgoingHttpHeaders> {
+async function forwardRequestHeaders(request: Request, targetUrl: URL): Promise<OutgoingHttpHeaders> {
   const headers: OutgoingHttpHeaders = {};
-  const connectionTokens = parseHeaderTokens(req.headers.connection);
+  const connectionTokens = parseHeaderTokens(request.headers.connection);
 
   // Preserve incoming headers except the ones we are required to override.
-  for (const [key, value] of Object.entries(req.headers)) {
+  for (const [key, value] of Object.entries(request.headers)) {
     const normalizedKey = key.toLowerCase();
 
     if (!value || normalizedKey === 'authorization' || normalizedKey === 'api-key') {
@@ -120,12 +117,13 @@ async function forwardRequestHeaders(req: Request, targetUrl: URL): Promise<Outg
   const accessToken = await getToken();
 
   headers['authorization'] = `Bearer ${accessToken}`;
+  headers['api-key'] = accessToken;
   headers['host'] = targetUrl.host;
 
   return headers;
 }
 
-function applyProxyResponseHeaders(res: Response, proxyHeaders: OutgoingHttpHeaders) {
+function applyProxyResponseHeaders(response: Response, proxyHeaders: OutgoingHttpHeaders) {
   const connectionTokens = parseHeaderTokens(
     typeof proxyHeaders.connection === 'number' ? String(proxyHeaders.connection) : proxyHeaders.connection,
   );
@@ -140,6 +138,6 @@ function applyProxyResponseHeaders(res: Response, proxyHeaders: OutgoingHttpHead
       continue;
     }
 
-    res.setHeader(normalizedKey, value);
+    response.setHeader(normalizedKey, value);
   }
 }
