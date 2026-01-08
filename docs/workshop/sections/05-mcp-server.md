@@ -90,7 +90,7 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<s
       return 'Operation completed successfully. No content returned.';
     }
 
-    return response.json();
+    return await response.json();
   } catch (error: any) {
     console.error(`Error fetching ${fullUrl}:`, error);
     throw error;
@@ -118,7 +118,7 @@ Next, inside the `getMcpServer` function, we can add our first tool to get the l
     async () => {
       const burgers = await fetchBurgerApi('/api/burgers');
       return {
-        structuredContent: burgers,
+        structuredContent: { result: burgers },
         content: []
       };
     },
@@ -131,7 +131,7 @@ And here we have registered our first tool! The `registerTool` method takes 3 pa
 
 2. The tool config object: this object contains metadata about the tool, such as its description, input and output schemas, etc. **It's strongly recommended to always provided a description for each tool**, as it will help the LLM understand what the tool does and when to use it. You can optionally provide input and output schemas using Zod to define the expected parameters and return values of the tool, but for this simple tool we don't need any input parameters. As the output format is controlled by the API, we'll skip defining it here for simplicity but you can add it when you need to enforce stricter output typing.
 
-3. The tool handler implementation: this function contains the actual logic of the tool, and return the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response, but the `content` field must be present for backwards compatibility even if it's empty.
+3. The tool handler implementation: this function contains the actual logic of the tool, and return the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response, but the `content` field must be present for backwards compatibility even if it's empty. Note that structured content can **only be an object**, and our API here returns an array of burgers, so we wrap it in an object with a `result` property.
 
 <div class="info" data-title="note">
 
@@ -148,7 +148,7 @@ What happens if the API request fails for some reason? In that case, the `fetchB
 async function createToolResponse(handler: () => Promise<Record<string, any>>) {
   try {
     return {
-      structuredContent: await handler(),
+      structuredContent: { result: await handler() },
       content: []
     };;
   } catch (error: any) {
@@ -452,3 +452,17 @@ npm run start:local
 ```
 
 // TODO: test with MCP inspector
+
+You can also test the stdio transport with GitHub Copilot by configuring the MCP server in `.vscode/mcp.json` like this:
+
+```json
+{
+  "servers": {
+    "burger-mcp": {
+      "type": "stdio",
+      "command": "npm",
+      "args": ["run", "start:local", "--workspace=burger-mcp"]
+    }
+  }
+}
+```

@@ -197,7 +197,7 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<R
 async function createToolResponse(handler: () => Promise<Record<string, any>>) {
   try {
     return {
-      structuredContent: await handler(),
+      structuredContent: { result: await handler() },
       content: [],
     };
   } catch (error: any) {
