@@ -1,6 +1,10 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
 
+// ------------------------------------------------
+// Init config from environment variables
+// ------------------------------------------------
+
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 // Env file is located in the root of the repository

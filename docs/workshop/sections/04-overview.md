@@ -22,9 +22,9 @@ Otherwise, you can use your regular `npm` commands in any project folder and it 
 
 ### About the services
 
-We generated the base code of our differents services with the respective CLI or generator of the frameworks we'll be using, and we've pre-written several service components so you can jump straight into the most interesting parts.
+We generated the initial code for our differents services with the respective CLI or generator of the frameworks we'll be using, and we've pre-written several service components so you can jump straight into the most interesting parts.
 
-### The Burger API
+### Burger API
 
 This is a REST API handling burger menu and orders for the restaurant. You can consider it as an existing business API of your company, and use it like an external service that your servers will interact with.
 
@@ -32,7 +32,7 @@ This is a REST API handling burger menu and orders for the restaurant. You can c
 
 We have deployed the Burger API for you, so you can use it to work on this workshop as if you were using a remote third-party service. We'll set up a live dashboard for you so can monitor your orders live as you're progressing in the workshop.
 
-You can then access the API at `$$burger_api$$/api`.
+You can access the API at `$$burger_api$$/api`.
 
 The complete API documentation is available by opening the [Swagger Editor](https://editor.swagger.io/?url=$$burger_api$$/api/openapi) or the [OpenAPI YAML file]($$burger_api$$/api/openapi). A quick overview of the available endpoints is also provided below.
 
@@ -47,7 +47,7 @@ To start the service, run the following command in a terminal at the root of the
 npm start:burger
 ```
 
-The API will be available at `http://localhost:7071/api`.
+You can then access the API at `http://localhost:7071/api`.
 
 The complete API documentation is available by opening the [Swagger Editor](https://editor.swagger.io/?url=http://localhost:7071/api/openapi) or the [OpenAPI YAML file](http://localhost:7071/api/openapi). A quick overview of the available endpoints is also provided below.
 

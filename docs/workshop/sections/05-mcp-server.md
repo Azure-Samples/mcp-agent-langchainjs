@@ -69,10 +69,9 @@ Since we want to expose multiple endpoints from the Burger API, let's first crea
 
 ```ts
 // Wraps standard fetch to include the base URL and handle errors
-async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<string> {
+async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<Record<string, any>> {
   const fullUrl = new URL(url, burgerApiUrl).toString();
   console.error(`Fetching ${fullUrl}`);
-
   try {
     const response = await fetch(fullUrl, {
       ...options,
@@ -87,10 +86,10 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<s
     }
 
     if (response.status === 204) {
-      return 'Operation completed successfully. No content returned.';
+      return { result: 'Operation completed successfully. No content returned.' };
     }
 
-    return await response.json();
+    return response.json();
   } catch (error: any) {
     console.error(`Error fetching ${fullUrl}:`, error);
     throw error;
@@ -112,7 +111,7 @@ Next, inside the `getMcpServer` function, we can add our first tool to get the l
 
 ```ts
   // Get the list of available burgers
-  server.registerTool({
+  server.registerTool(
     'get_burgers',
     { description: 'Get a list of all burgers in the menu' },
     async () => {
@@ -122,16 +121,16 @@ Next, inside the `getMcpServer` function, we can add our first tool to get the l
         content: []
       };
     },
-  });
+  );
 ```
 
 And here we have registered our first tool! The `registerTool` method takes 3 parameters:
 
-1. The tool name: this is how the tool will be identified by MCP clients, this must be unique within the server. Note that tool names must follow [specific rules](https://modelcontextprotocol.io/specification/latest/server/tools#tool-names).
+1. **The tool name:** this is how the tool will be identified by MCP clients, this must be unique within the server. Note that tool names must follow [specific rules](https://modelcontextprotocol.io/specification/latest/server/tools#tool-names).
 
-2. The tool config object: this object contains metadata about the tool, such as its description, input and output schemas, etc. **It's strongly recommended to always provided a description for each tool**, as it will help the LLM understand what the tool does and when to use it. You can optionally provide input and output schemas using Zod to define the expected parameters and return values of the tool, but for this simple tool we don't need any input parameters. As the output format is controlled by the API, we'll skip defining it here for simplicity but you can add it when you need to enforce stricter output typing.
+2. **The tool config:** this object contains metadata about the tool, such as its description, input and output schemas, etc. **It's strongly recommended to always provided a description for each tool**, as it will help the LLM understand what the tool does and when to use it. You can optionally provide input and output schemas using Zod to define the expected parameters and return values of the tool, but for this simple tool we don't need any input parameters. As the output format is controlled by the API, we'll skip defining it here for simplicity but you can add it when you need to enforce stricter output typing.
 
-3. The tool handler implementation: this function contains the actual logic of the tool, and return the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response, but the `content` field must be present for backwards compatibility even if it's empty. Note that structured content can **only be an object**, and our API here returns an array of burgers, so we wrap it in an object with a `result` property.
+3. **The tool handler implementation**: this function contains the actual logic of the tool, and returns the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response, but the `content` field must be present for backwards compatibility even if it's empty. Note that structured content can **only be an object**! Our API here returns an array of burgers, so we wrap it in an object with a `result` property.
 
 <div class="info" data-title="Note">
 
@@ -228,6 +227,25 @@ Now that we have the basic structure in place, you can continue adding the remai
 </div>
 
 To make the task easier, you can use AI code assistants like [GitHub Copilot](https://github.com/features/copilot): if you don't have access already, you can open https://github.com/features/copilot and click on the "Get started for free" button to enable GitHub Copilot for your account. Try referencing the OpenAPI specification while using **Agent mode** in the Copilot chat window to help you complete the implementation 😉
+
+<!-- 
+HINT:
+Example prompt for Copilot, with `mcp.ts` open and in the context (auto model):
+
+```
+#file:openapi.yaml 
+
+Add the following list of tools, based on the provided OpenAPI schema:
+
+get_toppings
+get_topping_by_id
+get_topping_categories
+get_orders
+get_order_by_id
+place_order
+delete_order_by_id
+```
+-->
 
 <div class="info" data-title="Skip notice">
 
