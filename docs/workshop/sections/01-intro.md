@@ -4,9 +4,8 @@ When it was introduced, generative AI was mostly limited to answering questions,
 
 When integrated in existing systems, like in this case a burger ordering service, AI agents can improve the user experience by streamlining interactions and providing personalized assistance. They can understand user preferences, make recommendations, and even place orders. Imagine an assistant available 24/7, capable of handling multiple requests simultaneously, all while providing a personalized experience. This is what AI agents bring to the table.
 
-<div class="warning" data-title="Attention point">
+<div class="warning" data-title="Accuracy in Generative AI">
 
-> **Accuracy in Generative AI** 
 > Large Language Models (LLMs), like the ones powering ChatGPT, do not have by design direct access to the external world. They may produce "hallucinations", offering responses that seem authoritative but are factually incorrect. It's crucial to **inform users that the responses are AI-generated**. During this workshop, we'll explore how to provide LLMs a limited access to external information sources and possible actions, allowing them to *ground* their answers and reduce hallucinations.
 
 </div>
@@ -29,7 +28,7 @@ Our application consists of five main components:
 
 4. **Agent Web App**: This site offers a chat interface for users to send requests to the Agent API and view the generated responses.
 
-5. **Microsoft Foundry model**: We will use the `gpt-5-mini` model, hosted on Azure, for this workshop. The code can also be adapted to work with OpenAI's APIs or Ollama with minimal changes.
+5. **Microsoft Foundry model**: We will use the `gpt-5-mini` model, hosted on Azure, for this workshop. The code can also be adapted to work with OpenAI API or Ollama with minimal changes.
 
 ### What's an AI Agent?
 
@@ -43,9 +42,9 @@ An AI agent is an autonomous software system that can perceive its environment, 
 
 In essence, AI agents bridge the gap between **conversation** and **action**, enabling AI systems to not just talk about tasks, but actually perform them.
 
-There is two key concepts to understand when working with AI agents: **tools** and **workflows**.
+There are two key concepts to understand when working with AI agents: **tools** and **workflows**.
 
-1. **Tools**: Tools are external functions or APIs that the agent can use to perform specific actions. In our case, the burger API is exposed through the multiple MCP tools that the agent can call to retrieve menu information or act on orders.
+1. **Tools**: Tools are external functions or APIs that the agent can use to perform specific actions. In our case, the burger API is exposed through multiple MCP tools that the agent can call to retrieve menu information or act on orders.
 
 2. **Workflows**: Workflows define the sequence of steps the agent takes to accomplish a task. This includes deciding which tools to use, in what order, and how to process the information received from those tools to generate a final response.
 
@@ -60,7 +59,7 @@ The flow goes like this:
 
 ### What's MCP (Model Context Protocol)?
 
-The Model Context Protocol (MCP) is a standardized way for AI models to interact with external tools and data. It defines how models can request information, perform actions, and receive responses in a structured manner. It’s an open-source protocol that has seen fast adoption in the AI community, enabling interoperability between different AI systems and tool providers. MCP has [joined the Linux Foundation](https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation) to further its development and adoption.
+The Model Context Protocol (MCP) is a standardized way for AI models to interact with external tools and data. It defines how models can request information, perform actions, and receive responses in a structured manner. It’s an open-source protocol that has seen fast adoption in the AI community, enabling interoperability between different AI systems and tool providers. MCP has [joined the Linux Foundation](https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation) to further accelerate its development and adoption.
 
 One of its main usages is to act as "the glue" that allows to connect tool providers with any AI agent. By implementing an MCP server, tool providers can expose their APIs in a way that AI agents can easily discover and use them, without needing custom integration for each agent, model or framework.
 

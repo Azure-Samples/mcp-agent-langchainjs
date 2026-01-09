@@ -383,7 +383,7 @@ After you're connected, go to the **Tools** tab to list available tools. You can
 
 Try playing a bit with the other tools to check your implementation!
 
-#### Using GitHub Copilot (optional)
+#### [optional] Using GitHub Copilot
 
 GitHub Copilot is an AI agent compatible with MCP servers, so you can also use it to test your MCP server implementation.
 
@@ -419,7 +419,7 @@ Copilot will automatically discover and use the MCP tools! 🎉
 
 </div>
 
-### Adding stdio transport support (optional)
+### [optional] Adding stdio transport support
 
 It's possible to support both HTTP and stdio transports in the same MCP server implementation. This is useful if you want to be able to run the server both as a web service and as a local process communicating over stdio.
 

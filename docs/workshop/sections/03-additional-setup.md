@@ -48,7 +48,7 @@ After you completed the Azure setup, come back here to continue the workshop.
 
 At this point you should have a `.env` file at the root of the project that contains the required environment variables to connect to your Azure resources.
 
-#### (Optional) Using Ollama
+#### [optional] Using Ollama
 
 If you have a machine with enough resources, you can run this workshop entirely locally without using any cloud resources. To do that, you first have to install [Ollama](https://ollama.com) and then run the following commands to download the models on your machine:
 
