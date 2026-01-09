@@ -75,7 +75,7 @@ makeArchive . solution solution
 echo "Creating mcp-server-tools package..."
 mkdir -p "$target_folder/packages/burger-mcp/src"
 cp -R packages/burger-mcp/src/mcp.ts "$target_folder/packages/burger-mcp/src/mcp.ts"
-makeArchive packages burger-mcp burger-mcp-tools
+makeArchive packages burger-mcp-tools .
 
 ##############################################################################
 # Agent webapp
