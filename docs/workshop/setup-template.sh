@@ -26,15 +26,55 @@ rm -rf packages/agent-cli
 rm -rf packages/burger-data
 rm -rf packages/burger-webapp
 rm -rf packages/burger-mcp/.env.example
+rm -rf packages/burger-mcp/src/local.ts
 rm -rf package-lock.json
 rm -rf docs/blog
 rm -rf docs/eli5.md
 rm -rf .azure
 # rm -rf .env
 # rm -rf ./*.env
+rm -rf env.js
 rm -rf *.ipynb.md
 rm -rf TODO*
 rm -rf .genaiscript
+rm -rf .vscode/mcp.json
+
+###############################################################################
+# azure
+###############################################################################
+
+echo -e "# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: mcp-agent-langchainjs
+metadata:
+  template: mcp-agent-langchainjs@1.0.0
+
+services:
+  burger-api:
+    project: ./packages/burger-api
+    language: ts
+    host: function
+
+  burger-mcp:
+    project: ./packages/burger-mcp
+    language: ts
+    host: function
+
+  agent-api:
+    project: ./packages/agent-api
+    language: ts
+    host: function
+
+  agent-webapp:
+    project: ./packages/agent-webapp
+    dist: dist
+    language: ts
+    host: staticwebapp
+
+hooks:
+  postprovision:
+    run: azd env get-values > .env
+" > azure.yaml
 
 ###############################################################################
 # burger-mcp
@@ -42,22 +82,6 @@ rm -rf .genaiscript
 
 echo -e "" > packages/burger-mcp/src/server.ts
 echo -e "" > packages/burger-mcp/src/mcp.ts
-echo -e "import path from 'node:path';
-import dotenv from 'dotenv';
-
-// ------------------------------------------------
-// Init config from environment variables
-// ------------------------------------------------
-
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
-// Env file is located in the root of the repository
-dotenv.config({ path: path.join(__dirname, '../../../.env'), quiet: true });
-
-// Use --local option to force MCP server to connect to local Burger API
-const localApiUrl = 'http://localhost:7071';
-const burgerApiUrl = process.argv[2] === '--local' ? localApiUrl : process.env.BURGER_API_URL || localApiUrl;
-" > packages/burger-mcp/src/config.ts
 
 ###############################################################################
 # agent-api
