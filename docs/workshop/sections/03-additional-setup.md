@@ -20,7 +20,7 @@ Create a `.env` file at the root of the project, and add the following content:
 
 ```
 AZURE_OPENAI_API_ENDPOINT=$$proxy$$
-BURGER_API=$$burger_api$$
+BURGER_API_URL=$$burger_api$$
 ```
 
 </div>
@@ -74,7 +74,7 @@ Once the model are downloaded, create a `.env` file at the root of the project, 
 
 ```
 AZURE_OPENAI_API_ENDPOINT=http://localhost:11434
-BURGER_API=$$burger_api$$
+BURGER_API_URL=$$burger_api$$
 ```
 
 </div>

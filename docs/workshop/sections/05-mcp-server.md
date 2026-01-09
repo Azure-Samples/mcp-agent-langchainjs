@@ -265,7 +265,7 @@ Open the `src/server.ts` file and add this at the top of the file:
 
 ```ts
 import process from 'node:process';
-import { createMcpExpressApp } from '@modelcontextprotocol/server';
+import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { Request, Response } from 'express';
 import { burgerApiUrl } from './config.js';
@@ -383,16 +383,43 @@ Your MCP server should now be running at `http://localhost:3000/mcp`, using the 
 
 #### Using MCP Inspector
 
-The easiest way to test the MCP server is with the [MCP Inspector tool](https://github.com/modelcontextprotocol/inspector). Run this command in the terminal to start the MCP Inspector:
+The easiest way to test the MCP server is with the [MCP Inspector tool](https://github.com/modelcontextprotocol/inspector).
+
+<div class="important" data-title="Codespaces important note">
+
+export ALLOWED_ORIGINS="https://$CODESPACE_NAME-6274.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
+export MCP_PROXY_FULL_ADDRESS="https://$CODESPACE_NAME-6277.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
+export DANGEROUSLY_OMIT_AUTH=true
+
+> If you're running this workshop in GitHub Codespaces, you need some additional setup before using the MCP Inspector. Open a new terminal and run these commands first (**skip this step if you're running locally**):
+>```bash
+>export ALLOWED_ORIGINS="https://$CODESPACE_NAME-6274.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
+>export MCP_PROXY_FULL_ADDRESS="https://$CODESPACE_NAME-6277.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
+>export DANGEROUSLY_OMIT_AUTH=true
+>```
+>
+> Then go to the **Ports** tab in the bottom panel, right click on the `6277` port, and switch its **Port Visibility** to **Public**.
+>
+> ![Screenshot of the port forwarding tab in Codespaces](./assets/port-forwarding.png)
+>
+> Finally, use the same terminal to start the MCP Inspector command.
+
+</div>
+
+Run this command to start the MCP Inspector:
 
 ```bash
 npx -y @modelcontextprotocol/inspector
 ```
 
-Open the URL shown in the console in your browser, then:
+![MCP Inspector link in console](./assets/mcp-inspector-link.png)
+
+Open the URL shown in the console in your browser **using Ctrl+Click (or Cmd+Click on Mac)**, then configure the connection to your local MCP server:
+
+If you're running this workshop
 
 1. Set transport type to **Streamable HTTP**
-2. Enter your local server URL: `http://localhost:3000/mcp`
+2. Enter your local server URL: `http://localhost:3000/mcp`.
 3. Click **Connect**
 
 After you're connected, go to the **Tools** tab to list available tools. You can then try the `get_burgers` tool to see the burger menu.
@@ -400,6 +427,14 @@ After you're connected, go to the **Tools** tab to list available tools. You can
 ![MCP Inspector Screenshot](./assets/mcp-inspector.png)
 
 Try playing a bit with the other tools to check your implementation!
+
+<div class="tip" data-title="tip">
+
+> If you're having trouble connecting to your local MCP server from the MCP Inspector, make sure that:
+> - The MCP server is running
+> - The **Inspector Proxy Adress** under the **Configuration** tab of the MCP Inspector is empty if you're running locally, or set to the forwarded URL for port 6277 if you're running in Codespaces (you can run `echo "https://$CODESPACE_NAME-6277.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"` to get the correct URL or view it in the **Ports** tab of the VS Code bottom panel).
+
+</div>
 
 #### [optional] Using GitHub Copilot
 
@@ -468,8 +503,6 @@ To run the MCP server with stdio transport, use the following command from the `
 ```bash
 npm run start:local
 ```
-
-// TODO: test with MCP inspector
 
 You can also test the stdio transport with GitHub Copilot by configuring the MCP server in `.vscode/mcp.json` like this:
 
