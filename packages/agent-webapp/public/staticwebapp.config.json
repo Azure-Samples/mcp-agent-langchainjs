@@ -2,6 +2,6 @@
   "trailingSlash": "auto",
   "navigationFallback": {
     "rewrite": "index.html",
-    "exclude": ["/assets/*", "*.css"]
+    "exclude": ["/assets/*", "*.css", "*.html"]
   }
 }
