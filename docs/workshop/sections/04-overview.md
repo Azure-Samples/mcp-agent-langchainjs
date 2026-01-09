@@ -52,7 +52,7 @@ The API will be available at `http://localhost:7071/api`.
 The complete API documentation is available by opening the [Swagger Editor](https://editor.swagger.io/?url=http://localhost:7071/api/openapi) or the [OpenAPI YAML file](http://localhost:7071/api/openapi). A quick overview of the available endpoints is also provided below.
 
 
-<div class="important" title="important">
+<div class="important" data-title="important">
 
 > Leave this terminal running, as the API needs to be up and running for the rest of the workshop.
 

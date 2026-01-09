@@ -42,9 +42,9 @@ If you prefer working on your local machine, you can also run the dev container 
 ![Screenshot of GitHub showing the repository URL](./assets/github-clone.png)
 3. Clone your forked repository and then open the folder in VS Code:
 
-    ```bash
-    git clone <your_repository_url>
-    ```
+   ```bash
+  git clone <your_repository_url>
+   ```
 
 3. In VS Code, use `Ctrl+Shift+P` (or `Command+Shift+P` on macOS) to open the **command palette** and type **Reopen in Container**.
 

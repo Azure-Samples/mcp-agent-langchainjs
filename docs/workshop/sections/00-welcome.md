@@ -27,7 +27,7 @@ We'll cover how to set up an MCP server and connect it to an existing REST API h
 
 - Build an AI agent using [LangChain.js](https://docs.langchain.com/oss/javascript/langchain/overview).
 - Create an MCP (Model Context Protocol) server with [Express](https://expressjs.com) to allow the AI agent to connect with a REST API.
-- Use **context engineering** to improve the performance of your AI agent.
+- Use *context engineering* to improve the performance of your AI agent.
 - Use [OpenAI](https://openai.com) models and [LangChain.js](https://js.langchain.com/docs/) to generate answers based on a prompt.
 - Create a serverless Web API with [Azure Functions](https://learn.microsoft.com/azure/azure-functions/).
 - Connect your agent API to a chat website.

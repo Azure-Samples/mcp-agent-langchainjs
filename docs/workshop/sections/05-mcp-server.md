@@ -100,7 +100,7 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<s
 
 This function takes care of building the full URL, setting the required headers for JSON, and handling errors. It returns the response body as a an object, that we'll later format as an MCP response.
 
-<div class="warning" data-title="Note">
+<div class="info" data-title="Note">
 
 > If you look closely, you'll see that we're using `console.error` to log messages instead of `console.log`. This is because MCP servers use standard output (stdout) for sending MCP messages when using the **stdio** transport, so logging to stdout could interfere with the MCP communication. By using standard error (stderr) for logging, we ensure that our logs don't mix with the MCP messages.
 
@@ -133,7 +133,7 @@ And here we have registered our first tool! The `registerTool` method takes 3 pa
 
 3. The tool handler implementation: this function contains the actual logic of the tool, and return the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response, but the `content` field must be present for backwards compatibility even if it's empty. Note that structured content can **only be an object**, and our API here returns an array of burgers, so we wrap it in an object with a `result` property.
 
-<div class="info" data-title="note">
+<div class="info" data-title="Note">
 
 > The `structuredContent` field was recently added to the spec, so it's also suggested to include a textual representation of the structured content in the `content` field when possible, to ensure compatibility with older MCP clients that don't support structured content yet.
 
@@ -150,7 +150,7 @@ async function createToolResponse(handler: () => Promise<Record<string, any>>) {
     return {
       structuredContent: { result: await handler() },
       content: []
-    };;
+    };
   } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('Error executing MCP tool:', errorMessage);

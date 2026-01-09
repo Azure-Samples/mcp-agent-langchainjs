@@ -4,7 +4,7 @@ When it was introduced, generative AI was mostly limited to answering questions,
 
 When integrated in existing systems, like in this case a burger ordering service, AI agents can improve the user experience by streamlining interactions and providing personalized assistance. They can understand user preferences, make recommendations, and even place orders. Imagine an assistant available 24/7, capable of handling multiple requests simultaneously, all while providing a personalized experience. This is what AI agents bring to the table.
 
-<div class="info" data-title="note">
+<div class="warning" data-title="Attention point">
 
 > **Accuracy in Generative AI** 
 > Large Language Models (LLMs), like the ones powering ChatGPT, do not have by design direct access to the external world. They may produce "hallucinations", offering responses that seem authoritative but are factually incorrect. It's crucial to **inform users that the responses are AI-generated**. During this workshop, we'll explore how to provide LLMs a limited access to external information sources and possible actions, allowing them to *ground* their answers and reduce hallucinations.
@@ -51,7 +51,7 @@ There is two key concepts to understand when working with AI agents: **tools** a
 
 For common use cases like our burger ordering assistant, AI agents can follow this workflow that works as a decision loop:
 
-![Simple agent loop workflow](./assets/agent-loop.png)
+![Simple agent loop workflow](./assets/agent-loop.drawio.png)
 
 The flow goes like this:
 1. The user send in a query, like “order a vegan burger”.

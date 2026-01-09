@@ -1,6 +1,6 @@
 ## Complete the setup
 
-To complete the template setup, please run the following command in a terminal, at the root of the project:
+To complete the template setup, please run the following command in a terminal, **at the root of the project**:
 
 ```bash
 ./docs/workshop/setup-template.sh
