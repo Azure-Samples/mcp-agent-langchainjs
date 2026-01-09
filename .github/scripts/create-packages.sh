@@ -15,8 +15,8 @@ mkdir -p "$target_folder"
 copyFolder() {
   local src="$1"
   local dest="$target_folder/${2:-}"
-  find "$src" -type d -not -path '*node_modules*' -not -path '*/.git' -not -path '*.git/*' -not -path '*/dist' -not -path '*dist/*' -not -path '*/lib' -not -path '*lib/*' -exec mkdir -p '{}' "$dest/{}" ';'
-  find "$src" -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist/*' -not -path '*lib/*' -not -path '*/.DS_Store' -exec cp -r '{}' "$dest/{}" ';'
+  find "$src" -type d -not -path '*node_modules*' -not -path '*/.git' -not -path '*.git/*' -not -path '*/dist' -not -path '*/.azurite' -not -path '*dist/*' -not -path '*/lib' -not -path '*lib/*' -exec mkdir -p '{}' "$dest/{}" ';'
+  find "$src" -type f -not -path '*node_modules*' -not -path '*.git/*' -not -path '*dist/*' -not -path '.azurite/*' -not -path '*lib/*' -not -path '*/.DS_Store' -exec cp -r '{}' "$dest/{}" ';'
 }
 
 makeArchive() {
@@ -75,7 +75,7 @@ makeArchive . solution solution
 echo "Creating mcp-server-tools package..."
 mkdir -p "$target_folder/packages/burger-mcp/src"
 cp -R packages/burger-mcp/src/mcp.ts "$target_folder/packages/burger-mcp/src/mcp.ts"
-makeArchive packages burger-mcp-tools .
+makeArchive packages burger-mcp-tools
 
 ##############################################################################
 # Agent webapp
