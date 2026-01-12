@@ -10,6 +10,8 @@ export type AIChatRole = 'user' | 'assistant' | 'system';
 export type AIChatContext = {
   currentStep?: AgentStep;
   intermediateSteps?: AgentStep[];
+  userId?: string;
+  sessionId?: string;
 };
 
 export type AIChatMessage = {
