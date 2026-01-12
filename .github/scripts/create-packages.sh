@@ -136,7 +136,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const requestBody = (await request.json()) as AIChatCompletionRequest;
     const { messages } = requestBody;
 
-    const userId = process.env.USER_ID;
+    const userId = process.env.USER_ID ?? requestBody?.context?.userId;
     if (!userId) {
       return {
         status: 400,

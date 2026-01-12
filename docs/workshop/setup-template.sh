@@ -105,7 +105,7 @@ Content-Type: application/json
 {
   \"messages\": [
     {
-      \"content\": \"What is there on the menu?\",
+      \"content\": \"Do you have spicy burgers?\",
       \"role\": \"user\"
     }
   ]
@@ -117,7 +117,24 @@ Content-Type: application/json
 # agent-webapp
 ##############################################################################
 
-# TODO
+echo -e "import { type AIChatMessage, type AIChatCompletionDelta } from '../models.js';
+
+export const apiBaseUrl: string = import.meta.env.VITE_API_URL || '';
+
+export type ChatRequestOptions = {
+  messages: AIChatMessage[];
+  context?: Record<string, unknown>;
+  apiUrl: string;
+};
+
+export async function getCompletion(options: ChatRequestOptions) {
+  const apiUrl = options.apiUrl || apiBaseUrl;
+
+  // TODO: complete call to the agent API
+  // const response =
+
+}
+" > packages/agent-webapp/src/services/api.service.ts
 
 echo -e "<!doctype html>
 <html lang=\"en\">
