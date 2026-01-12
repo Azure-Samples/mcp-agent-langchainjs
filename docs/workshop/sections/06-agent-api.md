@@ -456,7 +456,7 @@ curl -N -sS -X POST "http://localhost:7072/api/chats/stream" \
 
 You can play a bit and change the question to see how the agent behaves.
 
-### (Optional) Debugging your agent with traces
+### [Optional] Debugging your agent with traces
 
 As you're playing with your agent, you might want to see more details about its internal workings, like which tools it called, what were the inputs and outputs, and so on. This is especially useful when you're trying to debug or improve your agent's behavior.
 
