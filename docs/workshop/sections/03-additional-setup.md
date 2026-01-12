@@ -74,6 +74,7 @@ Once the model are downloaded, create a `.env` file at the root of the project, 
 
 ```
 AZURE_OPENAI_API_ENDPOINT=http://localhost:11434
+AZURE_OPENAI_MODEL=ministral-3
 BURGER_API_URL=$$burger_api$$
 ```
 
@@ -82,6 +83,7 @@ BURGER_API_URL=$$burger_api$$
 
 ```
 AZURE_OPENAI_API_ENDPOINT=http://localhost:11434
+AZURE_OPENAI_MODEL=ministral-3
 ```
 
 </div>

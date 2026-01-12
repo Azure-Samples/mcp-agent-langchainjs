@@ -89,7 +89,7 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<R
       return { result: 'Operation completed successfully. No content returned.' };
     }
 
-    return response.json();
+    return await response.json();
   } catch (error: any) {
     console.error(`Error fetching ${fullUrl}:`, error);
     throw error;
@@ -118,7 +118,12 @@ Next, inside the `getMcpServer` function, we can add our first tool to get the l
       const burgers = await fetchBurgerApi('/api/burgers');
       return {
         structuredContent: { result: burgers },
-        content: []
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(burgers),
+          }
+        ]
       };
     },
   );
@@ -130,7 +135,7 @@ And here we have registered our first tool! The `registerTool` method takes 3 pa
 
 2. **The tool config:** this object contains metadata about the tool, such as its description, input and output schemas, etc. **It's strongly recommended to always provided a description for each tool**, as it will help the LLM understand what the tool does and when to use it. You can optionally provide input and output schemas using Zod to define the expected parameters and return values of the tool, but for this simple tool we don't need any input parameters. As the output format is controlled by the API, we'll skip defining it here for simplicity but you can add it when you need to enforce stricter output typing.
 
-3. **The tool handler implementation**: this function contains the actual logic of the tool, and returns the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response, but the `content` field must be present for backwards compatibility even if it's empty. Note that structured content can **only be an object**! Our API here returns an array of burgers, so we wrap it in an object with a `result` property.
+3. **The tool handler implementation**: this function contains the actual logic of the tool, and returns the result. The content may return *unstructured content* such as text, audio or images, or *structured content* such as JSON objects or arrays. Our API always return JSON objects, so we'll return the response in the `structuredContent` field of the MCP response. For backward compatibility, it's also recommended to result the JSON result as text in the `content` array field. Note that structured content value can **only be an object**! Our API here returns an array of burgers, so we wrap it in an object with a `result` property.
 
 <div class="info" data-title="Note">
 
@@ -146,9 +151,15 @@ What happens if the API request fails for some reason? In that case, the `fetchB
 // Helper to create MCP tool responses with error handling
 async function createToolResponse(handler: () => Promise<Record<string, any>>) {
   try {
+    const result = await handler();
     return {
-      structuredContent: { result: await handler() },
-      content: []
+      structuredContent: { result },
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify(result),
+        }
+      ],
     };
   } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : String(error);
