@@ -27,6 +27,8 @@ rm -rf packages/burger-data
 rm -rf packages/burger-webapp
 rm -rf packages/burger-mcp/.env.example
 rm -rf packages/burger-mcp/src/local.ts
+rm -rf packages/agent-api/src/chat-get.ts
+rm -rf packages/agent-api/src/chat-delete.ts
 rm -rf package-lock.json
 rm -rf docs/blog
 rm -rf docs/eli5.md
@@ -43,7 +45,7 @@ rm -rf .vscode/mcp.json
 # azure
 ###############################################################################
 
-echo -e "# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+echo -e "# yaml-language-server: \$schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: mcp-agent-langchainjs
 metadata:
@@ -87,7 +89,29 @@ echo -e "" > packages/burger-mcp/src/mcp.ts
 # agent-api
 ###############################################################################
 
-# TODO
+echo -e "" > packages/agent-api/src/chat-post.ts
+
+echo -e "##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7072
+
+### Chat with the agent
+POST {{api_host}}/api/chats/stream
+Content-Type: application/json
+
+{
+  \"messages\": [
+    {
+      \"content\": \"What is there on the menu?\",
+      \"role\": \"user\"
+    }
+  ]
+}
+
+" > packages/agent-api/api.http
 
 ##############################################################################
 # agent-webapp

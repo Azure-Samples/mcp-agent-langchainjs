@@ -1,89 +1,146 @@
 ## Agent API
 
+With our MCP server up and running, it's time to build our AI agent using LangChain.js. We'll also create an API endpoint that our frontend can call to chat with the agent.
 
 ### About LangChain.js
 
+There are many frameworks available to build AI agents, but for this workshop we'll use [LangChain.js](https://docs.langchain.com/oss/javascript/langchain/overview). It's one of the most popular JS frameworks for building applications with LLMs, with a huge community of developers. Since its v1.0 release, it's now an agent-first framework making it a perfect fit for our use case.
 
-
+The benefits of using LangChain.js are numerous:
+- It provides a simple and consistent API to interact with different LLM providers, allowing to switch and try different models with minimal code changes.
+- It has first-class support for building agents, while streaming all intermediate steps for creating dynamic UI experiences.
+- It supports a wide range of tools and integrations, including MCP, vector databases, APIs, and more.
+- The [LangGraph.js](https://docs.langchain.com/oss/javascript/langgraph/overview) companion library gives you full control over your agents behavior when needed, with support for multi-agents orchestration and advanced workflows.
 
 ### Introducting Azure Functions
 
+We'll use [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript) to host the web API for ou Agent. Azure Functions is a serverless compute service that enables you to scale on-demand without having to manage infrastructure. It's a great fit for JS applications, and now even support hosting full Node.js applications, like our MCP server.
 
+#### Creating the HTTP function
 
-
-### Initializing the SDK clients
-
-
-
-#### Managing Azure credentials
-
-
-
-
-#### LangChain.js clients
-
-
-
-#### Creating the system prompt
-
-
-
-#### Generating the response
-
-
-
-### Testing our API
-
-
-
-
-
-We'll start the code by creating the Chat API. This API will implement the [ChatBootAI OpenAPI specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ChatBootAI/chatbootai-openapi/main/openapi/openapi-chatbootai.yml) and will be used by the website to get message answers.
-
-### Introducing Fastify
-
-We'll be using [Fastify](https://www.fastify.io/) to create our Chat API. Fastify is a Web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture.
-
-It's very similar to [Express](https://expressjs.com), but it's much faster and more lightweight making it a good choice for microservices. It also comes with first-class TypeScript support, and that's what we'll use in our base template.
-
-### Setting up the chat plugin
-
-We'll start by creating a plugin for Fastify that will implement our chat service. A plugin is a way to encapsulate a piece of functionality in Fastify, and it's a good way to organize your code.
-
-Open the file `src/backend/src/plugins/chat.ts`. At the bottom you should see the following code:
+Let's bootstrap our chat API endpoint, that will be used to interact with our AI agent. Open the file `src/functions/chat-post.ts` and add this code:
 
 ```ts
-export default fp(
-  async (fastify, options) => {
-    const config = fastify.config;
+import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/functions';
+import { type AIChatCompletionRequest, type AIChatCompletionDelta } from '../models.js';
 
-    // TODO: initialize clients here
+export async function postChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
 
-    const chatService = new ChatService(/* config, model, vectorStore */);
+  // TODO: implement chat endpoint
 
-    fastify.decorate('chat', chatService);
-  },
-  {
-    name: 'chat',
-    dependencies: ['config'],
-  },
-);
+}
+
+app.setup({ enableHttpStream: true });
+app.http('chats-post', {
+  route: 'chats/stream',
+  methods: ['POST'],
+  authLevel: 'anonymous',
+  handler: postChats,
+});
 ```
 
-We have the starting point to implement our chat service. Let's have a look at the pieces we have here:
+Here we're using the Azure Functions SDK to create an HTTP-triggered function. this bootstraping code is similar to what you would do with other frameworks like Express or Fastify:
 
-1. First we retrieve the configuration needed by our service with `const config = fastify.config;` It's initialized from environment variables in the `src/backend/src/plugins/config.ts` file.
-2. Then we will create the different clients we need to call the Aure services. We'll see how to do that in the next section.
-3. After that we create the `ChatService` instance that will be used by our API to generate answers. We'll pass the different clients we created as parameters to the constructor.
-4. Finally we decorate the Fastify instance with our `ChatService` instance, so we can access it from our routes using `fastify.chat`.
+1. We create the function that will implement the chat endpoint logic, named `postChats`.
+2. We use the `app.http` method to define the HTTP endpoint, specifying the route, the supported HTTP methods, if the endpoint needs authentication (`anonymous` means that it's publicly available to any user), and the handler function.
+3. As we're going to stream the Agent responses, we need to toggle a special option to enable HTTP streaming with `{ enableHttpStream: true }`.
 
-### Initializing the SDK clients
+You might have noticed in the imports that we already have defined some models that we'll use for our request and response:
+- `AIChatCompletionRequest`: defines the shape of the request body that our endpoint will receive.
+- `AIChatCompletionDelta`: defines the shape of the response chunks that our endpoint will stream back to the client.
 
-We'll now replace the `// TODO: initialize clients here` with the actual code to set up our clients.
+These models correspond to the specifiction we saw earlier in the **Overview** section.
+
+#### Completing the boilerplate
+
+Before we can focus on the agent implementation let's get the boilerplate code out of the way. We'll add basic checks and error handling to our endpoint.
+
+Replace the `postChats` function with this code:
+
+```ts
+export async function postChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+  const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
+  const burgerMcpUrl = process.env.BURGER_MCP_URL ?? 'http://localhost:3000/mcp';
+
+  try {
+    const requestBody = (await request.json()) as AIChatCompletionRequest;
+    const { messages } = requestBody;
+
+    const userId = process.env.USER_ID;
+    if (!userId) {
+      return {
+        status: 400,
+        jsonBody: {
+          error: 'Invalid or missing userId in the environment variables',
+        },
+      };
+    }
+
+    if (messages?.length === 0 || !messages.at(-1)?.content) {
+      return {
+        status: 400,
+        jsonBody: {
+          error: 'Invalid or missing messages in the request body',
+        },
+      };
+    }
+
+    if (!azureOpenAiEndpoint || !burgerMcpUrl) {
+      const errorMessage = 'Missing required environment variables: AZURE_OPENAI_API_ENDPOINT or BURGER_MCP_URL';
+      context.error(errorMessage);
+      return {
+        status: 500,
+        jsonBody: {
+          error: errorMessage,
+        },
+      };
+    }
+
+    // TODO: Implement the AI agent here
+
+  } catch (_error: unknown) {
+    const error = _error as Error;
+    context.error(`Error when processing chat-post request: ${error.message}`);
+
+    return {
+      status: 500,
+      jsonBody: {
+        error: 'Internal server error while processing the request',
+      },
+    };
+  }
+}
+```
+
+As you can see, we simply added validation for environment variables and the request input, and wrapped everything in a try/catch block to handle any unexpected errors.
+
+### Implementing the AI agent
+
+Now we can start coding our AI agent! Let's start by initializing our LLM model using LangChain.js. Add this import at the top of the file:
+
+```ts
+import { ChatOpenAI } from '@langchain/openai';
+```
+
+Then, inside the `postChats` function, add this code after the `// TODO: Implement the AI agent here` comment: 
+
+```ts
+    const model = new ChatOpenAI({
+      configuration: { baseURL: azureOpenAiEndpoint },
+      modelName: process.env.AZURE_OPENAI_MODEL ?? 'gpt-5-mini',
+      streaming: true,
+      useResponsesApi: true,
+      apiKey: getAzureOpenAiTokenProvider(),
+    });
+```
+
+<!-- TODO: test ollama responses api -->
 
 #### Managing Azure credentials
 
-Before we can create the clients, we need to retrieve the credentials to access our Azure services. We'll use the [Azure Identity SDK](https://learn.microsoft.com/javascript/api/overview/azure/identity-readme?view=azure-node-latest) to do that.
+Now we need to handle the authentication part and implement the `getAzureOpenAiTokenProvider` function.
+
+To allow connecting to Azure OpenAI without having to manage secrets, we'll use the [Azure Identity SDK](https://learn.microsoft.com/javascript/api/overview/azure/identity-readme?view=azure-node-latest) to retrieve an access token using the current user identity.
 
 Add this import at the top of the file:
 
@@ -91,314 +148,344 @@ Add this import at the top of the file:
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 ```
 
-Then add this code below the `const config = fastify.config;` line:
+Then add this at the bottom of the file:
 
 ```ts
-// Use the current user identity to authenticate.
-// No secrets needed, it uses `az login` or `azd auth login` locally,
-// and managed identity when deployed on Azure.
-const credentials = new DefaultAzureCredential();
+function getAzureOpenAiTokenProvider() {
+  // Automatically find and use the current user identity
+  const credentials = new DefaultAzureCredential();
 
-// Set up OpenAI token provider
-const getToken = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
-const azureADTokenProvider = async () => {
-  try {
-    return await getToken();
-  } catch {
-    // Azure identity is not supported in local container environment,
-    // so we use a dummy key (only works when using an OpenAI proxy).
-    fastify.log.warn('Failed to get Azure OpenAI token, using dummy key');
-    return '__dummy';
-  }
-};
+  // Set up token provider
+  const getToken = getBearerTokenProvider(credentials, 'https://cognitiveservices.azure.com/.default');
+  return async () => {
+    try {
+      return await getToken();
+    } catch {
+      // When using Ollama or an external OpenAI proxy,
+      // Azure identity is not supported, so we use a dummy key instead.
+      console.warn('Failed to get Azure OpenAI token, using dummy key');
+      return '__dummy';
+    }
+  };
+}
 ```
 
 This will use the current user identity to authenticate with Azure OpenAI. We don't need to provide any secrets, just use `az login` (or `azd auth login`) locally, and [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) when deployed on Azure.
 
-<div class="info" data-title="note">
+#### Connecting to the MCP server
 
-> When run locally inside a container, the Azure Identity SDK will not be able to retrieve the current user identity from the Azure Developer CLI. For simplicity, we'll use a dummy key in this case but it only works if you use the OpenAI proxy we provide if you attend this workshop in-person.
-> If need to properly authenticate locally, you should either run the app outside of a container with `npm run dev`, or create a [Service Principal](https://learn.microsoft.com/entra/identity-platform/howto-create-service-principal-portal), assign it the needed permissions and pass the environment variables to the container.
-
-</div>
-
-#### LangChain.js clients
-
-Next we'll create the LangChain.js clients. First add these imports at the top of the file:
+The next step is to connect to our Burger MCP server and load the tools we need for our agent. Add this import at the top of the file:
 
 ```ts
-import { QdrantClient } from '@qdrant/qdrant-js';
-import { QdrantVectorStore } from '@langchain/qdrant';
-import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/openai';
+import { MultiServerMCPClient } from "@langchain/mcp-adapters";
 ```
 
-Then add this code below the below the credentials retrieval:
+Next, continue the code inside the `postChats` function after the model initialization:
 
 ```ts
-// Set up LangChain.js clients
-fastify.log.info(`Using OpenAI at ${config.azureOpenAiApiEndpoint}`);
+    context.log(`Connecting to Burger MCP server at ${burgerMcpUrl}`);
+    const client = new MultiServerMCPClient({
+      burger: {
+        transport: 'http',
+        url: burgerMcpUrl,
+      },
+    });
 
-const model = new AzureChatOpenAI({
-  azureADTokenProvider,
-  // Only needed because we make the OpenAI endpoint configurable
-  azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
-  // Controls randomness. 0 = deterministic, 1 = maximum randomness
-  temperature: 0.7,
-  // Maximum number of tokens to generate
-  maxTokens: 1024,
-  // Number of completions to generate
-  n: 1,
-});
-const embeddings = new AzureOpenAIEmbeddings({
-  azureADTokenProvider,
-  // Only needed because we make the OpenAI endpoint configurable
-  azureOpenAIBasePath: `${config.azureOpenAiApiEndpoint}/openai/deployments`,
-});
-const vectorStore = new QdrantVectorStore(embeddings, {
-  client: new QdrantClient({
-    url: config.qdrantUrl,
-    // https://github.com/qdrant/qdrant-js/issues/59
-    port: Number(config.qdrantUrl.split(':')[2]),
-  }),
-});
+    const tools = await client.getTools();
+    context.log(`Loaded ${tools.length} tools from Burger MCP server`);
 ```
 
-Here we create the clients for the Azure OpenAI chat model and the Azure OpenAI embeddings model, using the `azureADTokenProvider` method we created earlier. We pass a few options to control the behavior of the chat model:
-- `temperature` controls the randomness of the model. A value of 0 will make the model deterministic, and a value of 1 will make it generate the most random answers.
-- `maxTokens` is the maximum number of tokens the model will generate. If you set it too low, the model will not be able to generate long answers. If you set it too high, the model may generate answers that are too long.
-- `n` is the number of answers the model will generate. In our case we only want one answer, so we set it to 1.
+Here we're first creating an MCP client and connecting it to our Burger MCP server using HTTP. Note that the `MultiServerMCPClient` supports connecting to multiple MCP servers and mixing different transports if needeed. By default, it works with **stateless connections** and needs some additional configuration to support **stateful servers** (see the [LangChain.js MCP documentation](https://docs.langchain.com/oss/javascript/langchain/mcp) for more details).
 
-For the vector database, we create a `QdrantVectorStore` instance that will be used to interact with the Qdrant service.
-
-<div class="info" data-title="note">
-
-> You can optionally define an [authentication key](https://qdrant.tech/documentation/guides/security/#authentication) to secure your Qdrant service. If you do that, you'll need to pass it to the `QdrantClient` constructor using the `apiKey` property.
-
-</div>
-
-### Creating the ChatService
-
-Now that we have created all the clients, it's time to properly initialize the `ChatService` instance. Uncomment the parameters in the `ChatService` constructor call like this:
-
-```ts
-const chatService = new ChatService(config, model, vectorStore);
-```
-
-We feed the `ChatService` instance with the current configuration, the Azure OpenAI chat model client, and the Qdrant vector store client.
-
-#### Retrieving the documents
-
-It's time to start implementing the RAG pattern! The first step is to retrieve the documents from the vector database. In the `ChatService` class, there's a method named `run` that is currently empty with a `// TODO: implement Retrieval Augmented Generation (RAG) here`. This is where we'll implement the RAG pattern.
-
-Before retrieving the documents, we need to get the question:
-
-```ts
-// Get the content of the last message (the question)
-const query = messages[messages.length - 1].content;
-```
-
-Next we'll retrieve the best 3 matching documents from the vector database. Note that LangChain.js automatically computes the embedding for the query before performing the search.
-
-```ts
-// Performs a vector similarity search.
-// Embedding for the query is automatically computed
-const documents = await this.vectorStore.similaritySearch(query, 3);
-```
-
-Let's process the search results to extract the documents' content:
-
-```ts
-const results: string[] = [];
-for (const document of documents) {
-  const source = document.metadata.source;
-  const content = document.pageContent.replaceAll(/[\n\r]+/g, ' ');
-  results.push(`${source}: ${content}`);
-}
-
-const content = results.join('\n');
-```
-
-For each document in the results, we extract the page information and the content of the document, and create a string from it.
-For the content, we use a regular expression to replace all the new lines with spaces, so it's easier to feed it to the GPT model later.
-
-Finally we join all the results into a single string, and separate each document with a new line. We'll use this content to generate the augmented prompt.
+After the connection is established, we use `getTools` to load all the tools exposed by the MCP server in a LangChain.js compatible format.
 
 #### Creating the system prompt
 
-Now that we have the content of the documents, we'll craft the base prompt that will be sent to the GPT model. Add this code at the top of the file below the imports:
+The last thing we need to do before creating the agent is to define the system prompt that will set the context for our agent. Don't overlook this step, as this is the most important part of the agent behavior!
+
+Add this code after the imports:
 
 ```ts
-const SYSTEM_MESSAGE_PROMPT = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
-Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
-For tabular information return it as an html table. Do not return markdown format. If the question is not in English, answer in the language used in the question.
-Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].
+const agentSystemPrompt = `## Role
+You an expert assistant that helps users with managing burger orders. Use the provided tools to get the information you need and perform actions on behalf of the user.
+Only answer to requests that are related to burger orders and the menu. If the user asks for something else, politely inform them that you can only assist with burger orders.
+Be conversational and friendly, like a real person would be, but keep your answers concise and to the point.
+
+## Context
+The restaurant is called Contoso Burgers. Contoso Burgets always provides french fries and a fountain drink with every burger order, so there's no need to add them to orders.
+
+## Task
+1. Help the user with their request, ask any clarifying questions if needed.
+
+## Instructions
+- Always use the tools provided to get the information requested or perform any actions
+- If you get any errors when trying to use a tool that does not seem related to missing parameters, try again
+- If you cannot get the information needed to answer the user's question or perform the specified action, inform the user that you are unable to do so. Never make up information.
+- The get_burger tool can help you get informations about the burgers
+- Creating or cancelling an order requires the userId, which is provided in the request context. Never ask the user for it or confirm it in your responses.
+- Use GFM markdown formatting in your responses, to make your answers easy to read and visually appealing. You can use tables, headings, bullet points, bold text, italics, images, and links where appropriate.
+- Only use image links from the menu data, do not make up image URLs.
+- When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
 `;
 ```
 
-We make it a constant so it's easier to tweak the prompt later without having to dive into the code.
+As you can see, this prompt is quite detailed. We'll break it down to understand the different parts:
+- **Role**: we define the role of the agent, what it is supposed to do/not do and the tone it should use. Role-playing is a powerful technique to guide an LLM behavior, and has been shown to improve results significantly.
 
-Let's decompose the prompt to better understand what's going on. When creating a prompt, there are a few things to keep in mind to get the best results:
+- **Context**: we provide additional context about the restaurant and its policies. This **grounds the agent** in the specific domain of our company, and provide the necessary background information and data (like the fact that fries and drinks are included with every order) that the burger API does not provide directly.
 
-- Be explicit about the domain of the prompt. In our case, we're setting the context with this phrase: `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests.`. This relates to the set of documents provided by default, so feel free to change it if you're using your own documents.
+- **Task**: we define the main task of the agent, which is to help the user with their requests. This can be a multiple-step task, here we just keep it simple.
 
-- Tell the model how long the answer should be. In our case, we want to keep the answers short, so we add this phrase: `Be brief in your answers.`.
+- **Instructions**: we provide a set of instructions to guide the agent behavior, can clarify, fine-tune, and constrain its actions. Some important instructions here are:
+  * `Always use the provided tools to get information or perform actions`: this ensures that the agent relies on the tools we provided via MCP, and does not try to answer questions on its own. We also give it an example usage with the `get_burger` tool, and explicitly tell it to retry if it gets errors.
+  * `If you cannot get the information needed...`: this is **a very important instruction to avoid hallucinations**, called an *escape hatch*. It tells the agent to inform the user if it cannot fulfill their request, instead of making up information.
+  * `Creating or cancelling an order requires the userId...`: this instruction is specific to our use case, as we will provide the `userId` via the request context. This prevents the agent from asking for it, which might be confusing for the user.
+  * We also provide detailed instructions on how to format the answers using markdown, including images. This kind of formatting can be tuned to fit your frontend needs.
 
-- In the context of RAG, tell it to only use the content of the documents we provide: `Answer ONLY with the facts listed in the list of sources below.`. This is called *grounding* the model.
+<div class="tip" data-title="Tip">
 
-- To avoid having the model inventing facts, we tell to answer that it doesn't know if the information is not in the documents: `If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below.`. This is called adding an *escape hatch*.
-
-- Allow the model to ask for clarifications if needed: `If asking a clarifying question to the user would help, ask the question.`.
-
-- Tell the model the format and language you expect in the answer: `Do not return markdown format. If the question is not in English, answer in the language used in the question.`
-
-- Finally, tell the model how it should understand the source format and quote it in the answer: `Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example: [info1.txt]. Don't combine sources, list each source separately, for example: [info1.txt][info2.pdf].`
-
-- Use examples when possible, like we do to explain the source format.
-
-#### Creating the augmented prompt
-
-Note that in the previous prompt, we did not add the source content. This is because the model does not handle lengthy system messages well, so instead we'll inject the sources into the latest user message.
-
-What the model expect as an input is an array of messages, with the latest message being the user message. Each message have a role, which can be `system` (which sets the context), `user` (the user questions), or `assistant` (which is the AI-generated answers).
-
-To build this array of messages, we'll use a helper class named `MessageBuilder` that we created in the `src/backend/src/lib/message-builder.ts` file. Let's continue our implementation of the RAG pattern with this code:
-
-```ts
-// Set the context with the system message
-const systemMessage = SYSTEM_MESSAGE_PROMPT;
-
-// Get the latest user message (the question), and inject the sources into it
-const userMessage = `${messages[messages.length - 1].content}\n\nSources:\n${content}`;
-
-// Create the messages prompt
-const messageBuilder = new MessageBuilder(systemMessage, this.config.azureOpenAiApiModelName);
-messageBuilder.appendMessage('user', userMessage);
-```
-
-Because the previous messages in the conversation may also help the model, we'll add them to the prompt as well. But here we need to be careful, as GPT models have a limit in the number of tokens they can process. So we'll only add messages until we reach the token limit we set.
-
-```ts
-// Add the previous messages to the prompt, as long as we don't exceed the token limit
-for (const historyMessage of messages.slice(0, -1).reverse()) {
-  if (messageBuilder.tokens > this.tokenLimit) {
-    messageBuilder.popMessage();
-    break;
-  };
-  messageBuilder.appendMessage(historyMessage.role, historyMessage.content);
-}
-```
-
-As a final touch, it can be useful to create some debug information to help us understand what the model is doing.
-
-```ts
-// Processing details, for debugging purposes
-const conversation = messageBuilder.messages.map((m) => `${m.role}: ${m.content}`).join('\n\n');
-const thoughts = `Search query:\n${query}\n\nConversation:\n${conversation}`.replaceAll('\n', '<br>');
-```
-
-Here we create a `thoughts` string that we'll return along the answer, that contains the search query and the messages that were sent to the model.
-
-#### Generating the response
-
-We're now ready to generate the response from the model. Add this code below the previous one:
-
-```ts
-const completion = await this.model.invoke(messageBuilder.getMessages());
-```
-
-We call the `invoke` method to generate the response, passing the messages we created earlier as input.
-
-The final step is to return the result in the Chat specification format:
-
-```ts
-// Return the response in the Chat specification format
-return {
-  message: {
-    content: completion.content as string,
-    role: 'assistant',
-  },
-  context: {
-    data_points: results,
-    thoughts: thoughts,
-  },
-};
-```
-
-The result of the completion is in the `completion.content` property. We also add the `data_points` containing the search document results and `thoughts` properties to the `context` object, so they can be used by the website to display the debug information.
-
-Feeeeew, that was a lot of code! But we're done with the implementation of the RAG pattern.
-
-### Creating the API route
-
-Now that we have our `ChatService` instance, we need to create the API route that will call it. Open the file `src/backend/src/routes/root.ts`. There's a comment that gives us a hint on what to do next: `// TODO: create /chat endpoint`
-
-So let's create the `/chat` endpoint:
-
-```ts
-fastify.post('/chat', async function (request, reply) {
-  const { messages } = request.body as any;
-  try {
-    return await fastify.chat.run(messages);
-  } catch (_error: unknown) {
-    const error = _error as Error;
-    fastify.log.error(error);
-    return reply.internalServerError(error.message);
-  }
-});
-```
-
-Using `fastify.post('/chat', ...)` we create a POST endpoint at the `/chat` route.
-We retrieve the `messages` property from the request body, and call the `run` method of the `ChatService` instance we created earlier.
-We also catch any errors that may happen, log them, and return an internal server error (HTTP status 500) to the client.
-
-<div class="info" data-title="note">
-
-> Here we bypassed the validation of the request body to keep things simple, hence the need to cast it to `any` (boo!). In a real-world application, you should always validate the request body to ensure it matches the expected format. Fastify allows you to do that by providing a [JSON schema to validate the body](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation). By doing that, you'll be able to remove the `as any` cast, and get better error messages when the request body is invalid.
+> Crafting good prompts is an iterative process. You should test and tweak the prompt as you go, to get the best results for your specific use case. Instructions that work well for one domain may not be optimal for another, so don't hesitate to experiment! This is outside the scope of this workshop, but you can use tools like [Promptfoo](https://github.com/promptfoo/promptfoo) to help you evaluate your prompts and compare different versions.
 
 </div>
 
-Our API is now ready to be tested!
+When working with agents, the prompt crafting process is called *context engineering*, and it's a key skill to master when building AI applications. It's also a bit different than what we call *prompt engineering*: prompt engineering is more focused on **how** to write the prompt (formatting, structure, wording etc.), while context engineering is more about **what** to include in the prompt to provide the necessary context for the agent to perform its task effectively, without overloading it with unnecessary information.
+
+#### Creating the agent
+
+We have the LLM, the tools and the prompt: it's time to create the agent!
+
+Add this import:
+
+```ts
+import { createAgent, AIMessage, HumanMessage } from 'langchain';
+```
+
+Then again, continue the code inside the `postChats` function after loading the tools:
+
+```ts
+    const agent = createAgent({
+      model,
+      tools,
+      systemPrompt: agentSystemPrompt,
+    });
+```
+
+Seems pretty straightforward, right? We just call the `createAgent` function, passing the model, the tools and the system prompt we created earlier.
+
+While simple on the surface, this creates a *ReAct* (Reasoning + Acting) agent that decide which tools to use, and iteratively work towards solutions.
+
+You have have the option to customize the agent behavior with **middlewares**, that can dynamically modify, extend or hook into the agent execution flow.
+
+Middlewares can for example be used to:
+- Add human-in-the-loop capabilities, to allow a human to review and approve tool calls before they are executed
+- Add pre/post model and tool processing for context injection or validation, for security or compliance purposes
+- Add dynamic control flows, to automatically retry failed tool calls, or branch the execution based on certain conditions
+
+Our use case is simple enough that we don't need any middlewares, but you can read more about them in the [LangChain.js documentation](https://docs.langchain.com/oss/javascript/langchain/middleware/overview).
+
+#### Generating the response
+
+Before we can call the agent to generate the response, we need to convert the messages we received in the request to the format expected by LangChain.js. Add this code after the agent creation:
+
+```ts
+    const lcMessages = messages.map((m) =>
+      m.role === 'user' ? new HumanMessage(m.content) : new AIMessage(m.content),
+    );
+```
+
+Now we can call the agent to generate the response. Add this code below:
+
+```ts
+    // Start the agent and stream the response events
+    const responseStream = agent.streamEvents(
+      {
+        messages: [
+          new HumanMessage(`userId: ${userId}`),
+          ...lcMessages],
+      },
+      { version: 'v2' },
+    );
+```
+
+<div class="info" data-title="note">
+
+> LangChain.js supports different way of streaming the responses. Here we use the `streamEvents` method, which returns all the agents steps as series of events that you can filter and process as needed. There's also a `stream` method, which you can configure to receive specific updates. Using `streamEvents` gives us more flexibility and control over the response handling.
+
+</div>
+
+Let's complete the `postChats` function by returning the response stream to the client. Add this import at the top of the file:
+
+```ts
+import { Readable } from 'node:stream';
+import { StreamEvent } from '@langchain/core/tracers/log_stream';
+```
+
+And complete the `postChats` function after the response stream creation:
+
+```ts
+    // Convert the LangChain stream into a Readable stream of JSON chunks
+    const jsonStream = Readable.from(createJsonStream(responseStream));
+
+    return {
+      headers: {
+        // This content type is needed for streaming responses
+        // from an Azure Static Web Apps linked backend API
+        'Content-Type': 'text/event-stream',
+        'Transfer-Encoding': 'chunked',
+      },
+      body: jsonStream,
+    };
+```
+
+The `Readable.from()` methods allows us to create a Node.js stream from an [async generator function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator). We also need to further process the response stream to convert it to a JSON format compatible with our frontend, so we call a helper function named `createJsonStream` that we'll implement next.
+
+Finally, we return the HTTP response with the appropriate headers for streaming, and the body set to our JSON stream.
+
+#### Filtering and formatting the event stream
+
+Now it's time to implement the `createJsonStream` function. Add this code at the bottom of the file:
+
+```ts
+// Transform the response chunks into a JSON stream
+async function* createJsonStream(chunks: AsyncIterable<StreamEvent>) {
+  for await (const chunk of chunks) {
+    const { data } = chunk;
+    let responseChunk: AIChatCompletionDelta | undefined;
+
+    if (chunk.event === 'on_chat_model_stream' && data.chunk.content.length > 0) {
+      // LLM is streaming the final response
+      responseChunk = {
+        delta: {
+          content: data.chunk.content[0].text ?? data.chunk.content,
+          role: 'assistant',
+        },
+      };
+    } else if (chunk.event === 'on_chat_model_start') {
+      // Start of a new LLM call
+      responseChunk = {
+        delta: {
+          context: {
+            currentStep: {
+              type: 'llm',
+              name: chunk.name,
+              input: data?.input ?? undefined,
+            },
+          },
+        },
+      };
+    } else if (chunk.event === 'on_tool_start') {
+      // Start of a new tool call
+      responseChunk = {
+        delta: {
+          context: {
+            currentStep: {
+              type: 'tool',
+              name: chunk.name,
+              input: data?.input?.input ? JSON.stringify(data.input?.input) : undefined,
+            },
+          },
+        },
+      };
+    }
+
+    if (!responseChunk) {
+      continue;
+    }
+
+    // Format response chunks in Newline delimited JSON
+    // see https://github.com/ndjson/ndjson-spec
+    yield JSON.stringify(responseChunk) + '\n';
+  }
+}
+```
+
+The event stream from LangChain.js contains different kinds of events, and not all of them relevant for our use case. They're sent as chunks that contain an `event` type and associated `data`.
+
+Here we're catching and processing kinds of events from the response chunk:
+
+1. **on_chat_model_stream**: this event is sent when the LLM is streaming tokens, ie the final response. We format it as a chat message delta.
+
+2. **on_chat_model_start**: this event is sent when the agent starts a new LLM call. We format it as a context delta with the current step information.
+
+3. **on_tool_start**: this event is sent when the agent starts a new tool call. We format it as a context delta with the current step information.
+
+<div class="info" data-title="note">
+
+> You may have notices the `async function*` syntax used to define the `createJsonStream` function.
+> This is an [async generator function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator), which allows us to `yield` values asynchronously. The `yield` keyword allows for the function to return multiple values over time, building up a stream of data.
+
+</div>
+
+There are many more events that you can hook into, you can try adding a `console.log({ chunk });` at the beginning of the `for await` loop to see all the events being sent by the agent.
 
 ### Testing our API
 
-Open a terminal and run the following commands to start the API:
+Make sure your Burger MCP server is still running locally, then open a terminal and start the agent API with:
 
 ```bash
-cd src/backend
-npm run dev
+cd packages/agent-api
+npm start
 ```
 
-This will start the API in development mode, which means it will automatically restart if you make changes to the code.
+This will start the Azure Functions runtime and host our agent API locally at `http://localhost:7072`. You should see this in the terminal when it's ready:
 
-To test this API, you can either use the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension for VS Code, or a cURL request.
+![Azure Functions runtime started](./assets/functions-runtime-started.png)
 
 #### Option 1: Using the REST Client extension
 
-Open the file `src/backend/test.http` file. Go to the "Chat with the bot" comment and hit the **Send Request** button below to test the API.
+This is the easiest way to test our API. If you don't have it yet, install the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension for VS Code.
 
-You can play a bit and change the question to see how the model behaves.
+Open the file `packages/agent-api/api.http` file. Go to the "Chat with the agent" comment and hit the **Send Request** button below to test the API.
 
-When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
-
-After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
+You can play a bit and edit the question to see how the agent behaves.
 
 #### Option 2: using cURL
 
 Open up a new terminal in VS Code, and run the following commands:
   
 ```bash
-curl -X POST "http://localhost:3000/chat" \
+curl -N -sS -X POST "http://localhost:7072/api/chats/stream" \
   -H "Content-Type: application/json" \
   -d '{
     "messages": [{
-      "content": "How to search and book rentals?",
+      "content": "What is there on the menu?",
       "role": "user"
     }]
   }'
 ```
 
-You can play a bit and change the question to see how the model behaves.
+You can play a bit and change the question to see how the agent behaves.
 
-When you're done with the testing, stop the server by pressing `Ctrl+C` in each of the terminals.
+### (Optional) Debugging your agent with traces
 
-After you checked that everything works as expected, don't forget to commit your changes to the repository, to keep track of your progress.
+As you're playing with your agent, you might want to see more details about its internal workings, like which tools it called, what were the inputs and outputs, and so on. This is especially useful when you're trying to debug or improve your agent's behavior.
+
+There are various ways to achieve this, but one of the most effective methods is to use tracing. We'll use [OpenTelemetry](https://opentelemetry.io), one of the most popular open-source observability frameworks, to instrument our agent and collect traces. LangChain.js does not have a built-in support for OpenTelemetry, but the community package [@arizeai/openinference-instrumentation-langchain](https://www.npmjs.com/package/@arizeai/openinference-instrumentation-langchain) fills this gap nicely.
+
+We've already set up OpenTelemetry in our project, so all we need to do is enable the LangChain.js instrumentation in our agent API. You can open the file `packages/agent-api/src/tracing.ts` to have a quick look at how we configured it.
+
+When running the server locally, we detect if there's an OpenTelemetry collector running at `http://localhost:4318`, and send the traces there.
+
+#### OpenTelemetry collector in AI Toolkit
+
+The [AI Toolkit for Visual Studio Code](https://code.visualstudio.com/docs/intelligentapps/overview) extension provides a great way to visualize and explore OpenTelemetry traces directly within VS Code. If you don't have it yet, install this extension by following the link.
+
+<div class="important" data-title="Important">
+
+> The tracing features in AI Toolkit are currently only available when running VS Code locally on your machine. They are not supported when using GitHub Codespaces.
+
+</div>
+
+Select the AI Toolkit icon in the VS Code sidebar, then go to the **Tracing** tool, located under the **Agent and Workflow Tools** section:
+
+![Screenshot of AI Toolkit tracing tool in VS Code](./assets/ai-toolkit-tracing.png)
+
+Click on the **Start Collector** button to launch a local OpenTelemetry collector, then make some requests to your agent API using one of the methods described earlier.
+
+You should start seeing traces appearing in table:
+
+![Screenshot of agent traces in AI Toolkit](./assets/ai-toolkit-traces.png)
+
+Select the "LangGraph" trace to see the details of the agent execution, including the tool calls and LLM interactions. You can expand each span to see more details, like the inputs and outputs, and any errors that might have occurred.
+
+![Screenshot of agent trace details](./assets/ai-toolkit-trace-details.png)
