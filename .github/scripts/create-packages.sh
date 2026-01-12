@@ -256,8 +256,6 @@ async function* createJsonStream(chunks: AsyncIterable<StreamEvent>) {
     const { data } = chunk;
     let responseChunk: AIChatCompletionDelta | undefined;
 
-    console.log('Processing chunk:', { chunk });
-
     if (chunk.event === 'on_chat_model_stream' && data.chunk.content.length > 0) {
       // LLM is streaming the final response
       responseChunk = {
