@@ -37,6 +37,15 @@ settings = {
   AZURE_COSMOSDB_NOSQL_ENDPOINT: process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT,
 };
 
+// This is only used for the workshop/demo, it can be removed for production apps
+if (process.env.USER_ID) {
+  console.log('Setting USER_ID value...');
+  settings = {
+    ...settings,
+    USER_ID: process.env.USER_ID,
+  };
+}
+
 writeFileSync(
   settingsFilePath,
   JSON.stringify(

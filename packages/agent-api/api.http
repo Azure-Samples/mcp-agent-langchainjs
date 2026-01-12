@@ -12,7 +12,7 @@ GET {{api_host}}/api/me
 GET {{api_host}}/api/me
 x-ms-client-principal: eyJ1c2VySWQiOiJfX3Rlc3RfdXNlcl9fIn0=
 
-### Chat with the bot
+### Chat with the agent
 POST {{api_host}}/api/chats/stream?userId=1
 Content-Type: application/json
 
