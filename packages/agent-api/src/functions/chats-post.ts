@@ -4,10 +4,8 @@ import { HttpRequest, InvocationContext, HttpResponseInit, app } from '@azure/fu
 import { createAgent, AIMessage, HumanMessage } from 'langchain';
 import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
-import { loadMcpTools } from '@langchain/mcp-adapters';
+import { MultiServerMCPClient } from '@langchain/mcp-adapters';
 import { StreamEvent } from '@langchain/core/tracers/log_stream';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
 import { type AIChatCompletionRequest, type AIChatCompletionDelta } from '../models.js';
 
@@ -97,15 +95,15 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       databaseName: 'historyDB',
     });
 
-    const client = new Client({
-      name: 'burger-mcp-client',
-      version: '1.0.0',
-    });
     context.log(`Connecting to Burger MCP server at ${burgerMcpUrl}`);
-    const transport = new StreamableHTTPClientTransport(new URL(burgerMcpUrl));
-    await client.connect(transport);
+    const client = new MultiServerMCPClient({
+      burger: {
+        transport: 'http',
+        url: burgerMcpUrl,
+      },
+    });
 
-    const tools = await loadMcpTools('burger', client);
+    const tools = await client.getTools();
     context.log(`Loaded ${tools.length} tools from Burger MCP server`);
 
     const agent = createAgent({

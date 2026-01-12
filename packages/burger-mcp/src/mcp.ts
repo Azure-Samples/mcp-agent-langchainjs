@@ -196,9 +196,15 @@ async function fetchBurgerApi(url: string, options: RequestInit = {}): Promise<R
 // Helper to create MCP tool responses with error handling
 async function createToolResponse(handler: () => Promise<Record<string, any>>) {
   try {
+    const result = await handler();
     return {
-      structuredContent: { result: await handler() },
-      content: [],
+      structuredContent: { result },
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify(result),
+        },
+      ],
     };
   } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : String(error);
