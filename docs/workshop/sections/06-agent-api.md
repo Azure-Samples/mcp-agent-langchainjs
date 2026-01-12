@@ -439,7 +439,7 @@ Open the file `packages/agent-api/api.http` file. Go to the "Chat with the agent
 
 You can play a bit and edit the question to see how the agent behaves.
 
-#### Option 2: using cURL
+#### Option 2: Using cURL
 
 Open up a new terminal in VS Code, and run the following commands:
   
@@ -448,7 +448,7 @@ curl -N -sS -X POST "http://localhost:7072/api/chats/stream" \
   -H "Content-Type: application/json" \
   -d '{
     "messages": [{
-      "content": "What is there on the menu?",
+      "content": "Do you have spicy burgers?",
       "role": "user"
     }]
   }'

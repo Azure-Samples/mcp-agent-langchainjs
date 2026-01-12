@@ -89,7 +89,7 @@ Content-Type: application/json
 {
   \"messages\": [
     {
-      \"content\": \"What is there on the menu?\",
+      \"content\": \"Do you have spicy burgers?\",
       \"role\": \"user\"
     }
   ]
