@@ -1,4 +1,4 @@
-TODO: WIP
+<!-- TODO: test -->
 
 <div class="info" data-title="skip notice">
 
@@ -49,13 +49,17 @@ jobs:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      AZURE_OPENAI_URL: ${{ vars.AZURE_OPENAI_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install azd
         uses: Azure/setup-azd@v2
+
+      - name: Install Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Log in with Azure (Federated Credentials)
         if: ${{ env.AZURE_CLIENT_ID != '' }}
@@ -87,7 +91,7 @@ You'll first be asked to log in to GitHub and then it will do the setup for you.
 - Set up OpenID Connect authentication between GitHub and Azure using [federated credentials](https://docs.github.com/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure).
 - Addition of [GitHub variables](https://docs.github.com/actions/learn-github-actions/variables) to your repository to store the IDs needed to authenticate to Azure.
 
-<div data-visible="$$proxy$$">
+<!-- <div data-visible="$$proxy$$">
 
 Since you're using the provided Open AI proxy service we have deployed, there's one extra variable that you need to set.
 
@@ -107,7 +111,7 @@ gh variable set AZURE_OPENAI_URL \
   --repo <your_github_username>/<your_forked_repository>
 ```
 
-</div>
+</div> -->
 
 ### Testing the deployment workflow
 
