@@ -83,6 +83,12 @@ At this stage, if you go to the Azure Portal at [portal.azure.com](https://porta
 
 ![Resource deployed on Azure](./assets/azure-portal-azd.png)
 
+We need to run an additional command to log in to Azure using the Azure CLI, to ensure you have a valid identity when testing the application locally:
+
+```sh
+az login
+```
+
 ### Introducing Azure services
 
 In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.

@@ -69,6 +69,7 @@ If you want to work locally without using a dev container, you need to clone the
 | Node.js v22+  | [Get Node.js](https://nodejs.org) |
 | GitHub CLI    | [Get GitHub CLI](https://github.com/cli/cli#installation) |
 | Azure Developer CLI | [Get Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) |
+| Azure CLI     | [Get Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) |
 | Bash v3+      | [Get bash](https://www.gnu.org/software/bash/) (Windows users can use **Git bash** that comes with Git) |
 | A code editor | [Get VS Code](https://aka.ms/get-vscode) |
 
@@ -79,5 +80,6 @@ git --version
 node --version
 gh --version
 azd version
+az --version
 bash --version
 ```
