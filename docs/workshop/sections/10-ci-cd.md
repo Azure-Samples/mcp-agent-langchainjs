@@ -1,5 +1,3 @@
-<!-- TODO: test -->
-
 <div class="info" data-title="skip notice">
 
 > This step is entirely optional, you can skip it if you want to jump directly to the next section.
@@ -26,7 +24,7 @@ It's a great way to automate your CI/CD pipelines, and it's free for public repo
 
 ### Adding the deployment workflow
 
-First we need to create the GitHub Actions workflow. Create the file `.github/workflows/deploy.yml` in your repository, with this content:
+First we need to create the GitHub Actions workflow. Create the file `.github/workflows/deploy.yaml` in your repository, with this content:
 
 ```yaml
 name: Deploy to Azure
