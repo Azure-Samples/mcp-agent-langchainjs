@@ -74,7 +74,7 @@ class: center, middle
 class: center, middle, big-text
 # Get started
 
-.bit-larger[👉https://aka.ms/mcp-agent-26]
+.bit-larger[👉 https://aka.ms/ws/mcp-agent]
 
 ---
 
