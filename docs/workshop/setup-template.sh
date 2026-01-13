@@ -160,6 +160,8 @@ echo -e "<!doctype html>
 </html>
 " > packages/agent-webapp/index.html
 
+perl -pi -e 's/"run": "npm run swa:start"/"run": "npm run dev"/g' packages/agent-webapp/swa-cli.config.json
+
 
 # Install dependencies
 echo "Running npm install..."
