@@ -89,7 +89,7 @@ echo -e "" > packages/burger-mcp/src/mcp.ts
 # agent-api
 ###############################################################################
 
-echo -e "" > packages/agent-api/src/chat-post.ts
+echo -e "" > packages/agent-api/src/functions/chats-post.ts
 
 echo -e "##################################################################
 # VS Code with REST Client extension is needed to use this file.
