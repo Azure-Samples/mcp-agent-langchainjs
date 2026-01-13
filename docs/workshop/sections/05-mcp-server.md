@@ -398,10 +398,6 @@ The easiest way to test the MCP server is with the [MCP Inspector tool](https://
 
 <div class="important" data-title="Codespaces important note">
 
-export ALLOWED_ORIGINS="https://$CODESPACE_NAME-6274.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
-export MCP_PROXY_FULL_ADDRESS="https://$CODESPACE_NAME-6277.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"
-export DANGEROUSLY_OMIT_AUTH=true
-
 > If you're running this workshop in GitHub Codespaces, you need some additional setup before using the MCP Inspector. Open a new terminal and run these commands first (**skip this step if you're running locally**):
 >```bash
 >export ALLOWED_ORIGINS="https://$CODESPACE_NAME-6274.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN"

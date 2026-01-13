@@ -2,7 +2,7 @@
 
 > If you want to skip the Chat website implementation and jump directly to the next section, run this command in the terminal **at the root of the project** to get the completed code directly:
 > ```bash
-> curl -fsSL https://github.com/Azure-Samples/mcp-agent-langchainjs/releases/download/latest/frontend.tar.gz | tar -xvz
+> curl -fsSL https://github.com/Azure-Samples/mcp-agent-langchainjs/releases/download/latest/agent-webapp.tar.gz | tar -xvz
 > ```
 
 <div>
@@ -205,6 +205,6 @@ You can now open [http://localhost:4280](http://localhost:4280) in your browser 
 
 ![Screenshot of the chat interface](./assets/chat-interface.png)
 
-If everything is working correctly, you should see the agent answering alternating between `Thinking...`, tools calls, beforing finally giving the final answer.
+If everything is working correctly, you should see the agent answering alternating between "Thinking...", tools calls, beforing finally giving the final answer.
 
 ![Screenshot of the agent answer](./assets/agent-answer.png)
