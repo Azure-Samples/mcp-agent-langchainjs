@@ -106,7 +106,7 @@ import { StreamEvent } from '@langchain/core/tracers/log_stream';
 import { createAgent, AIMessage, HumanMessage } from 'langchain';
 import { type AIChatCompletionRequest, type AIChatCompletionDelta } from '../models.js';
 
-const agentSystemPrompt = `## Role
+const agentSystemPrompt = \`## Role
 You an expert assistant that helps users with managing burger orders. Use the provided tools to get the information you need and perform actions on behalf of the user.
 Only answer to requests that are related to burger orders and the menu. If the user asks for something else, politely inform them that you can only assist with burger orders.
 Be conversational and friendly, like a real person would be, but keep your answers concise and to the point.
@@ -116,6 +116,12 @@ The restaurant is called Contoso Burgers. Contoso Burgets always provides french
 
 ## Task
 1. Help the user with their request, ask any clarifying questions if needed.
+2. ALWAYS generate 3 very brief follow-up questions that the user would likely ask next, as if you were the user.
+Enclose the follow-up questions in double angle brackets. Example:
+<<Do you have vegan options?>>
+<<How can I cancel my order?>>
+<<What are the available sauces?>>
+Make sure the last question ends with \">>\", and phrase the questions as if you were the user, not the assistant.
 
 ## Instructions
 - Always use the tools provided to get the information requested or perform any actions
@@ -126,7 +132,7 @@ The restaurant is called Contoso Burgers. Contoso Burgets always provides french
 - Use GFM markdown formatting in your responses, to make your answers easy to read and visually appealing. You can use tables, headings, bullet points, bold text, italics, images, and links where appropriate.
 - Only use image links from the menu data, do not make up image URLs.
 - When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
-`;
+\`;
 
 export async function postChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
@@ -175,7 +181,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       apiKey: getAzureOpenAiTokenProvider(),
     });
 
-    context.log(`Connecting to Burger MCP server at ${burgerMcpUrl}`);
+    context.log(\`Connecting to Burger MCP server at \${burgerMcpUrl}\`);
     const client = new MultiServerMCPClient({
       burger: {
         transport: 'http',
@@ -184,7 +190,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     });
 
     const tools = await client.getTools();
-    context.log(`Loaded ${tools.length} tools from Burger MCP server`);
+    context.log(\`Loaded \${tools.length} tools from Burger MCP server\`);
 
     const agent = createAgent({
       model,
@@ -200,7 +206,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
     const responseStream = agent.streamEvents(
       {
         messages: [
-          new HumanMessage(`userId: ${userId}`),
+          new HumanMessage(\`userId: \${userId}\`),
           ...lcMessages],
       },
       { version: 'v2' },
@@ -221,7 +227,7 @@ export async function postChats(request: HttpRequest, context: InvocationContext
 
   } catch (_error: unknown) {
     const error = _error as Error;
-    context.error(`Error when processing chat-post request: ${error.message}`);
+    context.error(\`Error when processing chat-post request: \${error.message}\`);
 
     return {
       status: 500,
@@ -334,8 +340,6 @@ app.http('chats-post', {
   </body>
 </html>
 " > packages/agent-webapp/index.html
-
-  # TODO: agent-api, agent-webapp
 }
 
 ##############################################################################
@@ -358,6 +362,11 @@ rm -rf "$target_folder/solution/.github/instructions/genaiscript*.md"
 rm -rf "$target_folder/solution/.github/instructions/script*.md"
 rm -rf "$target_folder/solution/.github/prompts"
 rm -rf "$target_folder/solution/.github/scripts"
+rm -rf "$target_folder/solution/.github/workflows/docs.yml"
+rm -rf "$target_folder/solution/.github/workflows/packages.yml"
+rm -rf "$target_folder/solution/.github/workflows/stale-bot.yml"
+rm -rf "$target_folder/solution/.github/workflows/build-test.yml"
+rm -rf "$target_folder/solution/.github/workflows/validate-infra.yml"
 rm -rf "$target_folder/solution/TODO*"
 rm -rf "$target_folder/solution/packages/agent-cli"
 rm -rf "$target_folder/solution/packages/burger-data"
@@ -406,7 +415,7 @@ makeArchive packages agent-webapp
 # Deployment (CI/CD)
 ##############################################################################
 
-# echo "Creating CI/CD package..."
-# mkdir -p "$target_folder/ci-cd/.github/workflows"
-# cp .github/workflows/deploy.yml "$target_folder/ci-cd/.github/workflows/deploy.yml"
-# makeArchive . ci-cd ci-cd
+echo "Creating CI/CD package..."
+mkdir -p "$target_folder/ci-cd/.github/workflows"
+cp .github/workflows/deploy.yml "$target_folder/ci-cd/.github/workflows/deploy.yml"
+makeArchive . ci-cd ci-cd
