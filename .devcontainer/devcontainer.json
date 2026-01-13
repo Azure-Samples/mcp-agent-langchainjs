@@ -2,18 +2,52 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
 {
   "name": "Node.js",
+
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bullseye",
+
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/azure/azure-dev/azd:latest": {}
   },
+
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [7071, 7072, 4280, 3000, 6274, 6277],
+  "portsAttributes": {
+    "7071": {
+      "label": "Burger API",
+      "onAutoForward": "silent"
+    },
+    "7072": {
+      "label": "Agent API",
+      "onAutoForward": "silent"
+    },
+    "4280": {
+      "label": "Agent Webapp",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "3000": {
+      "label": "MCP Server",
+      "onAutoForward": "silent"
+    },
+    "6274": {
+      "label": "MCP Inspector",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "6277": {
+      "onAutoForward": "silent"
+    }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "silent"
+  },
+
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "npm i -g fuzz-run",
+
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
@@ -34,6 +68,7 @@
       ]
     }
   },
+
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
   // Set minimal host requirements for the container.
