@@ -87,7 +87,7 @@ At this stage, if you go to the Azure Portal at [portal.azure.com](https://porta
 
 In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.
 
-![Application architecture](./assets/azure-architecture.png)
+![Application architecture](./assets/azure-architecture.drawio.png)
 
 Here's a brief overview of the Azure services we'll use:
 
