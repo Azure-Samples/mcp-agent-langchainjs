@@ -365,6 +365,7 @@ rm -rf "$target_folder/solution/packages/burger-webapp"
 rm -rf "$target_folder/solution/packages/burger-mcp/.env.example"
 rm -rf "$target_folder/solution/packages/agent-api/src/chat-get.ts"
 rm -rf "$target_folder/solution/packages/agent-api/src/chat-delete.ts"
+perl -pi -e 's/"run": "npm run swa:start"/"run": "npm run dev"/g' "$target_folder/solution/packages/agent-webapp/swa-cli.config.json"
 
 writeFiles solution
 makeArchive . solution solution
@@ -396,6 +397,7 @@ makeArchive packages agent-api
 echo "Creating agent-webapp package..."
 copyFolder packages/agent-webapp
 writeFiles agent-webapp
+perl -pi -e 's/"run": "npm run swa:start"/"run": "npm run dev"/g' "$target_folder/packages/agent-webapp/swa-cli.config.json"
 rm -rf "$target_folder/packages/agent-api"
 rm -rf "$target_folder/azure.yaml"
 makeArchive packages agent-webapp

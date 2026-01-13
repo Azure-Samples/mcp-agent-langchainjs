@@ -1,10 +1,8 @@
-TODO: fix SW CLI work + docs
-
 <div class="info" data-title="Skip notice">
 
 > If you want to skip the Chat website implementation and jump directly to the next section, run this command in the terminal **at the root of the project** to get the completed code directly:
 > ```bash
-> curl -fsSL https://github.com/Azure-Samples/azure-openai-rag-workshop/releases/download/latest/frontend.tar.gz | tar -xvz
+> curl -fsSL https://github.com/Azure-Samples/mcp-agent-langchainjs/releases/download/latest/frontend.tar.gz | tar -xvz
 > ```
 
 <div>
@@ -26,19 +24,20 @@ cd packages/agent-webapp
 npm run dev
 ```
 
-This will start the application in development mode. Click on [http://localhost:4280](http://localhost:4280) in the console to view it in the browser.
+This will start the application in development mode using the [Azure Static Web Apps CLI](https://learn.microsoft.com/azure/static-web-apps/static-web-apps-cli-overview) . Click on [http://localhost:4280](http://localhost:4280) in the console to view it in the browser.
+
+<div class="important" data-title="important">
+
+> In Codespaces, since the machine you're working on is remote, you need to use the forwarded port URL to access it in your browser.
+> You can find it in the **Ports** tab of the bottom panel. Right click on the URL in the **Forwarded Address** column next to the `4280` port, and select **Open in browser**.
+
+</div>
 
 <div class="tip" data-title="Tip">
 
 > In development mode, the Web page will automatically reload when you make any change to the code. We recommend you to keep this command running in the background, and then have two windows side-by-side: one with your IDE where you will edit the code, and one with your Web browser where you can see the final result.
 
 </div>
-
-<!-- <div class="info" data-title="Note">
-
-> TODO codespaces explain port forwarding and ports tab
-
-</div> -->
 
 ### The chat web component
 
