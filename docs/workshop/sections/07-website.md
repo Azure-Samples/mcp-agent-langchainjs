@@ -21,7 +21,7 @@ The project is available in the `packages/agent-webapp` folder. From the project
 
 ```bash
 cd packages/agent-webapp
-npm run dev
+npm run start
 ```
 
 This will start the application in development mode using the [Azure Static Web Apps CLI](https://learn.microsoft.com/azure/static-web-apps/static-web-apps-cli-overview) . Click on [http://localhost:4280](http://localhost:4280) in the console to view it in the browser.
