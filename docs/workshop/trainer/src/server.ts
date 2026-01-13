@@ -4,24 +4,34 @@ import express, { type Request, type Response } from 'express';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import 'dotenv/config';
 
-const targetEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
+const targetEndpoints = process.env.AZURE_OPENAI_API_ENDPOINTS ?? process.env.AZURE_OPENAI_API_ENDPOINT;
 const port = Number(process.env.PORT ?? 3000);
 
-if (!targetEndpoint) {
-  throw new Error('AZURE_OPENAI_API_ENDPOINT is not set.');
+if (!targetEndpoints) {
+  throw new Error('AZURE_OPENAI_API_ENDPOINTS (or AZURE_OPENAI_API_ENDPOINT) is not set.');
 }
 
-console.log(`Using OpenAI at: ${targetEndpoint}`);
+const endpointBases = parseEndpointBases(targetEndpoints);
+
+console.log(
+  `Using Azure OpenAI endpoints (round-robin): ${endpointBases.map((endpoint) => endpoint.toString()).join(', ')}`,
+);
 
 const credential = new DefaultAzureCredential();
 const getToken = getBearerTokenProvider(credential, 'https://cognitiveservices.azure.com/.default');
 
-const endpointBase = new URL(targetEndpoint);
+let endpointIndex = 0;
+function getNextEndpointBase(): URL {
+  const endpointBase = endpointBases[endpointIndex];
+  endpointIndex = (endpointIndex + 1) % endpointBases.length;
+  return endpointBase;
+}
+
 const app = express();
 app.disable('x-powered-by');
 
 async function forwardRequest(request: Request, response: Response) {
-  const targetUrl = new URL(request.originalUrl, endpointBase);
+  const targetUrl = new URL(request.originalUrl, getNextEndpointBase());
   const headers = await forwardRequestHeaders(request, targetUrl);
 
   const requestOptions: RequestOptions = {
@@ -140,4 +150,33 @@ function applyProxyResponseHeaders(response: Response, proxyHeaders: OutgoingHtt
 
     response.setHeader(normalizedKey, value);
   }
+}
+
+function parseEndpointBases(value: string): URL[] {
+  const endpoints = value
+    .split(',')
+    .map((endpoint) => endpoint.trim())
+    .filter(Boolean);
+
+  if (endpoints.length === 0) {
+    throw new Error('AZURE_OPENAI_API_ENDPOINTS (or AZURE_OPENAI_API_ENDPOINT) does not contain any endpoints.');
+  }
+
+  const bases: URL[] = [];
+  for (const endpoint of endpoints) {
+    let url: URL;
+    try {
+      url = new URL(endpoint);
+    } catch {
+      throw new Error(`Invalid Azure OpenAI endpoint URL: ${endpoint}`);
+    }
+
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+      throw new Error(`Invalid Azure OpenAI endpoint protocol (expected http/https): ${endpoint}`);
+    }
+
+    bases.push(url);
+  }
+
+  return bases;
 }
