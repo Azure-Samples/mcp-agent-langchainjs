@@ -60,7 +60,8 @@
     {
       "ignores": [
         "**/*.genai.mjs",
-        "**/vite.config.ts"
+        "**/vite.config.ts",
+        "**/slides/**/*.*"
       ]
     },
     {
