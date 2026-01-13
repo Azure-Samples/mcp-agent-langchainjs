@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  {{{style}}}
+  <script src="remark.min.js"></script>
+  <script src="rough-notation.js"></script>
+  <script>
+    function create() {
+      var slideshow = remark.create({
+        {{{source}}},
+        ratio: '16:9',
+        highlightLines: true,
+        countIncrementalSlides: false,
+        highlightStyle: 'github'
+      });
+      return slideshow;
+    }
+  </script>
+</head>
+<script src="code.js"></script>
+<body onload="window.slideshow = create(); window.setup()">
+</body>
+</html>

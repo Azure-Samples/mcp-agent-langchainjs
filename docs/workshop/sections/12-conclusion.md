@@ -41,4 +41,4 @@ If you want to go further with more advanced use-cases, authentication, history 
 - This workshop URL: [aka.ms/ws/mcp-agent](https://aka.ms/ws/mcp-agent)
 - The source repository for this workshop: [GitHub link](https://github.com/Azure-Samples/mcp-agent-langchainjs)
 - If something does not work: [Report an issue](https://github.com/Azure-Samples/mcp-agent-langchainjs/issues)
-<!-- - Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/mcp-agent-langchainjs/) -->
+- Introduction presentation for this workshop: [Slides](https://azure-samples.github.io/mcp-agent-langchainjs/)
