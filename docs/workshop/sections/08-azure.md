@@ -1,5 +1,3 @@
-TODO: WIP, add Azure Flex Functions + BYO MCP
-
 ## Azure setup
 
 [Azure](https://azure.microsoft.com) is Microsoft's comprehensive cloud platform, offering a vast array of services to build, deploy, and manage applications across a global network of Microsoft-managed data centers. In this workshop, we'll leverage several Azure services to run our chat application.
@@ -36,7 +34,7 @@ Next, set up a new environment. The Azure Developer CLI uses environments to man
 azd env new mcp-agent-workshop
 ```
 
-<div data-visible="$$proxy$$">
+<!-- <div data-visible="$$proxy$$">
 
 As we have deployed an OpenAI service for you, run this command to set the OpenAI URL we want to use:
 
@@ -53,7 +51,7 @@ azd env set AZURE_OPENAI_URL $$proxy$$
 > azd env set USE_AZURE_FREE true
 > ```
 
-</div>
+</div> -->
 
 #### Deploy Azure Infrastructure
 
@@ -85,17 +83,11 @@ At this stage, if you go to the Azure Portal at [portal.azure.com](https://porta
 
 ![Resource deployed on Azure](./assets/azure-portal-azd.png)
 
-### Deploying the ingestion service
-
-Once your infrastructure is deployed, you can immediately deploy the ingestion service so we can some gain time later. We'll explore the ingestion service in more detail later in the workshop.
-
-```sh
-azd deploy ingestion
-```
-
 ### Introducing Azure services
 
 In our journey to deploy the chat application, we'll be utilizing a suite of Azure services, each playing a crucial role in the application's architecture and performance.
+
+TODO!!
 
 ![Application architecture](./assets/azure-architecture.png)
 
@@ -103,50 +95,34 @@ Here's a brief overview of the Azure services we'll use:
 
 | Service | Purpose |
 | ------- | ------- |
-| [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | Hosts our containerized applications with features like auto-scaling and load balancing. |
-| [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | Serves our static Web chat with integrated APIs, authentication, and global distribution. |
-| [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/) | Stores our Docker container images in a managed, private registry. |
+| [Azure Functions](https://learn.microsoft.com/azure/functions/) | Hosts our Node.js MCP server and API endpoints with on-demand  scaling and pricing. |
+| [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/) | Serves our agent web chat with integrated authentication, and global distribution. |
+| [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/) | A globally distributed, multi-model database service used to store user, burger and order data. |
+| [Microsoft Foundry](https://learn.microsoft.com/azure/ai-foundry/) | Unified AI platform that we use to run the Azure OpenAI model powering our agent. |
 | [Azure Log Analytics](https://learn.microsoft.com/azure/log-analytics/) | Collects and analyzes telemetry and logs for insights into application performance and diagnostics. |
 | [Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/) | Provides comprehensive monitoring of our applications, infrastructure, and network. |
 
 While Azure Log Analytics and Azure Monitor aren't depicted in the initial diagram, they're integral to our application's observability, allowing us to troubleshoot and ensure our application is running optimally.
 
-#### About Azure Container Apps
+#### About Azure Functions
 
-[Azure Container Apps](https://learn.microsoft.com/azure/container-apps/overview) is our primary service for running the chat application. It's a serverless container service that abstracts away the underlying infrastructure, enabling us to focus on writing and deploying code.
+[Azure Functions](https://learn.microsoft.com/azure/functions/) is our primary service for running the backend services of our agent application. It's a serverless hosting service that abstracts away the underlying infrastructure, enabling us to focus on writing and deploying code.
 
-Key features of Azure Container Apps include:
+Key features of Azure Functions include:
 
-- **Serverless Nature**: Automatically scales up or down, even to zero, to match demand.
-- **Simplified Management**: No need to manage Kubernetes clusters or nodes.
-- **Integrated Environment**: Built-in support for Dapr and KEDA, facilitating microservices development and event-driven scaling.
-- **Traffic Splitting**: Facilitates A/B testing and phased rollouts with traffic routing between different app revisions.
+- **Serverless scaling**: Automatically scales up or down, even to zero, to match demand.
+- **Event-driven**: Can be triggered by various events, such as HTTP requests, timers, or messages from other Azure services.
+- **Multiple language support**: Supports various programming languages, including JavaScript and Node.js. 
 
 ![Azure compute options spectrum](./assets/azure-compute-services.png)
 
-Azure Container Apps sits in the sweet spot between PaaS and FaaS, offering the flexibility of a PaaS with the scaling characteristics of a FaaS.
-
-Container Apps is built on top of [Azure Kubernetes Service](https://learn.microsoft.com/azure/aks/), including a deep integration with KEDA (event-driven auto scaling for Kubernetes), Dapr (distributed application runtime) and Envoy (a service proxy designed for cloud-native applications).
-The underlying complexity is completely abstracted for you.
-So, no need to configure your Kubernetes service, ingress, deployment, volume manifests... You get a very simple API and user interface to configure the desired configuration for your containerized application.
-This simplification means also less control, hence the difference with AKS.
-
-![Diagram showing the architecture of Azure Container Apps](./assets/azure-container-apps.png)
-
-Azure Container Apps introduces the following concepts:
-- *Environment*: this is a secure boundary around a group of Container Apps.
-They are deployed in the same virtual network, these apps can easily intercommunicate easily with each other and they write logs to the same Log Analytics workspace. An environment can be compared with a Kubernetes namespace.
-
-- *Container App*: this is a group of containers (pod) that is deployed and scale together. They share the same disk space and network.
-
-- *Revision*: this is an immutable snapshot of a Container App.
-New revisions are automatically created and are valuable for HTTP traffic redirection strategies, such as A/B testing.
+With the recent introduction of [Azure Flex Functions](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan), some of the limitations of traditional serverless functions like cold starts and the restriction to functions apps can be lifted easily. Like with the Burger MCP service, you can now **host full Node.js applications** on Azure Functions without changing your code. The only requirement is to add a simple `host.json` file to your project, take a look at the `packages/burger-mcp/host.json` file.
 
 ### Creating the infrastructure
 
 Now that we know what we'll be using, let's create the infrastructure we'll need for this workshop.
 
-To set up our application, we can choose from various tools like the Azure CLI, Azure Portal, ARM templates, or even third-party tools like Terraform. All these tools interact with Azure's backbone, the [Azure Resource Manager (ARM) API](https://docs.microsoft.com/azure/azure-resource-manager/management/overview).
+To set up our application, we can choose from various tools like the Azure CLI, Azure Portal, ARM templates, or even third-party tools like Terraform. All these tools interact with Azure's backbone, the [Azure Resource Manager (ARM) API](https://learn.microsoft.com/azure/azure-resource-manager/management/overview).
 
 ![Azure Resource Manager interaction diagram](./assets/azure-resource-manager.png)
 
@@ -193,6 +169,6 @@ Inside the resource, you then specify the name of the resource, its location, an
 
 Bicep templates can be modular, allowing for the reuse of code across different parts of your infrastructure. They can also accept parameters, making your infrastructure dynamically adaptable to different environments or conditions.
 
-Explore the `./infra` directory to see how the Bicep files are structured for this workshop. The `main.bicep` file is the entry point, orchestrating various modules found in the `./infra/core` folder.
+Explore the `./infra` directory to see how the Bicep files are structured for this workshop. The `main.bicep` file is the entry point, orchestrating the various modules that define our infrastructure. Most of the time, you don't need to write Bicep modules yourself, as you can find many pre-built modules in the [Azure Verified Modules library](https://azure.github.io/Azure-Verified-Modules/).
 
 Bicep streamlines the template creation process, and you can get started with existing templates from the [Azure Quickstart Templates](https://github.com/Azure/azure-quickstart-templates/tree/master/quickstarts), use the [Bicep VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep) for assistance, or try out the [Bicep playground](https://aka.ms/bicepdemo) for converting between ARM and Bicep formats.
