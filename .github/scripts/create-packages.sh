@@ -379,6 +379,7 @@ rm -rf "$target_folder/solution/packages/burger-mcp/.env.example"
 rm -rf "$target_folder/solution/packages/agent-api/src/chat-get.ts"
 rm -rf "$target_folder/solution/packages/agent-api/src/chat-delete.ts"
 perl -pi -e 's/"run": "npm run swa:start"/"run": "npm run dev"/g' "$target_folder/solution/packages/agent-webapp/swa-cli.config.json"
+perl -pi -e 's/"start:burger": "npm run start --workspace=burger-webapp"/"start:api": "npm run start --workspace=agent-api"/g' package.json
 
 writeFiles solution
 makeArchive . solution solution

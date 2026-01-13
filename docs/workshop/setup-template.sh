@@ -166,6 +166,7 @@ echo -e "<!doctype html>
 
 perl -pi -e 's/"run": "npm run swa:start"/"run": "npm run dev"/g' packages/agent-webapp/swa-cli.config.json
 
+perl -pi -e 's/"start:burger": "npm run start --workspace=burger-webapp"/"start:api": "npm run start --workspace=agent-api"/g' package.json
 
 # Install dependencies
 echo "Running npm install..."
