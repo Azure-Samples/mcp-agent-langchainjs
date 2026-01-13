@@ -30,12 +30,14 @@ export async function initUserSession() {
     }
 
     // Set up user ID for chat history and chat components
-    window.chatHistory.userId = userId;
-    window.chatHistory.addEventListener('loadSession', (event) => {
-      const { id, messages } = (event as CustomEvent).detail;
-      window.chat.sessionId = id;
-      window.chat.messages = messages;
-    });
+    if (window.chatHistory) {
+      window.chatHistory.userId = userId;
+      window.chatHistory.addEventListener('loadSession', (event) => {
+        const { id, messages } = (event as CustomEvent).detail;
+        window.chat.sessionId = id;
+        window.chat.messages = messages;
+      });
+    }
 
     window.chat.userId = userId;
     window.chat.addEventListener('messagesUpdated', () => {

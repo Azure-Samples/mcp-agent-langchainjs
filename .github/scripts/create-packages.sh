@@ -337,6 +337,10 @@ app.http('chats-post', {
       <azc-chat id=\"chat\"></azc-chat>
     </main>
     <script type=\"module\" src=\"/src/index.ts\"></script>
+    <script type=\"module\">
+      import { initUserSession } from '/src/index.ts';
+      await initUserSession();
+    </script>
   </body>
 </html>
 " > packages/agent-webapp/index.html
