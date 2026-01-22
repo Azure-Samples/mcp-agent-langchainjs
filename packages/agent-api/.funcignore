@@ -2,6 +2,7 @@
 .azure/
 .azurite/
 .genaiscript/
+.history/
 test/
 docs/
 infra/

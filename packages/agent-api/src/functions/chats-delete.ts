@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { HttpRequest, HttpResponseInit, InvocationContext, app } from '@azure/functions';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
+import { FileSystemChatMessageHistory } from '../fs-history.js';
 import { getCredentials, getInternalUserId } from '../auth.js';
 
 async function deleteChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
@@ -28,24 +29,19 @@ async function deleteChats(request: HttpRequest, context: InvocationContext): Pr
 
   try {
     if (!azureCosmosDbEndpoint) {
-      const errorMessage = 'Missing required environment variable: AZURE_COSMOSDB_NOSQL_ENDPOINT';
-      context.error(errorMessage);
-      return {
-        status: 500,
-        jsonBody: {
-          error: errorMessage,
-        },
-      };
+      context.warn('Cosmos DB endpoint not found in environment variables. Falling back to in-memory storage.');
     }
 
     const credentials = getCredentials();
-    const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
-      sessionId,
-      userId,
-      credentials,
-      containerName: 'history',
-      databaseName: 'historyDB',
-    });
+    const chatHistory = azureCosmosDbEndpoint
+      ? new AzureCosmsosDBNoSQLChatMessageHistory({
+          sessionId,
+          userId,
+          credentials,
+          containerName: 'history',
+          databaseName: 'historyDB',
+        })
+      : new FileSystemChatMessageHistory({ userId, sessionId });
 
     await chatHistory.clear();
     return { status: 204 };

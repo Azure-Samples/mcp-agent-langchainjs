@@ -6,6 +6,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { AzureCosmsosDBNoSQLChatMessageHistory } from '@langchain/azure-cosmosdb';
 import { MultiServerMCPClient } from '@langchain/mcp-adapters';
 import { StreamEvent } from '@langchain/core/tracers/log_stream';
+import { FileSystemChatMessageHistory } from '../fs-history.js';
 import { getAzureOpenAiTokenProvider, getCredentials, getInternalUserId } from '../auth.js';
 import { type AIChatCompletionRequest, type AIChatCompletionDelta } from '../models.js';
 
@@ -35,12 +36,14 @@ Make sure the last question ends with ">>", and phrase the questions as if you w
 - Use GFM markdown formatting in your responses, to make your answers easy to read and visually appealing. You can use tables, headings, bullet points, bold text, italics, images, and links where appropriate.
 - Only use image links from the menu data, do not make up image URLs.
 - When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
+- When asked to place an order, use the "place_order" tool.
 `;
 
-const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes. The title should be concise, descriptive, and catchy. Respond with only the title, no other text.`;
+const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes or markdown, only plain text. The title should be concise, descriptive, and catchy. Respond with only the title, no other text.`;
 
 export async function postChats(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
+  const azureCosmosDbEndpoint = process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT;
   const burgerMcpUrl = process.env.BURGER_MCP_URL ?? 'http://localhost:3000/mcp';
 
   try {
@@ -80,20 +83,26 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       };
     }
 
+    if (!azureCosmosDbEndpoint) {
+      context.warn('Cosmos DB endpoint not found in environment variables. Falling back to in-memory storage.');
+    }
+
     const model = new ChatOpenAI({
       configuration: { baseURL: azureOpenAiEndpoint },
       modelName: process.env.AZURE_OPENAI_MODEL ?? 'gpt-5-mini',
       streaming: true,
       useResponsesApi: true,
-      apiKey: getAzureOpenAiTokenProvider(),
+      apiKey: process.env.AZURE_OPENAI_API_KEY ?? getAzureOpenAiTokenProvider(),
     });
-    const chatHistory = new AzureCosmsosDBNoSQLChatMessageHistory({
-      sessionId,
-      userId,
-      credentials: getCredentials(),
-      containerName: 'history',
-      databaseName: 'historyDB',
-    });
+    const chatHistory = azureCosmosDbEndpoint
+      ? new AzureCosmsosDBNoSQLChatMessageHistory({
+          sessionId,
+          userId,
+          credentials: getCredentials(),
+          containerName: 'history',
+          databaseName: 'historyDB',
+        })
+      : new FileSystemChatMessageHistory({ userId, sessionId });
 
     context.log(`Connecting to Burger MCP server at ${burgerMcpUrl}`);
     const client = new MultiServerMCPClient({
