@@ -11,8 +11,8 @@ background-image: url(images/ai.jpg)
 
 .full-layer.who.text-right.small.middle.light-text.darkened[
   .ms.responsive[![](images/ms-full-logo.svg)]
-  |
-  Yohan | Philippe
+  <!-- |
+  Yohan | Philippe -->
 ]
 
 ---
@@ -77,11 +77,11 @@ class: center
 class: center, middle, big-text
 # Get started
 
-.bit-larger[https://aka.ms/mcp-agent-26 <br>☝️☝️☝️]
+.bit-larger[https://aka.ms/ws/mcp-agent <br>☝️☝️☝️]
 
-.full-layer.stick-bottom.center[
+<!-- .full-layer.stick-bottom.center[
   .small[Live orders: https://aka.ms/mcp-agent-26/orders]
-]
+] -->
 
 ---
 
@@ -92,6 +92,7 @@ class: center, middle, clist
 
 -------
 
+exclude: true
 # Give your feedback 🙏
 .center[
   .w-20.responsive[![](./images/qrcode.png)]
