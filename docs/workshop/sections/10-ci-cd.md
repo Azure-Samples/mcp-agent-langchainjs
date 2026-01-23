@@ -74,6 +74,9 @@ jobs:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_OPENAI_ALT_ENDPOINT: ${{ vars.AZURE_OPENAI_ALT_ENDPOINT }}
+          AZURE_OPENAI_API_KEY: ${{ vars.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_MODEL: ${{ vars.AZURE_OPENAI_MODEL }}
 ```
 
 This workflow will run when you push a commit change to the `main` branch of your repository. What it does is log in to Azure using the `azd auth login` command, and then run the `azd up` command to provision the infrastructure, build and deploy the application.
@@ -89,7 +92,7 @@ You'll first be asked to log in to GitHub and then it will do the setup for you.
 - Set up OpenID Connect authentication between GitHub and Azure using [federated credentials](https://docs.github.com/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure).
 - Addition of [GitHub variables](https://docs.github.com/actions/learn-github-actions/variables) to your repository to store the IDs needed to authenticate to Azure.
 
-<!-- <div data-visible="$$proxy$$">
+<div data-visible="$$proxy$$">
 
 Since you're using the provided Open AI proxy service we have deployed, there's one extra variable that you need to set.
 
@@ -101,15 +104,31 @@ unset GITHUB_TOKEN
 gh auth login -w
 ```
 
-Once you're logged in, run this command to set the value of the `AZURE_OPENAI_URL` variable in your repository:
+Once you're logged in, run this command to set the value of the `AZURE_OPENAI_ALT_ENDPOINT` variable in your repository:
 
 ```bash
-gh variable set AZURE_OPENAI_URL \
-  --body "$$proxy$$" \
-  --repo <your_github_username>/<your_forked_repository>
+gh variable set AZURE_OPENAI_ALT_ENDPOINT --body "$$proxy$$"
 ```
 
-</div> -->
+</div>
+<div data-hidden="$$proxy$$">
+
+<div class="important" data-title="important">
+
+> If you're using a custom OpenAI endpoint, make sure to set these variables in your repository using the [GitHub CLI](https://cli.github.com/):
+> ```bash
+> # Log in as we need more permissions than provided by default with Codespaces
+> unset GITHUB_TOKEN
+> gh auth login -w
+> # Set variables
+> gh variable set AZURE_OPENAI_ALT_ENDPOINT --body "<your_openai_endpoint>"
+> gh variable set AZURE_OPENAI_API_KEY --body "<your_openai_api_key>"
+> gh variable set AZURE_OPENAI_MODEL --body "<your_openai_model>"
+> ```
+
+</div>
+
+</div>
 
 ### Testing the deployment workflow
 

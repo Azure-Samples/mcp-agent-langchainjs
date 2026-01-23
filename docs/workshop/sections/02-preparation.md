@@ -24,7 +24,7 @@ This will initialize a development container with all necessary tools pre-instal
 
 </div>
 
-#### [optional] Local Development with the dev container
+#### [optional] Local development with the dev container
 
 If you prefer working on your local machine, you can also run the dev container on your machine. If you're fine with using Codespaces, you can skip directly to the next section.
 

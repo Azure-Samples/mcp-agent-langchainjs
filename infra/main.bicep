@@ -67,6 +67,10 @@ param defaultModelCapacity int // Set in main.parameters.json
 })
 param webappLocation string = 'eastus2'
 
+// Alternative OpenAI endpoint and API key to use instead of the Azure OpenAI service
+param azureOpenAiAltEndpoint string = ''
+param azureOpenAiApiKey string = ''
+
 // Id of the user or app to assign application roles
 param principalId string = ''
 
@@ -85,7 +89,7 @@ var burgerApiResourceName = '${abbrs.webSitesFunctions}burger-api-${resourceToke
 var burgerMcpResourceName = '${abbrs.webSitesFunctions}burger-mcp-${resourceToken}'
 var agentApiResourceName = '${abbrs.webSitesFunctions}agent-api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
-var openAiUrl = 'https://${aiFoundry.outputs.aiServicesName}.openai.azure.com/openai/v1'
+var openAiUrl = empty(azureOpenAiAltEndpoint) ? 'https://${aiFoundry.outputs.aiServicesName}.openai.azure.com/openai/v1' : azureOpenAiAltEndpoint
 var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 var burgerApiUrl = 'https://${burgerApiFunction.outputs.defaultHostname}'
 var burgerMcpUrl = 'https://${burgerMcpFunction.outputs.defaultHostname}/mcp'
@@ -264,6 +268,7 @@ module agentApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
     properties: {
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
       AZURE_OPENAI_API_ENDPOINT: openAiUrl
+      AZURE_OPENAI_API_KEY: azureOpenAiApiKey // When empty, managed identity will be used
       AZURE_OPENAI_MODEL: defaultModelName
       BURGER_MCP_URL: burgerMcpUrl
     }
@@ -441,7 +446,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.1' = {
   }
 }
 
-module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.4.0' = {
+module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.4.0' = if (empty(azureOpenAiAltEndpoint)) {
   name: 'aiFoundry'
   scope: resourceGroup
   params: {

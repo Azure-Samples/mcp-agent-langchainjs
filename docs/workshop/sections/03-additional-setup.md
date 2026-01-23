@@ -53,18 +53,18 @@ At this point you should have a `.env` file at the root of the project that cont
 If you have a machine with enough resources, you can run this workshop entirely locally without using any cloud resources. To do that, you first have to install [Ollama](https://ollama.com) and then run the following commands to download the models on your machine:
 
 ```bash
-ollama pull ministral-3
+ollama pull qwen3:8b
 ```
 
 <div class="info" data-title="Note">
 
-> The `ministral-3` model with download a few gigabytes of data, so it can take some time depending on your internet connection.
+> The `qwen3:8b` model downloads a few gigabytes of data, so it can take some time depending on your internet connection.
 
 </div>
 
 <div class="important" data-title="Important">
 
-> Ollama work in GitHub Codespaces, but runs **very slow** currently. If you want to use the Ollama option, it will work best if you are working on the workshop on your local machine directly.
+> Ollama works in GitHub Codespaces, but runs **very very slow** currently. If you want to use the Ollama option, it will work best if you are working on the workshop on your local machine directly.
 
 </div>
 
@@ -74,7 +74,7 @@ Once the model are downloaded, create a `.env` file at the root of the project, 
 
 ```
 AZURE_OPENAI_API_ENDPOINT=http://localhost:11434
-AZURE_OPENAI_MODEL=ministral-3
+AZURE_OPENAI_MODEL=qwen3:8b
 BURGER_API_URL=$$burger_api$$
 ```
 
@@ -83,7 +83,7 @@ BURGER_API_URL=$$burger_api$$
 
 ```
 AZURE_OPENAI_API_ENDPOINT=http://localhost:11434
-AZURE_OPENAI_MODEL=ministral-3
+AZURE_OPENAI_MODEL=qwen3:8b
 ```
 
 </div>

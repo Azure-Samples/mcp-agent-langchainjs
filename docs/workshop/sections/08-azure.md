@@ -2,9 +2,9 @@
 
 [Azure](https://azure.microsoft.com) is Microsoft's comprehensive cloud platform, offering a vast array of services to build, deploy, and manage applications across a global network of Microsoft-managed data centers. In this workshop, we'll leverage several Azure services to run our chat application.
 
-### Getting Started with Azure
+### Getting started with Azure
 
-To complete this workshop, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://azure.microsoft.com/free/).
+To complete this part, you'll need an Azure account. If you don't already have one, you can sign up for a free account, which includes Azure credits, on the [Azure website](https://aka.ms/devrelft).
 
 <div class="important" data-title="important">
 
@@ -26,7 +26,7 @@ azd auth login --use-device-code
 
 This command will provide you a *device code* to enter in a browser window. Follow the prompts until you're notified of a successful login.
 
-#### Create a New Environment
+#### Create a new environment
 
 Next, set up a new environment. The Azure Developer CLI uses environments to manage settings and resources:
 
@@ -34,12 +34,12 @@ Next, set up a new environment. The Azure Developer CLI uses environments to man
 azd env new mcp-agent-workshop
 ```
 
-<!-- <div data-visible="$$proxy$$">
+<div data-visible="$$proxy$$">
 
 As we have deployed an OpenAI service for you, run this command to set the OpenAI URL we want to use:
 
 ```sh
-azd env set AZURE_OPENAI_URL $$proxy$$
+azd env set AZURE_OPENAI_ALT_ENDPOINT $$proxy$$
 ```
 
 </div>
@@ -48,12 +48,19 @@ azd env set AZURE_OPENAI_URL $$proxy$$
 
 > If you're using an Azure for Students or Free Trial account that you just created, you need to run the following command:
 > ```sh
-> azd env set USE_AZURE_FREE true
+> azd env set AZURE_OPENAI_MODEL_CAPACITY 1
 > ```
+> This ensures that the resources deployed will fit within the free tier limits. **This limitations reduce the capacity for AI models usage, so you'll also have to provide another OpenAI endpoint to use the application properly.** To do that, use the following commands to set the OpenAI endpoint, API key and model you want to use:
+> ```sh
+> azd env set AZURE_OPENAI_ALT_ENDPOINT <your_openai_endpoint>
+> azd env set AZURE_OPENAI_API_KEY <your_openai_api_key>
+> azd env set AZURE_OPENAI_MODEL <your_openai_model>
+> ```
+> You can for example use the free [GitHub Models](https://docs.github.com/github-models/use-github-models/prototyping-with-ai-models#experimenting-with-ai-models-using-the-api) for this, or any other OpenAI compatible endpoint.
 
-</div> -->
+</div>
 
-#### Deploy Azure Infrastructure
+#### Deploy Azure infrastructure
 
 Now it's time to deploy the Azure infrastructure for the workshop. Execute the following command:
 

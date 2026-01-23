@@ -18,13 +18,19 @@
       "value": "${AZURE_AI_LOCATION=eastus2}"
     },
     "defaultModelName": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL=gpt-5-mini}"
+      "value": "${AZURE_OPENAI_MODEL=gpt-5-mini}"
     },
     "defaultModelVersion": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL_VERSION=2025-08-07}"
+      "value": "${AZURE_OPENAI_MODEL_VERSION=2025-08-07}"
     },
     "defaultModelCapacity": {
-      "value": "${AZURE_OPENAI_CHAT_MODEL_CAPACITY=150}"
+      "value": "${AZURE_OPENAI_MODEL_CAPACITY=150}"
+    },
+    "azureOpenAiAltEndpoint": {
+      "value": "${AZURE_OPENAI_ALT_ENDPOINT}"
+    },
+    "azureOpenAiApiKey": {
+      "value": "${AZURE_OPENAI_API_KEY}"
     },
     "isContinuousIntegration": {
       "value": "${CI=false}"

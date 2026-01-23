@@ -40,7 +40,7 @@ We'll cover how to set up an MCP server and connect it to an existing REST API h
 | | |
 |----------------------|------------------------------------------------------|
 | GitHub account       | [Get a free GitHub account](https://github.com/join) |
-| Azure account        | [Get a free Azure account](https://azure.microsoft.com/free) |
+| Azure account        | [Get a free Azure account](https://aka.ms/devrelft) |
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | JavaScript knowledge | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
 | Basic LLM knowledge | [Introduction to Large Language Models](https://www.youtube.com/watch?v=GQ_2OjNZ9aA&list=PLlrxD0HtieHi5ZpsHULPLxm839IrhmeDk&index=2) |
@@ -52,7 +52,7 @@ We'll cover how to set up an MCP server and connect it to an existing REST API h
 | | |
 |--------------------------|------------------------------------------------------|
 | GitHub account           | [Get a free GitHub account](https://github.com/join) |
-| Azure account (optional) | [Get a free Azure account](https://azure.microsoft.com/free) |
+| Azure account (optional) | [Get a free Azure account](https://aka.ms/devrelft) |
 | A Web browser            | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | JavaScript knowledge     | [JavaScript tutorial on MDN documentation](https://developer.mozilla.org/docs/Web/JavaScript)<br>[JavaScript for Beginners on YouTube](https://www.youtube.com/playlist?list=PLlrxD0HtieHhW0NCG7M536uHGOtJ95Ut2) |
 | Basic LLM knowledge      | [Introduction to Large Language Models](https://www.youtube.com/watch?v=GQ_2OjNZ9aA&list=PLlrxD0HtieHi5ZpsHULPLxm839IrhmeDk&index=2) |

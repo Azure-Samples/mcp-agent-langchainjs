@@ -127,6 +127,19 @@ Then you can get the project code:
 
 Once deployment is complete, you'll see the URLs of all deployed services in the terminal.
 
+> [!IMPORTANT]
+> If you're using an Azure for Students or Free Trial account that you just created, you need to run the following command before running `azd up` or else the deployment will fail:
+> ```sh
+> azd env set AZURE_OPENAI_MODEL_CAPACITY 1
+> ```
+> This ensures that the resources deployed will fit within the free tier limits. **This limitations reduce the capacity for AI models usage, so you'll also have to provide another OpenAI endpoint to use the application properly.** To do that, use the following commands to set the OpenAI endpoint, API key and model you want to use:
+> ```sh
+> azd env set AZURE_OPENAI_ALT_ENDPOINT <your_openai_endpoint>
+> azd env set AZURE_OPENAI_API_KEY <your_openai_api_key>
+> azd env set AZURE_OPENAI_MODEL <your_openai_model>
+> ```
+> You can for example use the free [GitHub Models](https://docs.github.com/github-models/use-github-models/prototyping-with-ai-models#experimenting-with-ai-models-using-the-api) for this, or any other OpenAI compatible endpoint.
+
 ### Cost estimation
 
 Pricing varies per region and usage, so it isn't possible to predict exact costs for your usage. However, you can use the Azure pricing calculator with pre-configured estimations to get an idea of the costs: [Azure Pricing Calculator](https://azure.com/e/0ddf5e6a4c654576a74b7199c85413b9).
