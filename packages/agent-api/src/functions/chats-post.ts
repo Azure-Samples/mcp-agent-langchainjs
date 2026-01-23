@@ -36,7 +36,6 @@ Make sure the last question ends with ">>", and phrase the questions as if you w
 - Use GFM markdown formatting in your responses, to make your answers easy to read and visually appealing. You can use tables, headings, bullet points, bold text, italics, images, and links where appropriate.
 - Only use image links from the menu data, do not make up image URLs.
 - When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
-- When asked to place an order, use the "place_order" tool.
 `;
 
 const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes or markdown, only plain text. The title should be concise, descriptive, and catchy. Respond with only the title, no other text.`;
