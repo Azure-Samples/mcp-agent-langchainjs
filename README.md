@@ -28,8 +28,8 @@ This project demonstrates how to build AI agents that can interact with real-wor
 
 The system is hosted on [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview) (web apps) and [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-overview?pivots=programming-language-javascript) (API and MCP servers), with [Azure Cosmos DB for NoSQL](https://learn.microsoft.com/azure/cosmos-db/nosql/) for data storage. You can use it as a starting point for building your own AI agents.
 
-<!-- > [!TIP]
-> You can test this application locally without deployment needed or any cloud costs. The MCP server works with popular AI tools like GitHub Copilot, Claude, and other MCP-compatible clients. -->
+> [!TIP]
+> You can test this application locally without deployment needed or any cloud costs. The MCP server also works with popular AI tools like GitHub Copilot, Claude, and other MCP-compatible clients. Follow the instructions in the [Local Development](#use-ollama-for-local-development) section to get started.
 
 ### Key features
 
@@ -114,7 +114,7 @@ Then you can get the project code:
 
 ### Prerequisites
 
-- **Azure account**: If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free) to get free Azure credits to get started
+- **Azure account**: If you're new to Azure, [get an Azure account for free](https://aka.ms/devrelft) to get free Azure credits to get started
 - **Azure account permissions**: Your Azure account must have `Microsoft.Authorization/roleAssignments/write` permissions, such as [Role Based Access Control Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#role-based-access-control-administrator-preview), [User Access Administrator](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#user-access-administrator), or [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner)
 
 ### Deploy with Azure Developer CLI
@@ -139,9 +139,33 @@ To clean up all the Azure resources created by this sample:
 azd down --purge
 ```
 
+## Use Ollama for local development
+
+If you have a machine with enough resources, you can run this sample entirely locally without using any cloud resources. To do that, you first have to install [Ollama](https://ollama.com) and then run the following commands to download a model on your machine:
+
+```bash
+ollama pull qwen3:8b
+```
+
+> [!TIP]
+> If you have a powerful machine with enough memory, you can try using `gpt-oss:20b` instead to get better results.
+
+After that create a `.env` file in the root of the project with the following content:
+
+```env
+AZURE_OPENAI_API_ENDPOINT="http://localhost:11434/v1"
+AZURE_OPENAI_MODEL="qwen3:8b"
+AZURE_OPENAI_API_KEY="__not_used__"
+```
+
+You can now continue to the [run locally](#run-locally) section to start the application.
+
+> [!NOTE]
+> Local models may not work as well as cloud-hosted models, and may even fail to respond for some complex requests. This is a limitation of the local models and not of the application itself.
+
 ## Run locally
 
-After setting up your environment and provisioned the Azure resources, you can run the entire application locally:
+After setting up your environment and either provisioned the Azure resources or set up Ollama, you can run the entire application locally:
 
 ```bash
 # Install dependencies for all services
