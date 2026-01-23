@@ -22,6 +22,9 @@
 
 </div>
 
+> [!IMPORTANT]
+> 👉 **Follow the [full-length workshop](https://aka.ms/ws/mcp-agent)** to learn how we built this sample.
+
 ## Overview
 
 This project demonstrates how to build AI agents that can interact with real-world APIs using the **Model Context Protocol (MCP)**. It features a complete burger ordering system with a serverless API, web interfaces, and an MCP server that enables AI agents to browse menus, place orders, and track order status. The agent uses **LangChain.js** to handle LLM reasoning and tool calling. The system consists of multiple interconnected services, as detailed in the [Architecture](#architecture) section below.
