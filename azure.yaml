@@ -9,11 +9,13 @@ services:
     project: ./packages/burger-api
     language: ts
     host: function
+    remoteBuild: true
 
   burger-mcp:
     project: ./packages/burger-mcp
     language: ts
     host: function
+    remoteBuild: true
 
   burger-webapp:
     project: ./packages/burger-webapp
@@ -29,6 +31,7 @@ services:
     project: ./packages/agent-api
     language: ts
     host: function
+    remoteBuild: true
 
   agent-webapp:
     project: ./packages/agent-webapp
