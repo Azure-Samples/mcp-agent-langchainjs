@@ -1,0 +1,16 @@
+.vscode/
+.azure/
+.azurite/
+.genaiscript/
+test/
+docs/
+infra/
+node_modules/
+*.js.map
+.git*
+*.env*
+TODO
+/*.http
+azure.yaml
+local.settings.json
+README.md
