@@ -1,0 +1,36 @@
+{
+  "name": "beer-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server for Contoso World Beers recommendations",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "start:local": "tsx src/local.ts",
+    "dev": "tsx watch src/server.ts",
+    "dev:local": "tsx watch src/local.ts",
+    "generate:beers": "npx -y genaiscript@latest run generate-beers",
+    "build": "tsc",
+    "clean": "rimraf lib"
+  },
+  "keywords": [],
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/cosmos": "^4.3.0",
+    "@azure/identity": "^4.9.1",
+    "@langchain/azure-cosmosdb": "^1.2.0",
+    "@langchain/openai": "^1.1.2",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "dotenv": "^17.0.1",
+    "express": "^5.0.1",
+    "langchain": "^1.0.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5.8.3"
+  }
+}

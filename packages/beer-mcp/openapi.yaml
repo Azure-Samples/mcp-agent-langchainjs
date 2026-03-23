@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  title: Contoso World Beers API
+  description: API for beer recommendations and beer catalog lookup, powered by AI-driven agentic RAG.
+  version: 1.0.0
+
+paths:
+  /api/beers/recommend:
+    get:
+      operationId: recommendBeers
+      summary: Recommend beers based on a query
+      description: Returns the top 5 beer recommendations matching the natural language query, considering flavor profiles, food pairings, and beer styles.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: Natural language query describing desired beer characteristics, food pairings, or preferences.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of recommended beers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Beer"
+        "400":
+          description: Missing required query parameter
+
+  /api/beers/{id}:
+    get:
+      operationId: getBeerById
+      summary: Get a beer by ID
+      description: Returns detailed information about a specific beer.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the beer to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Beer details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Beer"
+        "404":
+          description: Beer not found
+
+components:
+  schemas:
+    Beer:
+      type: object
+      required:
+        - id
+        - name
+        - style
+        - brewery
+        - abv
+        - description
+        - flavorNotes
+        - pairingNotes
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        style:
+          type: string
+        brewery:
+          type: string
+        abv:
+          type: number
+          format: float
+        description:
+          type: string
+        flavorNotes:
+          type: array
+          items:
+            type: string
+        pairingNotes:
+          type: array
+          items:
+            type: string

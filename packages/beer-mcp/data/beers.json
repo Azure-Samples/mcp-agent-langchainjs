@@ -1,0 +1,52 @@
+[
+  {
+    "id": "beer-001",
+    "name": "Contoso Golden Lager",
+    "style": "Lager",
+    "brewery": "Contoso World Beers",
+    "abv": 4.8,
+    "description": "A crisp and refreshing golden lager with a clean finish.",
+    "flavorNotes": ["crisp", "malty", "light hop"],
+    "pairingNotes": ["classic burgers", "grilled chicken", "fries"]
+  },
+  {
+    "id": "beer-002",
+    "name": "Hoppy Trail IPA",
+    "style": "IPA",
+    "brewery": "Contoso World Beers",
+    "abv": 6.5,
+    "description": "A bold India Pale Ale bursting with citrus and pine hop aromas.",
+    "flavorNotes": ["citrus", "pine", "bitter", "tropical fruit"],
+    "pairingNotes": ["spicy burgers", "blue cheese", "jalapeño toppings"]
+  },
+  {
+    "id": "beer-003",
+    "name": "Midnight Stout",
+    "style": "Stout",
+    "brewery": "Contoso World Beers",
+    "abv": 5.8,
+    "description": "A rich and creamy stout with notes of roasted coffee and dark chocolate.",
+    "flavorNotes": ["coffee", "chocolate", "roasted malt", "cream"],
+    "pairingNotes": ["bacon burgers", "mushroom toppings", "smoked meats"]
+  },
+  {
+    "id": "beer-004",
+    "name": "Bavarian Wheat",
+    "style": "Hefeweizen",
+    "brewery": "Contoso World Beers",
+    "abv": 5.2,
+    "description": "A traditional Bavarian wheat beer with banana and clove flavors.",
+    "flavorNotes": ["banana", "clove", "wheat", "light citrus"],
+    "pairingNotes": ["turkey burgers", "garden salads", "light toppings"]
+  },
+  {
+    "id": "beer-005",
+    "name": "Red Amber Ale",
+    "style": "Amber Ale",
+    "brewery": "Contoso World Beers",
+    "abv": 5.4,
+    "description": "A balanced amber ale with caramel sweetness and moderate hop bitterness.",
+    "flavorNotes": ["caramel", "toffee", "moderate hop", "toasty"],
+    "pairingNotes": ["BBQ burgers", "cheddar cheese", "onion rings"]
+  }
+]
