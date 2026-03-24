@@ -17,7 +17,8 @@ app.get('/', async (_request: Request, response: Response) => {
     const db = await DbService.getInstance();
     const stats = await db.getStats();
     response.json({ status: 'up', stats });
-  } catch {
+  } catch (error: any) {
+    console.error('Error fetching database stats:', error.message);
     response.json({ status: 'up', message: 'Beer MCP server running (database not available)' });
   }
 });

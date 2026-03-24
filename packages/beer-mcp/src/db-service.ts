@@ -72,7 +72,7 @@ export class DbService {
 
       this.isInitialized = true;
       await this.seedIfEmpty();
-      console.log('Successfully connected to Cosmos DB for beer data');
+      console.log('Successfully connected to Cosmos DB');
     } catch (error: any) {
       console.error('Failed to initialize Cosmos DB:', error.message);
     }
@@ -174,14 +174,24 @@ export class DbService {
     const { resources } = await this.beersContainer!.items.query(
       `SELECT
         COUNT(1) AS totalBeers,
-        COUNT(DISTINCT c.brewery) AS totalBreweries,
-        COUNT(DISTINCT c.country) AS totalCountries,
-        COUNT(DISTINCT c.style) AS totalStyles,
         AVG(c.abv) AS averageAbv,
         MAX(c.abv) AS strongestAbv,
         MIN(c.abv) AS lightestAbv
       FROM c`,
     ).fetchAll();
+
+    const countDistinct = async (field: string) => {
+      const { resources: r } = await this.beersContainer!.items.query(
+        `SELECT VALUE COUNT(1) FROM (SELECT DISTINCT c.${field} FROM c)`,
+      ).fetchAll();
+      return r[0] as number;
+    };
+
+    const [totalBreweries, totalCountries, totalStyles] = await Promise.all([
+      countDistinct('brewery'),
+      countDistinct('country'),
+      countDistinct('style'),
+    ]);
 
     const { resources: naResources } = await this.beersContainer!.items.query(
       'SELECT VALUE COUNT(1) FROM c WHERE c.abv < 1',
@@ -190,9 +200,9 @@ export class DbService {
     const row = resources[0];
     this.cachedStats = {
       totalBeers: row.totalBeers,
-      totalBreweries: row.totalBreweries,
-      totalCountries: row.totalCountries,
-      totalStyles: row.totalStyles,
+      totalBreweries,
+      totalCountries,
+      totalStyles,
       nonAlcoholicBeers: naResources[0],
       averageAbv: Math.round(row.averageAbv * 10) / 10,
       strongestAbv: row.strongestAbv,
