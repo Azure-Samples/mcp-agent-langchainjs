@@ -3,7 +3,8 @@ import {
   AzureCosmosDBNoSQLVectorStore,
   type AzureCosmosDBNoSQLSearchType,
 } from '@langchain/azure-cosmosdb';
-import { AzureOpenAIEmbeddings } from '@langchain/openai';
+import { OpenAIEmbeddings } from '@langchain/openai';
+import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { type Beer } from './beer.js';
 import { DbService } from './db-service.js';
 import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey } from './config.js';
@@ -13,10 +14,15 @@ let vectorStore: AzureCosmosDBNoSQLVectorStore | undefined;
 async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
   if (vectorStore) return vectorStore;
 
-  const embeddings = new AzureOpenAIEmbeddings({
-    azureOpenAIApiEmbeddingsDeploymentName: process.env.AZURE_OPENAI_EMBEDDINGS_MODEL ?? 'text-embedding-3-small',
-    azureOpenAIEndpoint: azureOpenAiEndpoint,
-    azureOpenAIApiKey: azureOpenAiApiKey,
+  const azureADTokenProvider = getBearerTokenProvider(
+    new DefaultAzureCredential(),
+    'https://cognitiveservices.azure.com/.default',
+  );
+
+  const embeddings = new OpenAIEmbeddings({
+    configuration: { baseURL: azureOpenAiEndpoint },
+    model: process.env.AZURE_OPENAI_EMBEDDINGS_MODEL ?? 'text-embedding-3-small',
+    apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
   });
 
   const store = new AzureCosmosDBNoSQLVectorStore(embeddings, {
@@ -32,16 +38,32 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
     console.log('Indexing beer data into vector store...');
     const db = await DbService.getInstance();
     const beersContainer = db.getBeersContainer();
-    const { resources: beers } = await beersContainer.items.readAll<Beer>().fetchAll();
-    const docs = beers.map(
-      (beer) =>
-        new Document({
-          pageContent: `${beer.name} - ${beer.style} by ${beer.brewery} (${beer.country}, ${beer.abv}% ABV). ${beer.description} Flavors: ${beer.flavorNotes.join(', ')}. Pairs with: ${beer.pairingNotes.join(', ')}.`,
-          metadata: { id: beer.id },
-        }),
-    );
-    await store.addDocuments(docs);
-    console.log(`Indexed ${docs.length} beers`);
+    const iterator = beersContainer.items.readAll<Beer>().getAsyncIterator();
+    let batch: Document[] = [];
+    let total = 0;
+
+    for await (const { resources: beers } of iterator) {
+      for (const beer of beers) {
+        batch.push(
+          new Document({
+            pageContent: `${beer.name} - ${beer.style} by ${beer.brewery} (${beer.country}, ${beer.abv}% ABV). ${beer.description} Flavors: ${beer.flavorNotes.join(', ')}. Pairs with: ${beer.pairingNotes.join(', ')}.`,
+            metadata: { id: beer.id },
+          }),
+        );
+        if (batch.length >= 100) {
+          await store.addDocuments(batch);
+          total += batch.length;
+          batch = [];
+        }
+      }
+    }
+
+    if (batch.length > 0) {
+      await store.addDocuments(batch);
+      total += batch.length;
+    }
+
+    console.log(`Indexed ${total} beers`);
   }
 
   vectorStore = store;
