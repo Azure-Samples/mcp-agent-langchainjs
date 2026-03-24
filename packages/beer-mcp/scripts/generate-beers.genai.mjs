@@ -14,6 +14,7 @@ const beerSchema = z.object({
   name: z.string(),
   style: z.string(),
   brewery: z.string(),
+  country: z.string(),
   abv: z.number(),
   description: z.string(),
   flavorNotes: z.array(z.string()),
@@ -21,39 +22,78 @@ const beerSchema = z.object({
 });
 const beerCatalogSchema = z.array(beerSchema);
 
-const { text: beers } = await runPrompt((_) => {
-  const schema = _.defSchema('SCHEMA', beerCatalogSchema);
-  _.$`${role}
+const uncheckedPath = 'data/beers.unchecked.json';
+const uncheckedFile = await workspace.readText(uncheckedPath);
+let allBeers = [];
+
+if (uncheckedFile?.content) {
+  console.log('Found existing beers.unchecked.json, skipping generation...');
+  allBeers = JSON.parse(uncheckedFile.content);
+} else {
+  const batchSize = 100;
+  const totalBatches = 10;
+
+for (let batch = 0; batch < totalBatches; batch++) {
+  const startId = batch * batchSize + 1;
+  const endId = startId + batchSize - 1;
+  console.log(`Generating batch ${batch + 1}/${totalBatches} (beer-${String(startId).padStart(3, '0')} to beer-${String(endId).padStart(3, '0')})...`);
+
+  const { text: batchBeers } = await runPrompt((_) => {
+    const schema = _.defSchema('SCHEMA', beerCatalogSchema);
+    if (allBeers.length > 0) {
+      _.def('EXISTING_BEERS', JSON.stringify(allBeers, null, 2), { language: 'json' });
+    }
+
+    _.$`${role}
 
 ## Task
-Create a diverse catalog of 1000 beers for Contoso World Beers. The catalog should include:
+Create ${batchSize} beers for Contoso World Beers (IDs beer-${String(startId).padStart(3, '0')} to beer-${String(endId).padStart(3, '0')}). The catalog should include:
 - A wide variety of styles: Lagers, IPAs, Stouts, Porters, Wheat beers, Pilsners, Belgian ales, Sours, Pale Ales, Amber Ales, Brown Ales, Red Ales, Saisons, Barleywines, and more
 - Both well-known classic styles and creative craft variations
 - A range of ABV levels from non-alcoholic beers (0%), light session beers (3-4%) to strong ales (8-12%) and more extreme styles (15%+)
-- Beers from different fictional breweries worldwide (at least 15 different breweries)
+- Beers from different fictional breweries worldwide
+- Beers can have local names, ie in French, German, Spanish, etc., but the description and notes should be in English for global customers. Some local brewery have funny or unique names that reflect their culture or location. Beers can use non-latin characters (for example Asian breweries can have names in their local script), but ensure the beer name is also provided in Latin characters for readability in parentheses.
+- You can do wordplays that reminds real existing breweries or beer names, but do NOT duplicate any real existing beer or brewery names. Be creative and original!
 - Detailed flavor notes (3-5 per beer) covering taste, aroma, and mouthfeel
 - Food pairing notes (2-4 per beer) with specific dishes or ingredients
+
+${allBeers.length > 0 ? `## Already generated beers
+The EXISTING_BEERS variable contains beers already generated. Do NOT duplicate any beer names, styles+brewery combinations, or descriptions. Ensure variety and creativity.` : ''}
 
 ## Guidelines
 - Beer names should be creative and memorable
 - Descriptions should be 1-2 sentences, evocative and appealing
 - Flavor notes should use specific sensory terms (e.g. "citrus zest", "roasted coffee", "caramel malt" rather than generic "hoppy" or "malty")
 - Pairing notes should be specific (e.g. "bacon cheeseburger", "spicy jalapeño toppings", "blue cheese" rather than generic "burgers")
-- Include at least 50 non-alcoholic or low-alcohol options (ABV < 1%)
+- Include some non-alcoholic or low-alcohol options (ABV < 1%)
 - Brewery names should sound authentic and international
 
 ## Output
 The output should be an array of JSON objects that conforms to the following schema:
 ${schema}
 
-Use simple string IDs in the format "beer-001", "beer-002", etc.
+Use IDs from beer-${String(startId).padStart(3, '0')} to beer-${String(endId).padStart(3, '0')}.
 `;
-});
+  });
+
+  try {
+    const parsedBatch = beerCatalogSchema.parse(JSON.parse(batchBeers));
+    console.log(`  Got ${parsedBatch.length} beers in batch ${batch + 1}`);
+    allBeers.push(...parsedBatch);
+  } catch (error) {
+    console.warn(`  Batch ${batch + 1} produced invalid JSON, retrying...`, error.message);
+    batch--;
+  }
+}
+
+  await workspace.writeText(uncheckedPath, JSON.stringify(allBeers, null, 2));
+  console.log(`Saved unchecked beers to ${uncheckedPath}`);
+}
 
 // ----------------------------------------------------------------------------
 // Sanity check
 
-const parsedBeers = beerCatalogSchema.parse(JSON.parse(beers));
+const parsedBeers = allBeers;
 
 for (const beer of parsedBeers) {
   if (beer.abv < 0 || beer.abv > 20) {
@@ -88,4 +128,5 @@ console.log(`Generated ${parsedBeers.length} beers from ${new Set(parsedBeers.ma
 // ----------------------------------------------------------------------------
 // Save file
 
-await workspace.writeText('data/beers.json', beers);
+await workspace.writeText('data/beers.json', JSON.stringify(allBeers, null, 2));
+await host.exec('rm', [uncheckedPath]);
