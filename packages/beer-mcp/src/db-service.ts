@@ -1,8 +1,9 @@
 import { BulkOperationType, Container, CosmosClient, Database } from '@azure/cosmos';
+import { CosmosDBManagementClient } from "@azure/arm-cosmosdb";
 import { DefaultAzureCredential } from '@azure/identity';
 import beersData from '../data/beers.json' with { type: 'json' };
 import { type Beer } from './beer.js';
-import { cosmosDbEndpoint } from './config.js';
+import { cosmosDbEndpoint, subscriptionId } from './config.js';
 
 function stripUnderscoreProperties<T extends object>(object: T): T {
   if (!object || typeof object !== 'object') return object;
@@ -58,22 +59,82 @@ export class DbService {
         aadCredentials: credential,
       });
 
-      const { database } = await this.client.databases.createIfNotExists({
-        id: 'beerDB',
-      });
-      this.database = database;
-
-      const { container } = await this.database.containers.createIfNotExists({
-        id: 'beers',
-        partitionKey: { paths: ['/id'] },
-      });
-      this.beersContainer = container;
+      try {
+        this.database = this.client.database('beerDB');
+        this.beersContainer = this.database.container('beers');
+        await this.beersContainer.read();
+      } catch {
+        console.log('Database or container not found, creating via control plane...');
+        await this.initializeControlPlane();
+        this.database = this.client.database('beerDB');
+        this.beersContainer = this.database.container('beers');
+      }
 
       this.isInitialized = true;
       await this.seedIfEmpty();
       console.log('Successfully connected to Cosmos DB for beer data');
     } catch (error: any) {
       console.error('Failed to initialize Cosmos DB:', error.message);
+    }
+  }
+
+  private async initializeControlPlane(): Promise<void> {
+    try {
+      if (!subscriptionId) {
+        console.error('Azure subscription ID not found in environment variables. Control plane operations require AZURE_SUBSCRIPTION_ID.');
+        return;
+      }
+
+      if (!cosmosDbEndpoint) {
+        console.error('Cosmos DB endpoint not found in environment variables.');
+        return;
+      }
+
+      const credential = new DefaultAzureCredential();
+      const client = new CosmosDBManagementClient(credential, subscriptionId);
+
+      let resourceGroupName: string | undefined;
+      let accountName: string | undefined;
+      for await (const account of client.databaseAccounts.list()) {
+        if (account.documentEndpoint === cosmosDbEndpoint) {
+          accountName = account.name;
+          const match = account.id?.match(/\/resourceGroups\/([^/]+)\//i);
+          resourceGroupName = match?.[1];
+          break;
+        }
+      }
+
+      if (!resourceGroupName || !accountName) {
+        console.error('Could not find Cosmos DB account matching endpoint:', cosmosDbEndpoint);
+        return;
+      }
+
+      const databaseName = 'beerDB';
+      const containerName = 'beers';
+
+      await client.sqlResources.beginCreateUpdateSqlDatabaseAndWait(
+        resourceGroupName,
+        accountName,
+        databaseName,
+        { resource: { id: databaseName } },
+      );
+
+      await client.sqlResources.beginCreateUpdateSqlContainerAndWait(
+        resourceGroupName,
+        accountName,
+        databaseName,
+        containerName,
+        {
+          resource: {
+            id: containerName,
+            partitionKey: { paths: ['/id'] },
+          },
+        },
+      );
+
+      console.log('Successfully created database and container via control plane');
+    } catch (error: any) {
+      console.error('Failed to initialize Cosmos DB control plane client:', error.message);
     }
   }
 
@@ -95,6 +156,7 @@ export class DbService {
       const failures = bulkResponse.filter((r) => r.error);
       if (failures.length > 0) {
         console.error(`Failed to seed ${failures.length} beers`);
+        console.error(failures.map((f) => JSON.stringify(f.error)).join('\n'));
       }
 
       console.log(`Seeded ${beers.length - failures.length} beers`);

@@ -17,6 +17,7 @@
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
+    "@azure/arm-cosmosdb": "^16.4.0",
     "@azure/cosmos": "^4.3.0",
     "@azure/identity": "^4.9.1",
     "@langchain/azure-cosmosdb": "^1.2.0",
