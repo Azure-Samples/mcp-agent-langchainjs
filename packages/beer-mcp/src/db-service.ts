@@ -111,6 +111,7 @@ export class DbService {
 
       const databaseName = 'beerDB';
       const containerName = 'beers';
+      const vectorContainerName = 'beerVectors';
 
       await client.sqlResources.beginCreateUpdateSqlDatabaseAndWait(
         resourceGroupName,
@@ -132,7 +133,42 @@ export class DbService {
         },
       );
 
-      console.log('Successfully created database and container via control plane');
+      await client.sqlResources.beginCreateUpdateSqlContainerAndWait(
+        resourceGroupName,
+        accountName,
+        databaseName,
+        vectorContainerName,
+        {
+          resource: {
+            id: vectorContainerName,
+            partitionKey: { paths: ['/id'] },
+            vectorEmbeddingPolicy: {
+              vectorEmbeddings: [
+                {
+                  path: '/vector',
+                  dataType: 'float32',
+                  distanceFunction: 'cosine',
+                  dimensions: 1536,
+                },
+              ],
+            },
+            fullTextPolicy: {
+              defaultLanguage: 'en-US',
+              fullTextPaths: [{ path: '/text' }],
+            },
+            indexingPolicy: {
+              indexingMode: 'consistent',
+              automatic: true,
+              includedPaths: [{ path: '/*' }],
+              excludedPaths: [{ path: '/_etag/?' }],
+              vectorIndexes: [{ path: '/vector', type: 'quantizedFlat' }],
+              fullTextIndexes: [{ path: '/text' }],
+            },
+          },
+        },
+      );
+
+      console.log('Successfully created database and containers via control plane');
     } catch (error: any) {
       console.error('Failed to initialize Cosmos DB control plane client:', error.message);
     }
@@ -210,6 +246,14 @@ export class DbService {
     };
 
     return this.cachedStats;
+  }
+
+  getBeersContainer(): Container {
+    if (!this.isInitialized || !this.beersContainer) {
+      throw new Error('DbService is not initialized');
+    }
+
+    return this.beersContainer;
   }
 
   async getBeerById(id: string): Promise<Beer | undefined> {

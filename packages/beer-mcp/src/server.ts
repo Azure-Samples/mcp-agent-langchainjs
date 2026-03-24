@@ -6,7 +6,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { Request, Response } from 'express';
 import { DbService } from './db-service.js';
 import { getMcpServer } from './mcp.js';
-import { recommendBeers } from './recommendation.js';
+import { recommendBeers, type SearchMode } from './recommendation.js';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -37,7 +37,8 @@ app.get('/api/beers/recommend', async (request: Request, response: Response) => 
   }
 
   try {
-    const beers = await recommendBeers(query);
+    const searchMode = request.query.searchMode as SearchMode | undefined;
+    const beers = await recommendBeers(query, searchMode);
     response.json(beers);
   } catch (error: any) {
     console.error('Error recommending beers:', error);
