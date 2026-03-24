@@ -12,8 +12,14 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const app = createMcpExpressApp();
 
-app.get('/', (_request: Request, response: Response) => {
-  response.send({ status: 'up', message: 'Beer MCP server running' });
+app.get('/', async (_request: Request, response: Response) => {
+  try {
+    const db = await DbService.getInstance();
+    const stats = await db.getStats();
+    response.json({ status: 'up', stats });
+  } catch {
+    response.json({ status: 'up', message: 'Beer MCP server running (database not available)' });
+  }
 });
 
 app.get('/openapi', (_request: Request, response: Response) => {
