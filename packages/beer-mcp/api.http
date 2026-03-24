@@ -1,0 +1,18 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:3001
+
+### Get server status and beer stats
+GET {{api_host}}/
+
+### Get OpenAPI schema
+GET {{api_host}}/openapi
+
+### Recommend beers based on a query
+GET {{api_host}}/api/beers/recommend?query=something refreshing with citrus for a spicy burger
+
+### Get a single beer by ID
+GET {{api_host}}/api/beers/beer-001
