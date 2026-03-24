@@ -56,6 +56,9 @@ param aiServicesLocation string // Set in main.parameters.json
 param defaultModelName string // Set in main.parameters.json
 param defaultModelVersion string // Set in main.parameters.json
 param defaultModelCapacity int // Set in main.parameters.json
+param embeddingsModelName string // Set in main.parameters.json
+param embeddingsModelVersion string // Set in main.parameters.json
+param embeddingsModelCapacity int // Set in main.parameters.json
 
 // Location is not relevant here as it's only for the built-in api
 // which is not used here. Static Web App is a global service otherwise
@@ -467,6 +470,7 @@ module beerMcpFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = if (e
       AZURE_OPENAI_API_ENDPOINT: openAiUrl
       AZURE_OPENAI_API_KEY: azureOpenAiApiKey // When empty, managed identity will be used
       AZURE_OPENAI_MODEL: defaultModelName
+      AZURE_OPENAI_EMBEDDINGS_MODEL: embeddingsModelName
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
@@ -579,6 +583,20 @@ module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.6.0' = if (empty(azureOpe
           name: 'GlobalStandard'
         }
       }
+      ...(enableBeers ? [
+        {
+          name: embeddingsModelName
+          model: {
+            format: 'OpenAI'
+            name: embeddingsModelName
+            version: embeddingsModelVersion
+          }
+          sku: {
+            capacity: embeddingsModelCapacity
+            name: 'GlobalStandard'
+          }
+        }
+      ] : [])
     ]
   }
 }
@@ -685,22 +703,6 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.19.0' = {
         }
       ] : [])
     ]
-    // sqlRoleDefinitions: [
-    //   {
-    //     roleName: 'db-contrib-role-definition'
-    //     dataActions: [
-    //       'Microsoft.DocumentDB/databaseAccounts/readMetadata'
-    //       'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*'
-    //       'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*'
-    //     ]
-    //     assignments: [
-    //       { principalId: principalId }
-    //       { principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId! }
-    //       { principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId! }
-    //       ...(enableBeers ? [{ principalId: beerMcpFunction.outputs.systemAssignedMIPrincipalId! }] : [])
-    //     ]
-    //   }
-    // ]
   }
 }
 
@@ -772,5 +774,6 @@ output AZURE_COSMOSDB_NOSQL_ENDPOINT string = cosmosDb.outputs.endpoint
 
 output AZURE_OPENAI_API_ENDPOINT string = openAiUrl
 output AZURE_OPENAI_MODEL string = defaultModelName
+output AZURE_OPENAI_EMBEDDINGS_MODEL string = embeddingsModelName
 
 output GENAISCRIPT_DEFAULT_MODEL string = 'azure:${defaultModelName}'

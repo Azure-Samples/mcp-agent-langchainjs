@@ -26,6 +26,15 @@
     "defaultModelCapacity": {
       "value": "${AZURE_OPENAI_MODEL_CAPACITY=150}"
     },
+    "embeddingsModelName": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL=text-embedding-3-small}"
+    },
+    "embeddingsModelVersion": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL_VERSION=1}"
+    },
+    "embeddingsModelCapacity": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL_CAPACITY=150}"
+    },
     "azureOpenAiAltEndpoint": {
       "value": "${AZURE_OPENAI_ALT_ENDPOINT}"
     },
