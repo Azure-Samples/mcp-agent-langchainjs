@@ -651,23 +651,37 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.19.0' = {
         name: 'historyDB'
       }
     ]
-    sqlRoleAssignments: [
+    // Control plane role assignments (for managing the Cosmos DB account resource)
+    roleAssignments: [
       {
         principalId: principalId
-        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
-      }
-      {
-        principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId!
-        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
-      }
-      {
-        principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId!
-        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
+        roleDefinitionIdOrName: '230815da-be43-4aae-9cb4-875f7bd000aa' // Cosmos DB Operator
       }
       ...(enableBeers ? [
         {
           principalId: beerMcpFunction.outputs.systemAssignedMIPrincipalId!
-          roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
+          roleDefinitionIdOrName: '230815da-be43-4aae-9cb4-875f7bd000aa' // Cosmos DB Operator
+        }
+      ] : [])
+    ]
+    // Data plane role assignments (for accessing the data in the databases and containers)
+    sqlRoleAssignments: [
+      {
+        principalId: principalId
+        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor
+      }
+      {
+        principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId!
+        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor
+      }
+      {
+        principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId!
+        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor
+      }
+      ...(enableBeers ? [
+        {
+          principalId: beerMcpFunction.outputs.systemAssignedMIPrincipalId!
+          roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor
         }
       ] : [])
     ]

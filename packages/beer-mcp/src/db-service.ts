@@ -47,29 +47,34 @@ export class DbService {
 
   private async initialize(): Promise<void> {
     if (!cosmosDbEndpoint) {
-      throw new Error('AZURE_COSMOSDB_NOSQL_ENDPOINT is required. No local fallback is available for beer-mcp.');
+      console.error('Cosmos DB endpoint not found in environment variables. Beer MCP requires AZURE_COSMOSDB_NOSQL_ENDPOINT.');
+      return;
     }
 
-    const credential = new DefaultAzureCredential();
-    this.client = new CosmosClient({
-      endpoint: cosmosDbEndpoint,
-      aadCredentials: credential,
-    });
+    try {
+      const credential = new DefaultAzureCredential();
+      this.client = new CosmosClient({
+        endpoint: cosmosDbEndpoint,
+        aadCredentials: credential,
+      });
 
-    const { database } = await this.client.databases.createIfNotExists({
-      id: 'beerDB',
-    });
-    this.database = database;
+      const { database } = await this.client.databases.createIfNotExists({
+        id: 'beerDB',
+      });
+      this.database = database;
 
-    const { container } = await this.database.containers.createIfNotExists({
-      id: 'beers',
-      partitionKey: { paths: ['/id'] },
-    });
-    this.beersContainer = container;
+      const { container } = await this.database.containers.createIfNotExists({
+        id: 'beers',
+        partitionKey: { paths: ['/id'] },
+      });
+      this.beersContainer = container;
 
-    this.isInitialized = true;
-    await this.seedIfEmpty();
-    console.log('Successfully connected to Cosmos DB for beer data');
+      this.isInitialized = true;
+      await this.seedIfEmpty();
+      console.log('Successfully connected to Cosmos DB for beer data');
+    } catch (error: any) {
+      console.error('Failed to initialize Cosmos DB:', error.message);
+    }
   }
 
   private async seedIfEmpty(): Promise<void> {
