@@ -27,6 +27,7 @@ param location string
 param resourceGroupName string = ''
 param burgerApiServiceName string = 'burger-api'
 param burgerMcpServiceName string = 'burger-mcp'
+param beerMcpServiceName string = 'beer-mcp'
 param burgerWebappName string = 'burger-webapp'
 param agentApiServiceName string = 'agent-api'
 param agentWebappName string = 'agent-webapp'
@@ -71,6 +72,9 @@ param webappLocation string = 'eastus2'
 param azureOpenAiAltEndpoint string = ''
 param azureOpenAiApiKey string = ''
 
+// Enable Contoso World Beers integration
+param enableBeers bool // Set in main.parameters.json
+
 // Id of the user or app to assign application roles
 param principalId string = ''
 
@@ -87,12 +91,14 @@ var tags = { 'azd-env-name': environmentName }
 var principalType = isContinuousIntegration ? 'ServicePrincipal' : 'User'
 var burgerApiResourceName = '${abbrs.webSitesFunctions}burger-api-${resourceToken}'
 var burgerMcpResourceName = '${abbrs.webSitesFunctions}burger-mcp-${resourceToken}'
+var beerMcpResourceName = '${abbrs.webSitesFunctions}beer-mcp-${resourceToken}'
 var agentApiResourceName = '${abbrs.webSitesFunctions}agent-api-${resourceToken}'
 var storageAccountName = '${abbrs.storageStorageAccounts}${resourceToken}'
 var openAiUrl = empty(azureOpenAiAltEndpoint) ? 'https://${aiFoundry.outputs.aiServicesName}.openai.azure.com/openai/v1' : azureOpenAiAltEndpoint
 var storageUrl = 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
 var burgerApiUrl = 'https://${burgerApiFunction.outputs.defaultHostname}'
 var burgerMcpUrl = 'https://${burgerMcpFunction.outputs.defaultHostname}/mcp'
+var beerMcpUrl = enableBeers ? 'https://${beerMcpFunction.outputs.defaultHostname}/mcp' : ''
 var burgerWebappUrl = 'https://${burgerWebapp.outputs.defaultHostname}'
 var agentApiUrl = 'https://${agentApiFunction.outputs.defaultHostname}'
 var agentWebappUrl = 'https://${agentWebapp.outputs.defaultHostname}'
@@ -392,7 +398,95 @@ module burgerMcpAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
   }
 }
 
-module storage 'br/public:avm/res/storage/storage-account:0.26.2' = {
+module beerMcpFunction 'br/public:avm/res/web/site:0.16.1' = if (enableBeers) {
+  name: 'beer-mcp'
+  scope: resourceGroup
+  params: {
+    tags: union(tags, { 'azd-service-name': beerMcpServiceName })
+    location: location
+    kind: 'functionapp,linux'
+    name: beerMcpResourceName
+    serverFarmResourceId: beerMcpAppServicePlan.outputs.resourceId
+    configs: [
+      {
+        name: 'appsettings'
+        applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+        storageAccountResourceId: storage.outputs.resourceId
+        storageAccountUseIdentityAuthentication: true
+      }
+    ]
+    managedIdentities: { systemAssigned: true }
+    siteConfig: {
+      minTlsVersion: '1.2'
+      ftpsState: 'FtpsOnly'
+      cors: {
+        allowedOrigins: [
+          '*'
+        ]
+        supportCredentials: false
+      }
+    }
+    functionAppConfig: {
+      deployment: {
+        storage: {
+          type: 'blobContainer'
+          value: '${storage.outputs.primaryBlobEndpoint}${beerMcpResourceName}'
+          authentication: {
+            type: 'SystemAssignedIdentity'
+          }
+        }
+      }
+      scaleAndConcurrency: {
+        alwaysReady: [
+          {
+            name: 'http'
+            instanceCount: 1
+          }
+        ]
+        maximumInstanceCount: 100
+        instanceMemoryMB: 2048
+      }
+      runtime: {
+        name: 'node'
+        version: '22'
+      }
+    }
+  }
+}
+
+// Needed to avoid circular resource dependencies
+module beerMcpFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = if (enableBeers) {
+  name: 'beer-mcp-settings'
+  scope: resourceGroup
+  params: {
+    name: 'appsettings'
+    appName: beerMcpFunction.outputs.name
+    properties: {
+      AzureWebJobsFeatureFlags: 'EnableMcpCustomHandlerPreview'
+      AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
+      AZURE_OPENAI_API_ENDPOINT: openAiUrl
+      AZURE_OPENAI_API_KEY: azureOpenAiApiKey // When empty, managed identity will be used
+      AZURE_OPENAI_MODEL: defaultModelName
+    }
+    storageAccountResourceId: storage.outputs.resourceId
+    storageAccountUseIdentityAuthentication: true
+    applicationInsightResourceId: monitoring.outputs.applicationInsightsResourceId
+  }
+}
+
+module beerMcpAppServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = if (enableBeers) {
+  name: 'beer-mcp-appserviceplan'
+  scope: resourceGroup
+  params: {
+    name: '${abbrs.webServerFarms}beer-mcp-${resourceToken}'
+    tags: tags
+    location: location
+    skuName: 'FC1'
+    reserved: true
+  }
+}
+
+module storage 'br/public:avm/res/storage/storage-account:0.32.0' = {
   name: 'storage'
   scope: resourceGroup
   params: {
@@ -418,6 +512,11 @@ module storage 'br/public:avm/res/storage/storage-account:0.26.2' = {
         {
           name: burgerMcpResourceName
         }
+        ...(enableBeers ? [
+           {
+             name: beerMcpResourceName
+           }
+        ] : [])
         {
           name: blobContainerName
           publicAccess: 'None'
@@ -446,7 +545,7 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.2.1' = {
   }
 }
 
-module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.4.0' = if (empty(azureOpenAiAltEndpoint)) {
+module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.6.0' = if (empty(azureOpenAiAltEndpoint)) {
   name: 'aiFoundry'
   scope: resourceGroup
   params: {
@@ -484,7 +583,7 @@ module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.4.0' = if (empty(azureOpe
   }
 }
 
-module cosmosDb 'br/public:avm/res/document-db/database-account:0.16.0' = {
+module cosmosDb 'br/public:avm/res/document-db/database-account:0.19.0' = {
   name: 'cosmosDb'
   scope: resourceGroup
   params: {
@@ -498,6 +597,7 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.16.0' = {
     capabilitiesToAdd: [
       'EnableServerless'
       'EnableNoSQLVectorSearch'
+      'EnableNoSQLFullTextSearch'
     ]
     networkRestrictions: {
       ipRules: []
@@ -551,21 +651,42 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.16.0' = {
         name: 'historyDB'
       }
     ]
-    dataPlaneRoleDefinitions: [
+    sqlRoleAssignments: [
       {
-        roleName: 'db-contrib-role-definition'
-        dataActions: [
-          'Microsoft.DocumentDB/databaseAccounts/readMetadata'
-          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*'
-          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*'
-        ]
-        assignments: [
-          { principalId: principalId }
-          { principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId! }
-          { principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId! }
-        ]
+        principalId: principalId
+        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
       }
+      {
+        principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId!
+        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
+      }
+      {
+        principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId!
+        roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
+      }
+      ...(enableBeers ? [
+        {
+          principalId: beerMcpFunction.outputs.systemAssignedMIPrincipalId!
+          roleDefinitionId: '00000000-0000-0000-0000-000000000002' // Cosmos DB Built-in Data Contributor role
+        }
+      ] : [])
     ]
+    // sqlRoleDefinitions: [
+    //   {
+    //     roleName: 'db-contrib-role-definition'
+    //     dataActions: [
+    //       'Microsoft.DocumentDB/databaseAccounts/readMetadata'
+    //       'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*'
+    //       'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*'
+    //     ]
+    //     assignments: [
+    //       { principalId: principalId }
+    //       { principalId: burgerApiFunction.outputs.systemAssignedMIPrincipalId! }
+    //       { principalId: agentApiFunction.outputs.systemAssignedMIPrincipalId! }
+    //       ...(enableBeers ? [{ principalId: beerMcpFunction.outputs.systemAssignedMIPrincipalId! }] : [])
+    //     ]
+    //   }
+    // ]
   }
 }
 
@@ -605,6 +726,17 @@ module storageRoleBurgerMcp 'br/public:avm/ptn/authorization/resource-role-assig
   }
 }
 
+module storageRoleBeerMcp 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableBeers) {
+  scope: resourceGroup
+  name: 'storage-role-beer-mcp'
+  params: {
+    principalId: beerMcpFunction.outputs.?systemAssignedMIPrincipalId!
+    roleName: 'Storage Blob Data Contributor'
+    roleDefinitionId: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+    resourceId: storage.outputs.resourceId
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Outputs
 
@@ -614,6 +746,7 @@ output AZURE_RESOURCE_GROUP string = resourceGroup.name
 
 output BURGER_API_URL string = burgerApiUrl
 output BURGER_MCP_URL string = burgerMcpUrl
+output BEER_MCP_URL string = beerMcpUrl
 output BURGER_WEBAPP_URL string = burgerWebappUrl
 output AGENT_API_URL string = agentApiUrl
 output AGENT_WEBAPP_URL string = agentWebappUrl

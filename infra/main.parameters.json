@@ -32,6 +32,9 @@
     "azureOpenAiApiKey": {
       "value": "${AZURE_OPENAI_API_KEY}"
     },
+    "enableBeers": {
+      "value": "${ENABLE_BEERS=false}"
+    },
     "isContinuousIntegration": {
       "value": "${CI=false}"
     }

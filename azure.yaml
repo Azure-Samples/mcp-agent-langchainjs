@@ -36,6 +36,11 @@ services:
     language: ts
     host: staticwebapp
 
+  # beer-mcp:
+  #   project: ./packages/beer-mcp
+  #   language: ts
+  #   host: function
+
 hooks:
   postprovision:
     run: azd env get-values > .env
