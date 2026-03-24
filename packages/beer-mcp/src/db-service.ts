@@ -150,6 +150,7 @@ export class DbService {
       const beers = beersData as Beer[];
       const operations = beers.map((beer) => ({
         operationType: BulkOperationType.Create,
+        partitionKey: beer.id,
         resourceBody: beer as unknown as Record<string, any>,
       }));
       const bulkResponse = await this.beersContainer!.items.executeBulkOperations(operations);
