@@ -47,7 +47,7 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
         batch.push(
           new Document({
             pageContent: `${beer.name} - ${beer.style} by ${beer.brewery} (${beer.country}, ${beer.abv}% ABV). ${beer.description} Flavors: ${beer.flavorNotes.join(', ')}. Pairs with: ${beer.pairingNotes.join(', ')}.`,
-            metadata: { id: beer.id },
+            metadata: { beerId: beer.id },
           }),
         );
         if (batch.length >= 100) {
@@ -74,13 +74,16 @@ export type SearchMode = AzureCosmosDBNoSQLSearchType;
 
 export async function recommendBeers(query: string, searchMode?: SearchMode): Promise<Beer[]> {
   const store = await getVectorStore();
-  const results = await store.similaritySearch(query, 5, {
+  const results = await store.similaritySearchWithScore(query, 5, {
     searchType: searchMode,
   });
 
+  console.log(`Search query: "${query}" [mode: ${searchMode ?? 'vector'}]`);
+  console.log('Search results:', JSON.stringify(results, null, 2));
+
   const db = await DbService.getInstance();
-  const beers = await Promise.all(
-    results.map((doc) => db.getBeerById(doc.metadata.id as string)),
-  );
-  return beers.filter((b): b is Beer => b !== undefined);
+  const ids = results.map((doc) => doc[0].metadata.beerId as string);
+  const beers = await db.getBeersById(ids);
+  const beerMap = new Map(beers.map((b) => [b.id, b]));
+  return ids.map((id) => beerMap.get(id)).filter((b): b is Beer => b !== undefined);
 }

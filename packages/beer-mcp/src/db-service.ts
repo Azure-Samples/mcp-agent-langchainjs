@@ -269,4 +269,21 @@ export class DbService {
       throw error;
     }
   }
+
+  async getBeersById(ids: string[]): Promise<Beer[]> {
+    if (!this.isInitialized) {
+      throw new Error('DbService is not initialized');
+    }
+
+    if (ids.length === 0) return [];
+
+    const params = ids.map((id, i) => ({ name: `@id${i}`, value: id }));
+    const inClause = params.map((p) => p.name).join(', ');
+    const { resources } = await this.beersContainer!.items.query({
+      query: `SELECT * FROM c WHERE c.id IN (${inClause})`,
+      parameters: params,
+    }).fetchAll();
+
+    return resources.map((r) => stripUnderscoreProperties(r as Beer));
+  }
 }
