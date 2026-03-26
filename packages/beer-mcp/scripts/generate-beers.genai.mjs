@@ -22,32 +22,57 @@ const beerSchema = z.object({
 });
 const beerCatalogSchema = z.array(beerSchema);
 
-const uncheckedPath = 'data/beers.unchecked.json';
-const uncheckedFile = await workspace.readText(uncheckedPath);
+const incompletePath = 'data/beers.incomplete.json';
+const targetTotal = 1000;
+const batchSize = 10;
+
+const incompleteFile = await workspace.readText(incompletePath);
 let allBeers = [];
 
-if (uncheckedFile?.content) {
-  console.log('Found existing beers.unchecked.json, skipping generation...');
-  allBeers = JSON.parse(uncheckedFile.content);
-} else {
-  const batchSize = 100;
-  const totalBatches = 10;
+if (incompleteFile?.content) {
+  allBeers = JSON.parse(incompleteFile.content);
+  console.log(`Resuming from ${incompletePath} with ${allBeers.length} beers...`);
+}
 
-for (let batch = 0; batch < totalBatches; batch++) {
-  const startId = batch * batchSize + 1;
-  const endId = startId + batchSize - 1;
-  console.log(`Generating batch ${batch + 1}/${totalBatches} (beer-${String(startId).padStart(3, '0')} to beer-${String(endId).padStart(3, '0')})...`);
+function removeDuplicateNames(beers) {
+  const seen = new Set();
+  const unique = [];
+  for (const beer of beers) {
+    const key = beer.name.toLowerCase().trim();
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(beer);
+    } else {
+      console.log(`  Removed duplicate: "${beer.name}" (${beer.id})`);
+    }
+  }
+  return unique;
+}
+
+function reassignIds(beers) {
+  return beers.map((beer, i) => ({ ...beer, id: `beer-${String(i + 1).padStart(4, '0')}` }));
+}
+
+while (allBeers.length < targetTotal) {
+  const batchNumber = Math.floor(allBeers.length / batchSize) + 1;
+  const remaining = targetTotal - allBeers.length;
+  const currentBatchSize = Math.min(batchSize, remaining);
+  const startId = allBeers.length + 1;
+  const endId = startId + currentBatchSize - 1;
+  console.log(`Generating batch ${batchNumber} (${allBeers.length}/${targetTotal}, beer-${String(startId).padStart(4, '0')} to beer-${String(endId).padStart(4, '0')})...`);
+
+  const existingNames = allBeers.map((b) => b.name);
 
   const { text: batchBeers } = await runPrompt((_) => {
     const schema = _.defSchema('SCHEMA', beerCatalogSchema);
-    if (allBeers.length > 0) {
-      _.def('EXISTING_BEERS', JSON.stringify(allBeers, null, 2), { language: 'json' });
+    if (existingNames.length > 0) {
+      _.def('EXISTING_NAMES', JSON.stringify(existingNames), { language: 'json' });
     }
 
     _.$`${role}
 
 ## Task
-Create ${batchSize} beers for Contoso World Beers (IDs beer-${String(startId).padStart(3, '0')} to beer-${String(endId).padStart(3, '0')}). The catalog should include:
+Create ${currentBatchSize} beers for Contoso World Beers (IDs beer-${String(startId).padStart(4, '0')} to beer-${String(endId).padStart(4, '0')}). The catalog should include:
 - A wide variety of styles: Lagers, IPAs, Stouts, Porters, Wheat beers, Pilsners, Belgian ales, Sours, Pale Ales, Amber Ales, Brown Ales, Red Ales, Saisons, Barleywines, and more
 - Both well-known classic styles and creative craft variations
 - A range of ABV levels from non-alcoholic beers (0%), light session beers (3-4%) to strong ales (8-12%) and more extreme styles (15%+)
@@ -57,8 +82,8 @@ Create ${batchSize} beers for Contoso World Beers (IDs beer-${String(startId).pa
 - Detailed flavor notes (3-5 per beer) covering taste, aroma, and mouthfeel
 - Food pairing notes (2-4 per beer) with specific dishes or ingredients
 
-${allBeers.length > 0 ? `## Already generated beers
-The EXISTING_BEERS variable contains beers already generated. Do NOT duplicate any beer names, styles+brewery combinations, or descriptions. Ensure variety and creativity.` : ''}
+${existingNames.length > 0 ? `## Already generated beer names
+The EXISTING_NAMES variable contains the names of beers already generated. Do NOT duplicate any of these names. Ensure variety and creativity.` : ''}
 
 ## Guidelines
 - Beer names should be creative and memorable
@@ -72,30 +97,27 @@ The EXISTING_BEERS variable contains beers already generated. Do NOT duplicate a
 The output should be an array of JSON objects that conforms to the following schema:
 ${schema}
 
-Use IDs from beer-${String(startId).padStart(3, '0')} to beer-${String(endId).padStart(3, '0')}.
+Use IDs from beer-${String(startId).padStart(4, '0')} to beer-${String(endId).padStart(4, '0')}.
 `;
   });
 
   try {
     const parsedBatch = beerCatalogSchema.parse(JSON.parse(batchBeers));
-    console.log(`  Got ${parsedBatch.length} beers in batch ${batch + 1}`);
+    console.log(`  Got ${parsedBatch.length} beers in batch ${batchNumber}`);
     allBeers.push(...parsedBatch);
+    allBeers = removeDuplicateNames(allBeers);
+    allBeers = reassignIds(allBeers);
+    await workspace.writeText(incompletePath, JSON.stringify(allBeers, null, 2));
+    console.log(`  Saved ${allBeers.length} beers to ${incompletePath}`);
   } catch (error) {
-    console.warn(`  Batch ${batch + 1} produced invalid JSON, retrying...`, error.message);
-    batch--;
+    console.warn(`  Batch ${batchNumber} produced invalid JSON, retrying...`, error.message);
   }
-}
-
-  await workspace.writeText(uncheckedPath, JSON.stringify(allBeers, null, 2));
-  console.log(`Saved unchecked beers to ${uncheckedPath}`);
 }
 
 // ----------------------------------------------------------------------------
 // Sanity check
 
-const parsedBeers = allBeers;
-
-for (const beer of parsedBeers) {
+for (const beer of allBeers) {
   if (beer.abv < 0 || beer.abv > 20) {
     throw new Error(`Beer ${beer.name} has an invalid ABV: ${beer.abv}`);
   }
@@ -115,7 +137,7 @@ for (const beer of parsedBeers) {
 
 // Check for duplicate IDs
 const ids = new Set();
-for (const beer of parsedBeers) {
+for (const beer of allBeers) {
   if (ids.has(beer.id)) {
     throw new Error(`Duplicate beer ID: ${beer.id}`);
   }
@@ -123,10 +145,33 @@ for (const beer of parsedBeers) {
   ids.add(beer.id);
 }
 
-console.log(`Generated ${parsedBeers.length} beers from ${new Set(parsedBeers.map((b) => b.brewery)).size} breweries`);
+// ----------------------------------------------------------------------------
+// Stats
+
+const countries = new Set(allBeers.map((b) => b.country));
+const breweries = new Set(allBeers.map((b) => b.brewery));
+const styles = new Set(allBeers.map((b) => b.style));
+const avgAbv = allBeers.reduce((sum, b) => sum + b.abv, 0) / allBeers.length;
+const nonAlcoholic = allBeers.filter((b) => b.abv < 1).length;
+const sessionBeers = allBeers.filter((b) => b.abv >= 1 && b.abv <= 4).length;
+const strongBeers = allBeers.filter((b) => b.abv >= 8).length;
+const minAbv = Math.min(...allBeers.map((b) => b.abv));
+const maxAbv = Math.max(...allBeers.map((b) => b.abv));
+
+console.log(`\n===== Beer Catalog Stats =====`);
+console.log(`Total beers: ${allBeers.length}`);
+console.log(`Unique countries: ${countries.size}`);
+console.log(`Unique breweries: ${breweries.size}`);
+console.log(`Unique styles: ${styles.size}`);
+console.log(`ABV range: ${minAbv}% - ${maxAbv}%`);
+console.log(`Average ABV: ${avgAbv.toFixed(1)}%`);
+console.log(`Non-alcoholic (< 1%): ${nonAlcoholic}`);
+console.log(`Session beers (1-4%): ${sessionBeers}`);
+console.log(`Strong beers (8%+): ${strongBeers}`);
+console.log(`==============================\n`);
 
 // ----------------------------------------------------------------------------
 // Save file
 
 await workspace.writeText('data/beers.json', JSON.stringify(allBeers, null, 2));
-await host.exec('rm', [uncheckedPath]);
+await host.exec('rm', [incompletePath]);
