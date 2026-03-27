@@ -4,13 +4,11 @@ import {
 } from '@langchain/azure-cosmosdb';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
-import { CosmosClient } from '@azure/cosmos';
 import { type Beer } from './beer.js';
 import { DbService } from './db-service.js';
 import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey, azureOpenAiModel } from './config.js';
 
 let vectorStore: AzureCosmosDBNoSQLVectorStore | undefined;
-let cosmosClient: CosmosClient | undefined;
 let llm: ChatOpenAI | undefined;
 
 function getAzureADTokenProvider() {
@@ -39,16 +37,6 @@ function getLlm(): ChatOpenAI {
     apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
   });
   return llm;
-}
-
-function getCosmosClient(): CosmosClient {
-  if (cosmosClient) return cosmosClient;
-
-  cosmosClient = new CosmosClient({
-    endpoint: cosmosDbEndpoint!,
-    aadCredentials: new DefaultAzureCredential(),
-  });
-  return cosmosClient;
 }
 
 async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
@@ -102,28 +90,19 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
 export async function recommendBeers(query: string): Promise<Beer[]> {
   const store = await getVectorStore();
 
-  // Step 1: Hybrid search (RRF combining full-text + vector)
-  const embeddings = getEmbeddings();
-  const queryVector = await embeddings.embedQuery(query);
-  const container = store.getContainer();
+  // Step 1: Hybrid search via LangChain.js (RRF combining full-text + vector)
+  const results = await store.similaritySearchWithScore(query, 10, {
+    searchType: 'hybrid',
+    fullTextRankFilter: [{ searchField: 'text', searchText: query }]
+  });
 
-  const terms = query.split(/\s+/);
-  const termParams = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
-  const termNames = termParams.map((p) => p.name).join(', ');
+  console.log(`Hybrid search for "${query}" returned ${results.length} candidates`);
 
-  const hybridSql = `SELECT TOP 10 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding))`;
-  const { resources: hybridResults } = await container.items.query(
-    { query: hybridSql, parameters: [{ name: '@embedding', value: queryVector }, ...termParams] },
-    { forceQueryPlan: true },
-  ).fetchAll();
-
-  console.log(`Hybrid search for "${query}" returned ${hybridResults.length} candidates`);
-
-  if (hybridResults.length === 0) return [];
+  if (results.length === 0) return [];
 
   // Step 2: LLM-based reranking
-  const candidateList = hybridResults
-    .map((item, i) => `[${i}] ${item.text}`)
+  const candidateList = results
+    .map(([doc], i) => `[${i}] ${doc.pageContent}`)
     .join('\n');
 
   const model = getLlm();
@@ -146,12 +125,12 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
     const indices: number[] = JSON.parse(match[0]);
     rerankedIds = indices
       .slice(0, 5)
-      .filter((i) => i >= 0 && i < hybridResults.length)
-      .map((i) => hybridResults[i].id as string);
+      .filter((i) => i >= 0 && i < results.length)
+      .map((i) => results[i][0].metadata.beerId as string);
     console.log(`LLM reranked to indices: ${indices.slice(0, 5).join(', ')}`);
   } else {
     console.warn('Failed to parse LLM reranking response, using hybrid order');
-    rerankedIds = hybridResults.slice(0, 5).map((item) => item.id as string);
+    rerankedIds = results.slice(0, 5).map(([doc]) => doc.metadata.beerId as string);
   }
 
   const db = await DbService.getInstance();
