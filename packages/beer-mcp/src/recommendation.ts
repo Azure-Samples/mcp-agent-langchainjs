@@ -90,10 +90,29 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
 export async function recommendBeers(query: string): Promise<Beer[]> {
   const store = await getVectorStore();
 
+  // For long queries, extract keywords for the full-text part of hybrid search
+  let fullTextQuery = query;
+  const terms = query.split(/\s+/);
+  if (terms.length > 5) {
+    const model = getLlm();
+    const response = await model.invoke([
+      {
+        role: 'system',
+        content: 'Extract the 5 most important keywords from the user query for searching a beer catalog. Return ONLY the keywords separated by spaces, nothing else.',
+      },
+      { role: 'user', content: query },
+    ]);
+    const extracted = typeof response.content === 'string' ? response.content.trim() : '';
+    if (extracted) {
+      fullTextQuery = extracted;
+      console.log(`Extracted keywords for full-text search: "${fullTextQuery}"`);
+    }
+  }
+
   // Step 1: Hybrid search via LangChain.js (RRF combining full-text + vector)
   const results = await store.similaritySearchWithScore(query, 10, {
     searchType: 'hybrid',
-    fullTextRankFilter: [{ searchField: 'text', searchText: query }]
+    fullTextRankFilter: [{ searchField: 'text', searchText: fullTextQuery }]
   });
 
   console.log(`Hybrid search for "${query}" returned ${results.length} candidates`);
