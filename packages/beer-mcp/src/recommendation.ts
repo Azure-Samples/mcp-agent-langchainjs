@@ -1,31 +1,60 @@
 import { Document } from '@langchain/core/documents';
 import {
   AzureCosmosDBNoSQLVectorStore,
-  type AzureCosmosDBNoSQLSearchType,
 } from '@langchain/azure-cosmosdb';
-import { OpenAIEmbeddings } from '@langchain/openai';
+import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
+import { CosmosClient } from '@azure/cosmos';
 import { type Beer } from './beer.js';
 import { DbService } from './db-service.js';
-import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey } from './config.js';
+import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey, azureOpenAiModel } from './config.js';
 
 let vectorStore: AzureCosmosDBNoSQLVectorStore | undefined;
+let cosmosClient: CosmosClient | undefined;
+let llm: ChatOpenAI | undefined;
 
-async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
-  if (vectorStore) return vectorStore;
-
-  const azureADTokenProvider = getBearerTokenProvider(
+function getAzureADTokenProvider() {
+  return getBearerTokenProvider(
     new DefaultAzureCredential(),
     'https://cognitiveservices.azure.com/.default',
   );
+}
 
-  const embeddings = new OpenAIEmbeddings({
+function getEmbeddings() {
+  const azureADTokenProvider = getAzureADTokenProvider();
+  return new OpenAIEmbeddings({
     configuration: { baseURL: azureOpenAiEndpoint },
     model: process.env.AZURE_OPENAI_EMBEDDINGS_MODEL ?? 'text-embedding-3-small',
     apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
   });
+}
 
-  const store = new AzureCosmosDBNoSQLVectorStore(embeddings, {
+function getLlm(): ChatOpenAI {
+  if (llm) return llm;
+
+  const azureADTokenProvider = getAzureADTokenProvider();
+  llm = new ChatOpenAI({
+    configuration: { baseURL: azureOpenAiEndpoint },
+    modelName: azureOpenAiModel,
+    apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
+  });
+  return llm;
+}
+
+function getCosmosClient(): CosmosClient {
+  if (cosmosClient) return cosmosClient;
+
+  cosmosClient = new CosmosClient({
+    endpoint: cosmosDbEndpoint!,
+    aadCredentials: new DefaultAzureCredential(),
+  });
+  return cosmosClient;
+}
+
+async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
+  if (vectorStore) return vectorStore;
+
+  const store = new AzureCosmosDBNoSQLVectorStore(getEmbeddings(), {
     endpoint: cosmosDbEndpoint,
     databaseName: 'beerDB',
     containerName: 'beerVectors',
@@ -70,20 +99,63 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
   return store;
 }
 
-export type SearchMode = AzureCosmosDBNoSQLSearchType;
-
-export async function recommendBeers(query: string, searchMode?: SearchMode): Promise<Beer[]> {
+export async function recommendBeers(query: string): Promise<Beer[]> {
   const store = await getVectorStore();
-  const results = await store.similaritySearchWithScore(query, 5, {
-    searchType: searchMode,
-  });
 
-  console.log(`Search query: "${query}" [mode: ${searchMode ?? 'vector'}]`);
-  console.log('Search results:', JSON.stringify(results, null, 2));
+  // Step 1: Hybrid search (RRF combining full-text + vector)
+  const embeddings = getEmbeddings();
+  const queryVector = await embeddings.embedQuery(query);
+  const container = store.getContainer();
+
+  const terms = query.split(/\s+/);
+  const termParams = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
+  const termNames = termParams.map((p) => p.name).join(', ');
+
+  const hybridSql = `SELECT TOP 10 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding))`;
+  const { resources: hybridResults } = await container.items.query(
+    { query: hybridSql, parameters: [{ name: '@embedding', value: queryVector }, ...termParams] },
+    { forceQueryPlan: true },
+  ).fetchAll();
+
+  console.log(`Hybrid search for "${query}" returned ${hybridResults.length} candidates`);
+
+  if (hybridResults.length === 0) return [];
+
+  // Step 2: LLM-based reranking
+  const candidateList = hybridResults
+    .map((item, i) => `[${i}] ${item.text}`)
+    .join('\n');
+
+  const model = getLlm();
+  const response = await model.invoke([
+    {
+      role: 'system',
+      content: 'You are a beer recommendation expert. Given a user query and a list of beer candidates, rerank them by relevance to the query. Return ONLY a JSON array of the indices of the top 5 most relevant beers, ordered from most to least relevant. Example: [3, 0, 7, 1, 5]',
+    },
+    {
+      role: 'user',
+      content: `Query: "${query}"\n\nCandidates:\n${candidateList}`,
+    },
+  ]);
+
+  const content = typeof response.content === 'string' ? response.content : '';
+  const match = content.match(/\[[\d\s,]+\]/);
+  let rerankedIds: string[];
+
+  if (match) {
+    const indices: number[] = JSON.parse(match[0]);
+    rerankedIds = indices
+      .slice(0, 5)
+      .filter((i) => i >= 0 && i < hybridResults.length)
+      .map((i) => hybridResults[i].id as string);
+    console.log(`LLM reranked to indices: ${indices.slice(0, 5).join(', ')}`);
+  } else {
+    console.warn('Failed to parse LLM reranking response, using hybrid order');
+    rerankedIds = hybridResults.slice(0, 5).map((item) => item.id as string);
+  }
 
   const db = await DbService.getInstance();
-  const ids = results.map((doc) => doc[0].metadata.beerId as string);
-  const beers = await db.getBeersById(ids);
+  const beers = await db.getBeersById(rerankedIds);
   const beerMap = new Map(beers.map((b) => [b.id, b]));
-  return ids.map((id) => beerMap.get(id)).filter((b): b is Beer => b !== undefined);
+  return rerankedIds.map((id) => beerMap.get(id)).filter((b): b is Beer => b !== undefined);
 }

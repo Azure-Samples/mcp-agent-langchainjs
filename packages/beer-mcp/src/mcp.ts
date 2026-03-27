@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { DbService } from './db-service.js';
-import { recommendBeers, type SearchMode } from './recommendation.js';
+import { recommendBeers } from './recommendation.js';
 
 export function getMcpServer() {
   const server = new McpServer({
@@ -16,12 +16,11 @@ export function getMcpServer() {
         'Recommend beers based on a natural language query. Returns the top 5 best beer recommendations matching the query, considering flavor profiles, food pairings, and beer styles.',
       inputSchema: z.object({
         query: z.string().describe('Natural language query describing desired beer characteristics, food pairings, or preferences'),
-        searchMode: z.enum(['vector', 'vector_score_threshold', 'full_text_search', 'full_text_ranking', 'hybrid', 'hybrid_score_threshold']).optional().describe('Search mode to use for retrieval. Defaults to vector similarity search.'),
       }),
     },
     async (args) =>
       createToolResponse(async () => {
-        const beers = await recommendBeers(args.query, args.searchMode as SearchMode | undefined);
+        const beers = await recommendBeers(args.query);
         return { beers };
       }),
   );
