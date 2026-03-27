@@ -2,8 +2,8 @@ import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
 import { cosmosDbEndpoint } from '../src/config.js';
 
-// const query = 'usa 11%';
-const query = 'Booze-free for spicy food';
+const query = '5.6% beer from france';
+// const query = 'Booze-free spicy food pregant wife';
 // const query = 'light, citrusy beer';
 // const query = 'bière légère et citronnée';  // light, citrusy beer
 

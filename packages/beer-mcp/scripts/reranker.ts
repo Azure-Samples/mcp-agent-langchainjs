@@ -1,7 +1,7 @@
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
-import { OpenAIEmbeddings } from '@langchain/openai';
-import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey } from '../src/config.js';
+import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
+import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey, azureOpenAiModel } from '../src/config.js';
 
 const query = '5.6% beer from france';
 // const query = 'Booze-free spicy food pregant wife';
@@ -41,7 +41,7 @@ async function main() {
 
   const keywordSql = `SELECT TOP 1000 c.id FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
   const vectorSql = `SELECT TOP 1000 c.id FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
-  const hybridSql = `SELECT TOP 10 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding))`;
+  const hybridSql = `SELECT TOP 5 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding))`;
 
   console.log(`Search: "${query}"\n`);
 
@@ -54,19 +54,57 @@ async function main() {
   const keywordRank = new Map(keywordResults.resources.map((item, i) => [item.id as string, i + 1]));
   const vectorRank = new Map(vectorResults.resources.map((item, i) => [item.id as string, i + 1]));
 
-  for (const [i, item] of hybridResults.resources.entries()) {
-    console.log(item);
+  const candidates = hybridResults.resources.map((item, i) => {
     const id = item.id as string;
-    const [title, ...rest] = (item.text as string).split(' - ');
-    const description = rest.join(' - ');
-    const kr = keywordRank.get(id);
-    const vr = vectorRank.get(id);
-    const k = 60;
-    const rrf = 1 / (k + (kr ?? Infinity)) + 1 / (k + (vr ?? Infinity));
-    const krStr = kr ? `#${kr} keyword` : '#- keyword';
-    const vrStr = vr ? `#${vr} vector` : '#- vector';
-    console.log(`#${i + 1} ${title} - ${krStr}, ${vrStr}, RRF score: ${rrf.toFixed(6)}`);
-    console.log(`   ${description}\n`);
+    const text = item.text as string;
+    const [title, ...rest] = text.split(' - ');
+    return {
+      id,
+      title,
+      description: rest.join(' - '),
+      text,
+      rrfRank: i + 1,
+      kr: keywordRank.get(id),
+      vr: vectorRank.get(id),
+    };
+  });
+
+  // LLM reranking
+  const llm = new ChatOpenAI({
+    configuration: { baseURL: azureOpenAiEndpoint },
+    modelName: azureOpenAiModel,
+    apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
+  });
+
+  const candidateList = candidates
+    .map((c, i) => `[${i}] ${c.text}`)
+    .join('\n');
+
+  const response = await llm.invoke([
+    {
+      role: 'system',
+      content: `You are a beer recommendation expert. Given a user query and a list of beer candidates, rerank them by relevance to the query. Return ONLY a JSON array of the indices of the top 5 most relevant beers, ordered from most to least relevant. Example: [3, 0, 7, 1, 5]`,
+    },
+    {
+      role: 'user',
+      content: `Query: "${query}"\n\nCandidates:\n${candidateList}`,
+    },
+  ]);
+
+  const content = typeof response.content === 'string' ? response.content : '';
+  const match = content.match(/\[[\d\s,]+\]/);
+  if (!match) {
+    console.error('Failed to parse LLM response:', content);
+    process.exit(1);
+  }
+
+  const rerankedIndices: number[] = JSON.parse(match[0]);
+  for (const [rank, idx] of rerankedIndices.slice(0, 5).entries()) {
+    const c = candidates[idx];
+    const krStr = c.kr ? `#${c.kr} keyword` : '#- keyword';
+    const vrStr = c.vr ? `#${c.vr} vector` : '#- vector';
+    console.log(`#${rank + 1} ${c.title} - ${krStr}, ${vrStr}, #${c.rrfRank} RRF`);
+    console.log(`   ${c.description}\n`);
   }
 }
 
