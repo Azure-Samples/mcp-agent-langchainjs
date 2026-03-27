@@ -98,6 +98,8 @@ The output should be an array of JSON objects that conforms to the following sch
 ${schema}
 
 Use IDs from beer-${String(startId).padStart(4, '0')} to beer-${String(endId).padStart(4, '0')}.
+
+Output ONLY the JSON array, without any triple quotes \`\`\`
 `;
   });
 
