@@ -73,6 +73,8 @@ async function main() {
   const llm = new ChatOpenAI({
     configuration: { baseURL: azureOpenAiEndpoint },
     modelName: azureOpenAiModel,
+    useResponsesApi: true,
+    reasoning: { effort: 'minimal' },
     apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
   });
 
@@ -88,10 +90,10 @@ async function main() {
     {
       role: 'user',
       content: `Query: "${query}"\n\nCandidates:\n${candidateList}`,
-    },
+    }
   ]);
 
-  const content = typeof response.content === 'string' ? response.content : '';
+  const content = (response.content as Array<{ text: string }>).map((c) => c.text).join('');
   const match = content.match(/\[[\d\s,]+\]/);
   if (!match) {
     console.error('Failed to parse LLM response:', content);
