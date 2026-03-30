@@ -5,7 +5,7 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey } from '../src/config.js';
 
 const query = '5.6% beer from france';
-// const query = 'Booze-free spicy food pregant wife';
+// const query = 'Booze-free for spicy food, for my pregant wife';
 // const query = 'light, citrusy beer';
 // const query = 'bière légère et citronnée';  // light, citrusy beer
 

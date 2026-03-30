@@ -5,7 +5,7 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 import { cosmosDbEndpoint, azureOpenAiEndpoint, azureOpenAiApiKey } from '../src/config.js';
 
 const query = '5.6% beer from france';
-// const query = 'Booze-free spicy food pregant wife';
+// const query = 'Booze-free for spicy food, for my pregant wife';
 // const query = 'light, citrusy beer';
 // const query = 'bière légère et citronnée';  // light, citrusy beer
 
@@ -33,13 +33,13 @@ async function main() {
 
   const container = client.database('beerDB').container('beerVectors');
 
-  const terms = query.split(/\s+/);
+  const terms = query.replaceAll(',', '').split(/\s+/).filter((t) => t.length > 3);
   const termParameters = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
   const termNames = termParameters.map((p) => p.name).join(', ');
 
+  const hybridSql = `SELECT TOP 5 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding), [1,1])`;
   const keywordSql = `SELECT TOP 1000 c.id, c.text FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
   const vectorSql = `SELECT TOP 1000 c.id, c.text FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
-  const hybridSql = `SELECT TOP 5 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding), [1,1])`;
 
   console.log(`Search: "${query}"\n`);
 
@@ -60,6 +60,9 @@ async function main() {
   const vectorRank = new Map(vectorResults.resources.map((item, i) => [item.id as string, i + 1]));
 
   const allIds = new Set([...keywordRank.keys(), ...vectorRank.keys()]);
+
+  // Using Reciprocal Rank Fusion (RRF) to combine rankings
+  // CosmosDB SDK doesn't expose scores (yet), so we compute it for the demo
   const k = 60;
   const scored = [...allIds].map((id) => {
     const kr = keywordRank.get(id) ?? Infinity;
@@ -88,23 +91,18 @@ async function main() {
     console.log(`   ${description}\n`);
   }
 
-  // Native hybrid search results
-  console.log('--- Native Cosmos DB Hybrid (RRF) ---\n');
   for (const [i, item] of hybridResults.resources.entries()) {
+    // TODO: update to use actual scores when CosmosDB SDK exposes them
+    const id = item.id as string;
     const [title, ...rest] = (item.text as string).split(' - ');
     const description = rest.join(' - ');
-    console.log(`#${i + 1} ${title}`);
-    console.log(`   ${description}\n`);
-  }
-
-  // Compare rankings
-  const manualTop5 = scored.slice(0, 5).map((s) => s.id);
-  const nativeTop5 = hybridResults.resources.map((item) => item.id as string);
-  const match = manualTop5.every((id, i) => id === nativeTop5[i]);
-  console.log(`--- Comparison: ${match ? 'MATCH ✅' : 'DIVERGE ❌'} ---`);
-  if (!match) {
-    console.log(`Manual: ${manualTop5.join(', ')}`);
-    console.log(`Native: ${nativeTop5.join(', ')}`);
+    // const kr = keywordRank.get(id);
+    // const vr = vectorRank.get(id);
+    // const rrf = 1 / (k + (kr ?? Infinity)) + 1 / (k + (vr ?? Infinity));
+    // const krString = kr ? `#${kr} keyword` : '#- keyword';
+    // const vrString = vr ? `#${vr} vector` : '#- vector';
+    // console.log(`#${i + 1} ${title} - ${krString}, ${vrString}, RRF score: ${rrf.toFixed(6)}`);
+    // console.log(`   ${description}\n`);
   }
 }
 
