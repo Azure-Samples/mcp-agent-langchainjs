@@ -26,6 +26,7 @@ rm -rf .tours
 rm -rf packages/agent-cli
 rm -rf packages/burger-data
 rm -rf packages/burger-webapp
+rm -rf packages/beer-mcp
 rm -rf packages/burger-mcp/.env.example
 rm -rf packages/burger-mcp/src/local.ts
 rm -rf packages/agent-api/src/chat-get.ts
