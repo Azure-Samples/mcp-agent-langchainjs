@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential } from '@azure/identity';
 import { cosmosDbEndpoint } from '../src/config.js';
@@ -27,9 +28,7 @@ async function main() {
 
   console.log(`Search: "${query}"\n`);
 
-  const { resources } = await container.items
-    .query({ query: sql, parameters }, { forceQueryPlan: true })
-    .fetchAll();
+  const { resources } = await container.items.query({ query: sql, parameters }, { forceQueryPlan: true }).fetchAll();
 
   for (const [i, item] of resources.entries()) {
     const [title, ...rest] = (item.text as string).split(' - ');

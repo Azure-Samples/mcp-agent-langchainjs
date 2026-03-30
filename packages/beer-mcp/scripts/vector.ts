@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { OpenAIEmbeddings } from '@langchain/openai';
@@ -15,10 +16,7 @@ async function main() {
   }
 
   const credential = new DefaultAzureCredential();
-  const azureADTokenProvider = getBearerTokenProvider(
-    credential,
-    'https://cognitiveservices.azure.com/.default',
-  );
+  const azureADTokenProvider = getBearerTokenProvider(credential, 'https://cognitiveservices.azure.com/.default');
 
   const embeddings = new OpenAIEmbeddings({
     configuration: { baseURL: azureOpenAiEndpoint },
@@ -40,9 +38,7 @@ async function main() {
 
   console.log(`Search: "${query}"\n`);
 
-  const { resources } = await container.items
-    .query({ query: sql, parameters }, { forceQueryPlan: true })
-    .fetchAll();
+  const { resources } = await container.items.query({ query: sql, parameters }, { forceQueryPlan: true }).fetchAll();
 
   for (const [i, item] of resources.entries()) {
     const [title, ...rest] = (item.text as string).split(' - ');

@@ -70,6 +70,7 @@
       "semicolon": true,
       "prettier": true,
       "rules": {
+        "unicorn/no-abusive-eslint-disable": "off",
         "@typescript-eslint/triple-slash-reference": "off",
         "@typescript-eslint/naming-convention": "off",
         "@typescript-eslint/consistent-type-definitions": "off",

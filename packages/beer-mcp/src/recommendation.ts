@@ -1,7 +1,5 @@
 import { Document } from '@langchain/core/documents';
-import {
-  AzureCosmosDBNoSQLVectorStore,
-} from '@langchain/azure-cosmosdb';
+import { AzureCosmosDBNoSQLVectorStore } from '@langchain/azure-cosmosdb';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { type Beer } from './beer.js';
@@ -12,10 +10,7 @@ let vectorStore: AzureCosmosDBNoSQLVectorStore | undefined;
 let llm: ChatOpenAI | undefined;
 
 function getAzureADTokenProvider() {
-  return getBearerTokenProvider(
-    new DefaultAzureCredential(),
-    'https://cognitiveservices.azure.com/.default',
-  );
+  return getBearerTokenProvider(new DefaultAzureCredential(), 'https://cognitiveservices.azure.com/.default');
 }
 
 function getEmbeddings() {
@@ -70,6 +65,7 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
           }),
         );
         if (batch.length >= 100) {
+          // eslint-disable-next-line no-await-in-loop
           await store.addDocuments(batch);
           total += batch.length;
           batch = [];
@@ -96,16 +92,20 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
   let fullTextQuery = query;
   const terms = query.split(/\s+/);
   if (terms.length > 5) {
-    let start = performance.now();
+    const start = performance.now();
     const model = getLlm();
     const response = await model.invoke([
       {
         role: 'system',
-        content: 'Extract the 5 most important keywords from the user query for searching a beer catalog. Return ONLY the keywords separated by spaces, nothing else. MAX 5 keywords.',
+        content:
+          'Extract the 5 most important keywords from the user query for searching a beer catalog. Return ONLY the keywords separated by spaces, nothing else. MAX 5 keywords.',
       },
       { role: 'user', content: query },
     ]);
-    const extracted = (response.content as Array<{ text: string }>).map((c) => c.text).join('').trim();
+    const extracted = (response.content as Array<{ text: string }>)
+      .map((c) => c.text)
+      .join('')
+      .trim();
     if (extracted) {
       fullTextQuery = extracted;
     } else {
@@ -123,7 +123,7 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
   let start = performance.now();
   const results = await store.similaritySearchWithScore(query, 10, {
     searchType: 'hybrid',
-    fullTextRankFilter: [{ searchField: 'text', searchText: fullTextQuery }]
+    fullTextRankFilter: [{ searchField: 'text', searchText: fullTextQuery }],
   });
   console.log(`Hybrid search: ${results.length} candidates (${(performance.now() - start).toFixed(0)}ms)`);
 
@@ -131,15 +131,14 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
 
   // Step 2: LLM-based reranking
   start = performance.now();
-  const candidateList = results
-    .map(([doc], i) => `[${i}] ${doc.pageContent}`)
-    .join('\n');
+  const candidateList = results.map(([document], i) => `[${i}] ${document.pageContent}`).join('\n');
 
   const model = getLlm();
   const response = await model.invoke([
     {
       role: 'system',
-      content: 'You are a beer recommendation expert. Given a user query and a list of beer candidates, rerank them by relevance to the query. Return ONLY a JSON array of the indices of the top 5 most relevant beers, ordered from most to least relevant. Example: [3, 0, 7, 1, 5]',
+      content:
+        'You are a beer recommendation expert. Given a user query and a list of beer candidates, rerank them by relevance to the query. Return ONLY a JSON array of the indices of the top 5 most relevant beers, ordered from most to least relevant. Example: [3, 0, 7, 1, 5]',
     },
     {
       role: 'user',
@@ -148,7 +147,7 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
   ]);
 
   const content = (response.content as Array<{ text: string }>).map((c) => c.text).join('');
-  const match = content.match(/\[[\d\s,]+\]/);
+  const match = /\[[\d\s,]+]/.exec(content);
   let rerankedIds: string[];
 
   if (match) {
@@ -159,8 +158,10 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
       .map((i) => results[i][0].metadata.beerId as string);
     console.log(`Reranking: indices [${indices.slice(0, 5).join(', ')}] (${(performance.now() - start).toFixed(0)}ms)`);
   } else {
-    console.warn(`Reranking: failed to parse LLM response, using hybrid order (${(performance.now() - start).toFixed(0)}ms)`);
-    rerankedIds = results.slice(0, 5).map(([doc]) => doc.metadata.beerId as string);
+    console.warn(
+      `Reranking: failed to parse LLM response, using hybrid order (${(performance.now() - start).toFixed(0)}ms)`,
+    );
+    rerankedIds = results.slice(0, 5).map(([document]) => document.metadata.beerId as string);
   }
 
   // Step 3: Fetch full beer data

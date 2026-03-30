@@ -21,6 +21,7 @@
     "@azure/cosmos": "^4.3.0",
     "@azure/identity": "^4.9.1",
     "@langchain/azure-cosmosdb": "^1.2.0",
+    "@langchain/core": "^1.1.36",
     "@langchain/openai": "^1.1.2",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "dotenv": "^17.0.1",

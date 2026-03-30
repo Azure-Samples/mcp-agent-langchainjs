@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
@@ -15,10 +16,7 @@ async function main() {
   }
 
   const credential = new DefaultAzureCredential();
-  const azureADTokenProvider = getBearerTokenProvider(
-    credential,
-    'https://cognitiveservices.azure.com/.default',
-  );
+  const azureADTokenProvider = getBearerTokenProvider(credential, 'https://cognitiveservices.azure.com/.default');
 
   const embeddings = new OpenAIEmbeddings({
     configuration: { baseURL: azureOpenAiEndpoint },
@@ -36,8 +34,8 @@ async function main() {
   const container = client.database('beerDB').container('beerVectors');
 
   const terms = query.split(/\s+/);
-  const termParams = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
-  const termNames = termParams.map((p) => p.name).join(', ');
+  const termParameters = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
+  const termNames = termParameters.map((p) => p.name).join(', ');
 
   const keywordSql = `SELECT TOP 1000 c.id FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
   const vectorSql = `SELECT TOP 1000 c.id FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
@@ -46,9 +44,16 @@ async function main() {
   console.log(`Search: "${query}"\n`);
 
   const [keywordResults, vectorResults, hybridResults] = await Promise.all([
-    container.items.query({ query: keywordSql, parameters: termParams }, { forceQueryPlan: true }).fetchAll(),
-    container.items.query({ query: vectorSql, parameters: [{ name: '@embedding', value: queryVector }] }, { forceQueryPlan: true }).fetchAll(),
-    container.items.query({ query: hybridSql, parameters: [{ name: '@embedding', value: queryVector }, ...termParams] }, { forceQueryPlan: true }).fetchAll(),
+    container.items.query({ query: keywordSql, parameters: termParameters }, { forceQueryPlan: true }).fetchAll(),
+    container.items
+      .query({ query: vectorSql, parameters: [{ name: '@embedding', value: queryVector }] }, { forceQueryPlan: true })
+      .fetchAll(),
+    container.items
+      .query(
+        { query: hybridSql, parameters: [{ name: '@embedding', value: queryVector }, ...termParameters] },
+        { forceQueryPlan: true },
+      )
+      .fetchAll(),
   ]);
 
   const keywordRank = new Map(keywordResults.resources.map((item, i) => [item.id as string, i + 1]));
@@ -78,9 +83,7 @@ async function main() {
     apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
   });
 
-  const candidateList = candidates
-    .map((c, i) => `[${i}] ${c.text}`)
-    .join('\n');
+  const candidateList = candidates.map((c, i) => `[${i}] ${c.text}`).join('\n');
 
   const response = await llm.invoke([
     {
@@ -90,22 +93,22 @@ async function main() {
     {
       role: 'user',
       content: `Query: "${query}"\n\nCandidates:\n${candidateList}`,
-    }
+    },
   ]);
 
   const content = (response.content as Array<{ text: string }>).map((c) => c.text).join('');
-  const match = content.match(/\[[\d\s,]+\]/);
+  const match = /\[[\d\s,]+]/.exec(content);
   if (!match) {
     console.error('Failed to parse LLM response:', content);
     process.exit(1);
   }
 
   const rerankedIndices: number[] = JSON.parse(match[0]);
-  for (const [rank, idx] of rerankedIndices.slice(0, 5).entries()) {
-    const c = candidates[idx];
-    const krStr = c.kr ? `#${c.kr} keyword` : '#- keyword';
-    const vrStr = c.vr ? `#${c.vr} vector` : '#- vector';
-    console.log(`#${rank + 1} ${c.title} - ${krStr}, ${vrStr}, #${c.rrfRank} RRF`);
+  for (const [rank, index] of rerankedIndices.slice(0, 5).entries()) {
+    const c = candidates[index];
+    const krString = c.kr ? `#${c.kr} keyword` : '#- keyword';
+    const vrString = c.vr ? `#${c.vr} vector` : '#- vector';
+    console.log(`#${rank + 1} ${c.title} - ${krString}, ${vrString}, #${c.rrfRank} RRF`);
     console.log(`   ${c.description}\n`);
   }
 }

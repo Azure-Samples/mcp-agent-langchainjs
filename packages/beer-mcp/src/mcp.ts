@@ -15,7 +15,9 @@ export function getMcpServer() {
       description:
         'Recommend beers based on a natural language query. Returns the top 5 best beer recommendations matching the query, considering flavor profiles, food pairings, and beer styles.',
       inputSchema: z.object({
-        query: z.string().describe('Natural language query describing desired beer characteristics, food pairings, or preferences'),
+        query: z
+          .string()
+          .describe('Natural language query describing desired beer characteristics, food pairings, or preferences'),
       }),
     },
     async (args) =>

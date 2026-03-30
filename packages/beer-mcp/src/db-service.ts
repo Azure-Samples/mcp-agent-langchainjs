@@ -1,5 +1,5 @@
 import { BulkOperationType, Container, CosmosClient, Database } from '@azure/cosmos';
-import { CosmosDBManagementClient } from "@azure/arm-cosmosdb";
+import { CosmosDBManagementClient } from '@azure/arm-cosmosdb';
 import { DefaultAzureCredential } from '@azure/identity';
 import beersData from '../data/beers.json' with { type: 'json' };
 import { type Beer } from './beer.js';
@@ -48,7 +48,9 @@ export class DbService {
 
   private async initialize(): Promise<void> {
     if (!cosmosDbEndpoint) {
-      console.error('Cosmos DB endpoint not found in environment variables. Beer MCP requires AZURE_COSMOSDB_NOSQL_ENDPOINT.');
+      console.error(
+        'Cosmos DB endpoint not found in environment variables. Beer MCP requires AZURE_COSMOSDB_NOSQL_ENDPOINT.',
+      );
       return;
     }
 
@@ -81,7 +83,9 @@ export class DbService {
   private async initializeControlPlane(): Promise<void> {
     try {
       if (!subscriptionId) {
-        console.error('Azure subscription ID not found in environment variables. Control plane operations require AZURE_SUBSCRIPTION_ID.');
+        console.error(
+          'Azure subscription ID not found in environment variables. Control plane operations require AZURE_SUBSCRIPTION_ID.',
+        );
         return;
       }
 
@@ -98,7 +102,7 @@ export class DbService {
       for await (const account of client.databaseAccounts.list()) {
         if (account.documentEndpoint === cosmosDbEndpoint) {
           accountName = account.name;
-          const match = account.id?.match(/\/resourceGroups\/([^/]+)\//i);
+          const match = account.id?.match(/\/resourcegroups\/([^/]+)\//i);
           resourceGroupName = match?.[1];
           break;
         }
@@ -113,12 +117,9 @@ export class DbService {
       const containerName = 'beers';
       const vectorContainerName = 'beerVectors';
 
-      await client.sqlResources.beginCreateUpdateSqlDatabaseAndWait(
-        resourceGroupName,
-        accountName,
-        databaseName,
-        { resource: { id: databaseName } },
-      );
+      await client.sqlResources.beginCreateUpdateSqlDatabaseAndWait(resourceGroupName, accountName, databaseName, {
+        resource: { id: databaseName },
+      });
 
       await client.sqlResources.beginCreateUpdateSqlContainerAndWait(
         resourceGroupName,
@@ -277,11 +278,11 @@ export class DbService {
 
     if (ids.length === 0) return [];
 
-    const params = ids.map((id, i) => ({ name: `@id${i}`, value: id }));
-    const inClause = params.map((p) => p.name).join(', ');
+    const parameters = ids.map((id, i) => ({ name: `@id${i}`, value: id }));
+    const inClause = parameters.map((p) => p.name).join(', ');
     const { resources } = await this.beersContainer!.items.query({
       query: `SELECT * FROM c WHERE c.id IN (${inClause})`,
-      parameters: params,
+      parameters,
     }).fetchAll();
 
     return resources.map((r) => stripUnderscoreProperties(r as Beer));

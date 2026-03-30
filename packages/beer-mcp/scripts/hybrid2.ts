@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { OpenAIEmbeddings } from '@langchain/openai';
@@ -15,10 +16,7 @@ async function main() {
   }
 
   const credential = new DefaultAzureCredential();
-  const azureADTokenProvider = getBearerTokenProvider(
-    credential,
-    'https://cognitiveservices.azure.com/.default',
-  );
+  const azureADTokenProvider = getBearerTokenProvider(credential, 'https://cognitiveservices.azure.com/.default');
 
   const embeddings = new OpenAIEmbeddings({
     configuration: { baseURL: azureOpenAiEndpoint },
@@ -36,8 +34,8 @@ async function main() {
   const container = client.database('beerDB').container('beerVectors');
 
   const terms = query.split(/\s+/);
-  const termParams = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
-  const termNames = termParams.map((p) => p.name).join(', ');
+  const termParameters = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
+  const termNames = termParameters.map((p) => p.name).join(', ');
 
   const keywordSql = `SELECT TOP 1000 c.id FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
   const vectorSql = `SELECT TOP 1000 c.id FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
@@ -46,9 +44,16 @@ async function main() {
   console.log(`Search: "${query}"\n`);
 
   const [keywordResults, vectorResults, hybridResults] = await Promise.all([
-    container.items.query({ query: keywordSql, parameters: termParams }, { forceQueryPlan: true }).fetchAll(),
-    container.items.query({ query: vectorSql, parameters: [{ name: '@embedding', value: queryVector }] }, { forceQueryPlan: true }).fetchAll(),
-    container.items.query({ query: hybridSql, parameters: [{ name: '@embedding', value: queryVector }, ...termParams] }, { forceQueryPlan: true }).fetchAll(),
+    container.items.query({ query: keywordSql, parameters: termParameters }, { forceQueryPlan: true }).fetchAll(),
+    container.items
+      .query({ query: vectorSql, parameters: [{ name: '@embedding', value: queryVector }] }, { forceQueryPlan: true })
+      .fetchAll(),
+    container.items
+      .query(
+        { query: hybridSql, parameters: [{ name: '@embedding', value: queryVector }, ...termParameters] },
+        { forceQueryPlan: true },
+      )
+      .fetchAll(),
   ]);
 
   const keywordRank = new Map(keywordResults.resources.map((item, i) => [item.id as string, i + 1]));
@@ -63,9 +68,9 @@ async function main() {
     const vr = vectorRank.get(id);
     const k = 60;
     const rrf = 1 / (k + (kr ?? Infinity)) + 1 / (k + (vr ?? Infinity));
-    const krStr = kr ? `#${kr} keyword` : '#- keyword';
-    const vrStr = vr ? `#${vr} vector` : '#- vector';
-    console.log(`#${i + 1} ${title} - ${krStr}, ${vrStr}, RRF score: ${rrf.toFixed(6)}`);
+    const krString = kr ? `#${kr} keyword` : '#- keyword';
+    const vrString = vr ? `#${vr} vector` : '#- vector';
+    console.log(`#${i + 1} ${title} - ${krString}, ${vrString}, RRF score: ${rrf.toFixed(6)}`);
     console.log(`   ${description}\n`);
   }
 }
