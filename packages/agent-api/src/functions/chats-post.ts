@@ -44,6 +44,8 @@ export async function postChats(request: HttpRequest, context: InvocationContext
   const azureOpenAiEndpoint = process.env.AZURE_OPENAI_API_ENDPOINT;
   const azureCosmosDbEndpoint = process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT;
   const burgerMcpUrl = process.env.BURGER_MCP_URL ?? 'http://localhost:3000/mcp';
+  const beerMcpUrl = process.env.BEER_MCP_URL ?? 'http://localhost:3001/mcp';
+  const enableBeers = process.env.ENABLE_BEERS === 'true';
 
   try {
     const requestBody = (await request.json()) as AIChatCompletionRequest;
@@ -104,15 +106,28 @@ export async function postChats(request: HttpRequest, context: InvocationContext
       : new FileSystemChatMessageHistory({ userId, sessionId });
 
     context.log(`Connecting to Burger MCP server at ${burgerMcpUrl}`);
+
+    if (enableBeers) {
+      context.log(`Connecting to Beer MCP server at ${beerMcpUrl}`);
+    }
+
     const client = new MultiServerMCPClient({
       burger: {
         transport: 'http',
         url: burgerMcpUrl,
       },
+      ...(enableBeers
+        ? {
+            beer: {
+              transport: 'http',
+              url: beerMcpUrl,
+            },
+          }
+        : {}),
     });
 
     const tools = await client.getTools();
-    context.log(`Loaded ${tools.length} tools from Burger MCP server`);
+    context.log(`Loaded ${tools.length} tools`);
 
     const agent = createAgent({
       model,

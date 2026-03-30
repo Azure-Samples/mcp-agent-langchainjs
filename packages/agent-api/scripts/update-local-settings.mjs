@@ -37,6 +37,14 @@ settings = {
   AZURE_COSMOSDB_NOSQL_ENDPOINT: process.env.AZURE_COSMOSDB_NOSQL_ENDPOINT,
 };
 
+if (process.env.ENABLE_BEERS) {
+  console.log('Enabling beer recommendations...');
+  settings = {
+    ...settings,
+    ENABLE_BEERS: 'true',
+  };
+}
+
 // This is only used for the workshop/demo, it can be removed for production apps
 if (process.env.USER_ID) {
   console.log('Setting USER_ID value...');

@@ -72,6 +72,7 @@ export const chatDefaultOptions: ChatComponentOptions = {
       get_order_by_id: 'Retrieving order details',
       place_order: 'Placing a new order',
       delete_order_by_id: 'Deleting order',
+      recommend_beers: 'Getting beer recommendations',
     },
   },
 };

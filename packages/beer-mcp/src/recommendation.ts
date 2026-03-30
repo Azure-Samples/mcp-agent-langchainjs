@@ -34,6 +34,8 @@ function getLlm(): ChatOpenAI {
   llm = new ChatOpenAI({
     configuration: { baseURL: azureOpenAiEndpoint },
     modelName: azureOpenAiModel,
+    useResponsesApi: true,
+    reasoning: { effort: 'minimal' },
     apiKey: azureOpenAiApiKey ?? azureADTokenProvider,
   });
   return llm;
@@ -94,32 +96,41 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
   let fullTextQuery = query;
   const terms = query.split(/\s+/);
   if (terms.length > 5) {
+    let start = performance.now();
     const model = getLlm();
     const response = await model.invoke([
       {
         role: 'system',
-        content: 'Extract the 5 most important keywords from the user query for searching a beer catalog. Return ONLY the keywords separated by spaces, nothing else.',
+        content: 'Extract the 5 most important keywords from the user query for searching a beer catalog. Return ONLY the keywords separated by spaces, nothing else. MAX 5 keywords.',
       },
       { role: 'user', content: query },
     ]);
-    const extracted = typeof response.content === 'string' ? response.content.trim() : '';
+    const extracted = (response.content as Array<{ text: string }>).map((c) => c.text).join('').trim();
     if (extracted) {
       fullTextQuery = extracted;
-      console.log(`Extracted keywords for full-text search: "${fullTextQuery}"`);
+    } else {
+      console.warn(`Keyword extraction failed, using full query. LLM response: ${response.content}`);
     }
+
+    // Truncate to 5 keywords in case LLM returned more
+    const extractedTerms = fullTextQuery.split(/\s+/).slice(0, 5);
+    fullTextQuery = extractedTerms.join(' ');
+
+    console.log(`Keyword extraction: "${fullTextQuery}" (${(performance.now() - start).toFixed(0)}ms)`);
   }
 
   // Step 1: Hybrid search via LangChain.js (RRF combining full-text + vector)
+  let start = performance.now();
   const results = await store.similaritySearchWithScore(query, 10, {
     searchType: 'hybrid',
     fullTextRankFilter: [{ searchField: 'text', searchText: fullTextQuery }]
   });
-
-  console.log(`Hybrid search for "${query}" returned ${results.length} candidates`);
+  console.log(`Hybrid search: ${results.length} candidates (${(performance.now() - start).toFixed(0)}ms)`);
 
   if (results.length === 0) return [];
 
   // Step 2: LLM-based reranking
+  start = performance.now();
   const candidateList = results
     .map(([doc], i) => `[${i}] ${doc.pageContent}`)
     .join('\n');
@@ -136,7 +147,7 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
     },
   ]);
 
-  const content = typeof response.content === 'string' ? response.content : '';
+  const content = (response.content as Array<{ text: string }>).map((c) => c.text).join('');
   const match = content.match(/\[[\d\s,]+\]/);
   let rerankedIds: string[];
 
@@ -146,14 +157,18 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
       .slice(0, 5)
       .filter((i) => i >= 0 && i < results.length)
       .map((i) => results[i][0].metadata.beerId as string);
-    console.log(`LLM reranked to indices: ${indices.slice(0, 5).join(', ')}`);
+    console.log(`Reranking: indices [${indices.slice(0, 5).join(', ')}] (${(performance.now() - start).toFixed(0)}ms)`);
   } else {
-    console.warn('Failed to parse LLM reranking response, using hybrid order');
+    console.warn(`Reranking: failed to parse LLM response, using hybrid order (${(performance.now() - start).toFixed(0)}ms)`);
     rerankedIds = results.slice(0, 5).map(([doc]) => doc.metadata.beerId as string);
   }
 
+  // Step 3: Fetch full beer data
+  start = performance.now();
   const db = await DbService.getInstance();
   const beers = await db.getBeersById(rerankedIds);
   const beerMap = new Map(beers.map((b) => [b.id, b]));
-  return rerankedIds.map((id) => beerMap.get(id)).filter((b): b is Beer => b !== undefined);
+  const result = rerankedIds.map((id) => beerMap.get(id)).filter((b): b is Beer => b !== undefined);
+  console.log(`Mapping: ${result.length} beers (${(performance.now() - start).toFixed(0)}ms)`);
+  return result;
 }

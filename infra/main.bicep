@@ -280,6 +280,10 @@ module agentApiFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = {
       AZURE_OPENAI_API_KEY: azureOpenAiApiKey // When empty, managed identity will be used
       AZURE_OPENAI_MODEL: defaultModelName
       BURGER_MCP_URL: burgerMcpUrl
+      ...(enableBeers ? {
+        ENABLE_BEERS: 'true'
+        BEER_MCP_URL: beerMcpUrl
+      } : {})
     }
     storageAccountResourceId: storage.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
