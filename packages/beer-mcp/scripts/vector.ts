@@ -33,7 +33,12 @@ async function main() {
 
   const container = client.database('beerDB').container('beerVectors');
 
-  const sql = `SELECT TOP 5 c.id, c.text, c.metadata, VectorDistance(c.vector, @embedding) AS score FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
+  const sql = `
+    SELECT TOP 5 c.id, c.text, c.metadata,
+      VectorDistance(c.vector, @embedding) AS score
+    FROM c
+    ORDER BY VectorDistance(c.vector, @embedding)
+  `;
   const parameters = [{ name: '@embedding', value: queryVector }];
 
   console.log(`Search: "${query}"\n`);

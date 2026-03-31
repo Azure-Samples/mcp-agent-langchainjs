@@ -37,9 +37,25 @@ async function main() {
   const termParameters = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
   const termNames = termParameters.map((p) => p.name).join(', ');
 
-  const hybridSql = `SELECT TOP 5 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding), [1,1])`;
-  const keywordSql = `SELECT TOP 1000 c.id, c.text FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
-  const vectorSql = `SELECT TOP 1000 c.id, c.text FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
+  const hybridSql = `
+    SELECT TOP 5 c.id, c.text
+    FROM c
+    ORDER BY RANK RRF(
+      FullTextScore(c.text, ${termNames}),
+      VectorDistance(c.vector, @embedding),
+      [1, 1]
+    )
+  `;
+  const keywordSql = `
+    SELECT TOP 1000 c.id, c.text
+    FROM c
+    ORDER BY RANK FullTextScore(c.text, ${termNames})
+  `;
+  const vectorSql = `
+    SELECT TOP 1000 c.id, c.text
+    FROM c
+    ORDER BY VectorDistance(c.vector, @embedding)
+  `;
 
   console.log(`Search: "${query}"\n`);
 

@@ -1,4 +1,4 @@
-// /* eslint-disable */
+/* eslint-disable */
 import { CosmosClient } from '@azure/cosmos';
 import { DefaultAzureCredential, getBearerTokenProvider } from '@azure/identity';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
@@ -37,9 +37,24 @@ async function main() {
   const termParameters = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
   const termNames = termParameters.map((p) => p.name).join(', ');
 
-  const keywordSql = `SELECT TOP 1000 c.id FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
-  const vectorSql = `SELECT TOP 1000 c.id FROM c ORDER BY VectorDistance(c.vector, @embedding)`;
-  const hybridSql = `SELECT TOP 10 c.id, c.text FROM c ORDER BY RANK RRF(FullTextScore(c.text, ${termNames}), VectorDistance(c.vector, @embedding))`;
+  const hybridSql = `
+    SELECT TOP 10 c.id, c.text
+    FROM c
+    ORDER BY RANK RRF(
+      FullTextScore(c.text, ${termNames}),
+      VectorDistance(c.vector, @embedding)
+    )
+  `;
+  const keywordSql = `
+    SELECT TOP 1000 c.id
+    FROM c
+    ORDER BY RANK FullTextScore(c.text, ${termNames})
+  `;
+  const vectorSql = `
+    SELECT TOP 1000 c.id
+    FROM c
+    ORDER BY VectorDistance(c.vector, @embedding)
+  `;
 
   console.log(`Search: "${query}"\n`);
 

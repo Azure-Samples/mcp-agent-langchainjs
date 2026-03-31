@@ -24,7 +24,11 @@ async function main() {
   const terms = query.replaceAll(',', '').split(/\s+/).filter((t) => t.length > 3);
   const parameters = terms.map((term, i) => ({ name: `@term${i}`, value: term }));
   const termNames = parameters.map((p) => p.name).join(', ');
-  const sql = `SELECT TOP 5 c.id, c.text, c.metadata FROM c ORDER BY RANK FullTextScore(c.text, ${termNames})`;
+  const sql = `
+    SELECT TOP 5 c.id, c.text, c.metadata
+    FROM c
+    ORDER BY RANK FullTextScore(c.text, ${termNames})
+  `;
 
   console.log(`Search: "${query}"\n`);
 
