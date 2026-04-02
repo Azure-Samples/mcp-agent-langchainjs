@@ -59,10 +59,11 @@ The application is made from these main components:
 | Burger Web App    | [`packages/burger-webapp`](./packages/burger-webapp) | Live orders visualization                    |
 | Infrastructure    | [`infra`](./infra)                                   | Bicep templates (IaC)                        |
 
-Additionally, these support components are included:
+Additionally, these optional and support components are included:
 
 | Component       | Folder                                           | Purpose                                                  |
 | --------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| Beer MCP Server | [`packages/beer-mcp`](./packages/beer-mcp)       | AI-powered beer recommendations via hybrid RAG            |
 | Agent CLI       | [`packages/agent-cli`](./packages/agent-cli)     | Command-line interface LangChain.js agent and MCP client |
 | Data generation | [`packages/burger-data`](./packages/burger-data) | Scripts to (re)generate burgers data & images            |
 

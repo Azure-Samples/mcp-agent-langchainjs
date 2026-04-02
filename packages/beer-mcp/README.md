@@ -20,7 +20,7 @@ This server supports the following transport types:
 - **Streamable HTTP**
 - **Stdio** (currently only supported when starting the server locally with `npm run start:local`)
 
-The beer data and vector embeddings are stored in [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/).
+The beer data and vector embeddings are stored in [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/), making use of its built-in hybrid search features.
 
 ## MCP tools
 
