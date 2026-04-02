@@ -60,6 +60,7 @@ components:
         - name
         - style
         - brewery
+        - country
         - abv
         - description
         - flavorNotes
@@ -72,6 +73,8 @@ components:
         style:
           type: string
         brewery:
+          type: string
+        country:
           type: string
         abv:
           type: number
