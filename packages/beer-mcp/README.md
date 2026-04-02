@@ -22,6 +22,10 @@ This server supports the following transport types:
 
 The beer data and vector embeddings are stored in [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/), making use of its built-in hybrid search features.
 
+<div align="center">
+  <img src="../../docs/images/beer-architecture.drawio.png" alt="Service architecture" />
+</div>
+
 ## MCP tools
 
 The Beer MCP server provides the following tools:
