@@ -15,4 +15,4 @@ GET {{api_host}}/openapi
 GET {{api_host}}/api/beers/recommend?query=something refreshing with citrus for a spicy burger
 
 ### Get a single beer by ID
-GET {{api_host}}/api/beers/beer-001
+GET {{api_host}}/api/beers/beer-0001
