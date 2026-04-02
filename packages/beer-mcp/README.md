@@ -40,14 +40,11 @@ The Beer MCP server is an optional component. To enable it:
    azd env set ENABLE_BEERS true
    ```
 
-2. Deploy the infrastructure and services:
+2. Enable the Beer MCP service in your `azure.yaml` environment file. The `beer-mcp` service definition may be commented out by default; uncomment it (or otherwise enable it) so that `azd up` will build and deploy the Beer MCP service.
+
+3. Deploy the infrastructure and services:
    ```bash
    azd up
-   ```
-
-3. In the root `package.json`, replace `_start:beer` with `start:beer` to enable the local startup script.
-
-4. Start all services:
    ```bash
    npm start
    ```
