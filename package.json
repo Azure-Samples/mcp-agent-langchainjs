@@ -62,16 +62,9 @@
       "ignores": [
         "**/*.genai.mjs",
         "**/vite.config.ts",
-        "**/slides/**/*.*"
+        "**/slides/**/*.*",
+        "packages/beer-mcp/scripts/*.ts"
       ]
-    },
-    {
-      "files": ["packages/beer-mcp/scripts/*.ts"],
-      "languageOptions": {
-        "parserOptions": {
-          "allowDefaultProject": ["packages/beer-mcp/scripts/*.ts"]
-        }
-      }
     },
     {
       "space": true,
