@@ -66,6 +66,12 @@
       ]
     },
     {
+      "files": ["packages/beer-mcp/scripts/*.ts"],
+      "parserOptions": {
+        "allowDefaultProject": ["packages/beer-mcp/scripts/*.ts"]
+      }
+    },
+    {
       "space": true,
       "semicolon": true,
       "prettier": true,
