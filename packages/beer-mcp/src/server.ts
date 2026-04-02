@@ -23,9 +23,9 @@ app.get('/', async (_request: Request, response: Response) => {
   }
 });
 
-app.get('/openapi', (_request: Request, response: Response) => {
+app.get('/openapi', async (_request: Request, response: Response) => {
   const openapiPath = path.join(__dirname, '../openapi.yaml');
-  const content = fs.readFileSync(openapiPath, 'utf8');
+  const content = await fs.promises.readFile(openapiPath, 'utf8');
   response.type('text/yaml').send(content);
 });
 
