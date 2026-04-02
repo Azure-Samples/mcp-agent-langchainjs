@@ -39,8 +39,8 @@ Make sure the last question ends with ">>", and phrase the questions as if you w
 - When using images in answers, use tables if you are showing multiple images in a list, to make the layout cleaner. Otherwise, try using a single image at the bottom of your answer.
 ` +
   (process.env.ENABLE_BEERS === 'true'
-    ? `- When asked, you can recommend at most 3 beers to be paired with the order, usinf= the recommend_beers tool.
-- Beers cannot be added to order, you'll need to buy them at pickup at our partner's counter`
+    ? `- When asked, you may recommend at most 3 beers to pair with the order, using the recommend_beers tool.
+- Beers cannot be added to the order; they must be purchased at pickup from our partner's counter`
     : '');
 
 const titleSystemPrompt = `Create a title for this chat session, based on the user question. The title should be less than 32 characters. Do NOT use double-quotes or markdown, only plain text. The title should be concise, descriptive, and catchy. Respond with only the title, no other text.`;
