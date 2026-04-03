@@ -43,6 +43,7 @@ services:
   #   project: ./packages/beer-mcp
   #   language: ts
   #   host: function
+  #   remoteBuild: true
 
 hooks:
   postprovision:
