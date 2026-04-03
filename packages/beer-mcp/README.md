@@ -49,10 +49,8 @@ The Beer MCP server is an optional component. To enable it:
 3. Deploy the infrastructure and services:
    ```bash
    azd up
-   ```bash
-   npm start
    ```
-
+   
 ## Test with MCP inspector
 
 1. Start the Beer MCP server locally.
