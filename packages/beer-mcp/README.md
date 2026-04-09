@@ -37,7 +37,13 @@ The Beer MCP server provides the following tools:
 
 ## Enable and test
 
-The Beer MCP server is an optional component. To enable it:
+The Beer MCP server is an optional component. To enable it, you have 2 options.
+
+### Automated setup
+
+If you have GitHub Copilot, simply send `/enable-beer` to the agent, in the chat window in VS Code or GitHub Copilot CLI. The agent will do all the steps to enable the beer MCP server for you.
+
+### Manual setup
 
 1. Set the `ENABLE_BEERS` environment variable:
    ```bash
@@ -46,7 +52,9 @@ The Beer MCP server is an optional component. To enable it:
 
 2. Enable the Beer MCP service in your `azure.yaml` environment file. The `beer-mcp` service definition may be commented out by default; uncomment it (or otherwise enable it) so that `azd up` will build and deploy the Beer MCP service.
 
-3. Deploy the infrastructure and services:
+3. Rename the `_start:beer` script in the root `package.json` to `start:beer`, so that it can be started by the agent when running locally.
+
+4. Deploy the infrastructure and services:
    ```bash
    azd up
    ```
