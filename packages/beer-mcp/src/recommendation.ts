@@ -90,7 +90,7 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
 
   // For long queries, extract keywords for the full-text part of hybrid search
   let fullTextQuery = query;
-  const terms = query.split(/\s+/);
+  const terms = query.split(/\s+/v);
   if (terms.length > 5) {
     const start = performance.now();
     const model = getLlm();
@@ -113,7 +113,7 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
     }
 
     // Truncate to 5 keywords in case LLM returned more
-    const extractedTerms = fullTextQuery.split(/\s+/).slice(0, 5);
+    const extractedTerms = fullTextQuery.split(/\s+/v).slice(0, 5);
     fullTextQuery = extractedTerms.join(' ');
 
     console.log(`Keyword extraction: "${fullTextQuery}" (${(performance.now() - start).toFixed(0)}ms)`);
@@ -147,7 +147,7 @@ export async function recommendBeers(query: string): Promise<Beer[]> {
   ]);
 
   const content = (response.content as Array<{ text: string }>).map((c) => c.text).join('');
-  const match = /\[[\d\s,]+]/.exec(content);
+  const match = /\[[\d\s,]+\]/v.exec(content);
   let rerankedIds: string[];
 
   if (match) {

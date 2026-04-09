@@ -27,7 +27,7 @@ export function parseMessageIntoHtml(message: AIChatMessage, enableMarkdown = tr
 
   // Extract any follow-up questions that might be in the message
   const text = message.content
-    .replaceAll(/<<([^>]+)>>/g, (_match, content: string) => {
+    .replaceAll(/<<([^>]+)>>/gv, (_match, content: string) => {
       followupQuestions.push(content);
       return '';
     })

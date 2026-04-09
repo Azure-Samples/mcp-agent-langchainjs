@@ -20,7 +20,7 @@ app.http('orders-get', {
 
     let lastMs: number | undefined;
     if (lastParameter) {
-      const match = /^(\d+)([mh])$/i.exec(lastParameter);
+      const match = /^(\d+)([mh])$/iv.exec(lastParameter);
       if (match) {
         const value = Number.parseInt(match[1], 10);
         const unit = match[2].toLowerCase();

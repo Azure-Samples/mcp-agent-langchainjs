@@ -163,11 +163,7 @@ export class AuthComponent extends LitElement {
   protected override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
 
-    if (this._userDetails) {
-      this.classList.add('authenticated');
-    } else {
-      this.classList.remove('authenticated');
-    }
+    this.classList.toggle('authenticated', this._userDetails);
   }
 
   protected override render() {

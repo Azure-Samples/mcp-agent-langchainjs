@@ -46,6 +46,7 @@ export class DbService {
     return DbService.instance;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-private-class-members
   private async initialize(): Promise<void> {
     if (!cosmosDbEndpoint) {
       console.error(
@@ -102,7 +103,7 @@ export class DbService {
       for await (const account of client.databaseAccounts.list()) {
         if (account.documentEndpoint === cosmosDbEndpoint) {
           accountName = account.name;
-          const match = account.id?.match(/\/resourcegroups\/([^/]+)\//i);
+          const match = account.id?.match(/\/resourcegroups\/([^\/]+)\//iv);
           resourceGroupName = match?.[1];
           break;
         }

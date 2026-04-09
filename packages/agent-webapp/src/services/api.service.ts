@@ -65,7 +65,7 @@ export async function* getChunksFromResponse<T>(response: Response): AsyncGenera
   let value: JSON | undefined;
   let done: boolean;
   // eslint-disable-next-line no-await-in-loop
-  while ((({ value, done } = await reader.read()), !done)) {
+  while (({ value, done } = await reader.read()) && !done) {
     const chunk = value as T;
     yield chunk;
   }

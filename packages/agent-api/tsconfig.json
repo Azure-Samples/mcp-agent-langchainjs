@@ -14,6 +14,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
+    "types": ["node"],
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "lib": ["ESNext"]

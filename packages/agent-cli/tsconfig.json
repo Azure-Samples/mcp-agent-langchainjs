@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "nodenext",
     "target": "esnext",
     "incremental": true,
     "skipLibCheck": true,
@@ -9,7 +9,8 @@
     "rootDir": ".",
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "node",
+    "types": ["node"],
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "lib": ["ESNext"]
   }

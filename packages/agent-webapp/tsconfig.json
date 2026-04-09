@@ -16,13 +16,14 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
     "emitDeclarationOnly": true,
     "useDefineForClassFields": false,
+    "types": ["vite/client"],
     "plugins": [
       {
         "name": "ts-lit-plugin",
@@ -30,6 +31,5 @@
       }
     ]
   },
-  "include": ["src/**/*.ts"],
-  "types": ["vite/client"]
+  "include": ["src/**/*.ts"]
 }

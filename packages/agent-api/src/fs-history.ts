@@ -120,7 +120,7 @@ export class FileSystemChatMessageHistory extends BaseListChatMessageHistory {
         return {};
       }
 
-      throw new Error(`Error loading FileSystemChatMessageHistory store: ${error}`);
+      throw new Error(`Error loading FileSystemChatMessageHistory store: ${error}`, { cause: _error });
     }
   }
 
@@ -129,7 +129,7 @@ export class FileSystemChatMessageHistory extends BaseListChatMessageHistory {
       await fs.mkdir(dirname(this.filePath), { recursive: true });
       await fs.writeFile(this.filePath, JSON.stringify(store));
     } catch (error) {
-      throw new Error(`Error saving FileSystemChatMessageHistory store: ${error}`);
+      throw new Error(`Error saving FileSystemChatMessageHistory store: ${error}`, { cause: error });
     }
   }
 

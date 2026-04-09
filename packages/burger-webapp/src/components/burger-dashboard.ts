@@ -47,9 +47,9 @@ export class BurgerDashboard extends LitElement {
       }
 
       // Sort latest first
-      this.inProgressOrders = [...inProgress].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 50);
-      this.completedOrders = [...completed]
-        .sort((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''))
+      this.inProgressOrders = inProgress.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 50);
+      this.completedOrders = completed
+        .toSorted((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''))
         .slice(0, 50);
     } catch {
       this.hasError = true;
