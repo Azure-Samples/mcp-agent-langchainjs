@@ -39,6 +39,9 @@ function getLlm(): ChatOpenAI {
 async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
   if (vectorStore) return vectorStore;
 
+  // Ensure the DB is initialized before we initialize the vector store
+  const db = await DbService.getInstance();
+
   const store = new AzureCosmosDBNoSQLVectorStore(getEmbeddings(), {
     endpoint: cosmosDbEndpoint,
     databaseName: 'beerDB',
@@ -50,7 +53,6 @@ async function getVectorStore(): Promise<AzureCosmosDBNoSQLVectorStore> {
   const { resources } = await container.items.query('SELECT VALUE COUNT(1) FROM c').fetchAll();
   if (resources[0] === 0) {
     console.log('Indexing beer data into vector store...');
-    const db = await DbService.getInstance();
     const beersContainer = db.getBeersContainer();
     const iterator = beersContainer.items.readAll<Beer>().getAsyncIterator();
     let batch: Document[] = [];

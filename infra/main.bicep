@@ -470,6 +470,7 @@ module beerMcpFunctionSettings 'br/public:avm/res/web/site/config:0.1.0' = if (e
     appName: beerMcpFunction.outputs.name
     properties: {
       AzureWebJobsFeatureFlags: 'EnableMcpCustomHandlerPreview'
+      AZURE_SUBSCRIPTION_ID: subscription().subscriptionId
       AZURE_COSMOSDB_NOSQL_ENDPOINT: cosmosDb.outputs.endpoint
       AZURE_OPENAI_API_ENDPOINT: openAiUrl
       AZURE_OPENAI_API_KEY: azureOpenAiApiKey // When empty, managed identity will be used
@@ -572,6 +573,13 @@ module aiFoundry 'br/public:avm/ptn/ai-ml/ai-foundry:0.6.0' = if (empty(azureOpe
           principalType: 'ServicePrincipal'
           roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
        }
+        ...(enableBeers ? [
+          {
+            principalId: beerMcpFunction.outputs.?systemAssignedMIPrincipalId!
+            principalType: 'ServicePrincipal'
+            roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
+          }
+        ] : [])
       ]
     }
     aiModelDeployments: [

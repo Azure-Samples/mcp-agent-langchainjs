@@ -3,7 +3,8 @@
 # Download at: https://aka.ms/vscode/rest-client
 ##################################################################
 
-@api_host = http://localhost:3001
+# @api_host = http://localhost:3001
+@api_host = https://func-beer-mcp-s5uerbtiahm32.azurewebsites.net/
 
 ### Get server status and beer stats
 GET {{api_host}}/
