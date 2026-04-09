@@ -153,7 +153,7 @@ export class AuthComponent extends LitElement {
       ${unsafeSVG(logoutSvg)}
     </button>`;
 
-  protected override async connectedCallback() {
+  public override async connectedCallback() {
     super.connectedCallback();
     const userDetails = await getUserInfo();
     this._userDetails = userDetails;
@@ -163,7 +163,7 @@ export class AuthComponent extends LitElement {
   protected override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
 
-    this.classList.toggle('authenticated', this._userDetails);
+    this.classList.toggle('authenticated', Boolean(this._userDetails));
   }
 
   protected override render() {

@@ -109,7 +109,7 @@ export class ChatComponent extends LitElement {
 
   protected lastStepSetAt = 0;
   protected stepQueue: AgentStep[] = [];
-  protected stepTimer: NodeJS.Timeout | undefined;
+  protected stepTimer: ReturnType<typeof setTimeout> | undefined;
 
   async onSuggestionClicked(suggestion: string) {
     this.question = suggestion;
