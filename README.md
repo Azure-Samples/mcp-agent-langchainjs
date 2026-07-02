@@ -310,6 +310,87 @@ If you encounter issues while running or deploying this sample:
 
 For more detailed troubleshooting, check the individual README files in each service directory.
 
+## FAQ
+
+### What is MCP (Model Context Protocol)?
+
+MCP is a protocol that enables AI agents to interact with external tools and APIs in a standardized way. It provides a common interface for tools, making it easier to integrate different services and capabilities into AI agents. Learn more at [modelcontextprotocol.io](https://modelcontextprotocol.io/).
+
+### How does this project differ from other AI agent samples?
+
+This sample focuses on **MCP integration** with LangChain.js in a **serverless architecture**. Unlike standalone agent examples, this project demonstrates:
+- Multi-service architecture (web UIs, APIs, MCP server)
+- Production-ready deployment on Azure
+- Real-world use case (burger ordering system)
+- Integration with popular AI tools (GitHub Copilot, Claude)
+
+### Which LLM providers are supported?
+
+The agent supports any OpenAI-compatible endpoint:
+- **Azure OpenAI** (default when deployed to Azure)
+- **GitHub Models** (free alternative)
+- **Ollama** (local development)
+- Any other OpenAI-compatible API (set via `AZURE_OPENAI_API_ENDPOINT`)
+
+### What's the difference between local and cloud deployment?
+
+**Local development:**
+- Uses in-memory storage (data lost on restart)
+- No cloud costs
+- Requires local setup (Node.js, Docker)
+- Perfect for testing and development
+
+**Azure deployment:**
+- Uses Azure Cosmos DB for persistent storage
+- Production-ready with authentication
+- Single-command deployment with `azd up`
+- Scalable and cost-effective serverless architecture
+
+### How does the MCP server work?
+
+The Burger MCP server exposes burger API operations as MCP tools:
+- It translates API calls into MCP tool definitions
+- AI agents can discover and call these tools automatically
+- Uses Streamable HTTP transport for communication
+- Works with MCP-compatible clients (Copilot, Claude, etc.)
+
+### Can I use this MCP server with other AI tools?
+
+Yes! The MCP server is compatible with:
+- **GitHub Copilot** (agent mode) - via `.vscode/mcp.json` config
+- **Claude Desktop** - via MCP client configuration
+- **MCP Inspector** - for testing and debugging
+- Any MCP-compatible client
+
+### What are the prerequisites for deployment?
+
+- **Azure account** with `Microsoft.Authorization/roleAssignments/write` permissions
+- **Azure Developer CLI** (azd) 1.19+
+- **Node.js** 22+ LTS
+- **Git** for cloning the repository
+
+### How do I customize the MCP tools?
+
+You can extend the MCP server by:
+1. Adding new tool definitions in `packages/burger-mcp`
+2. Implementing corresponding API endpoints in `packages/burger-api`
+3. Updating the tool schema to expose new operations
+4. Testing with MCP Inspector before deployment
+
+### Why am I getting "model capacity" errors on Azure?
+
+If using Azure for Students or Free Trial, run:
+```bash
+azd env set AZURE_OPENAI_MODEL_CAPACITY 1
+```
+This ensures resources fit within free tier limits. You may also need to provide an alternative OpenAI endpoint.
+
+### Where can I get help?
+
+- Join the [Microsoft Foundry Discord](https://aka.ms/foundry/discord)
+- Visit the [Developer Forum](https://aka.ms/foundry/forum)
+- Check the [MCP for Beginners](https://github.com/microsoft/mcp-for-beginners) guide
+
 ## Built for AI Agents
 
 This project has been optimized for use with AI agents like [GitHub Copilot](https://github.com/features/copilot). This includes:
@@ -330,3 +411,4 @@ If you get stuck or have any questions about building AI apps, join:
 If you have product feedback or errors while building visit:
 
 [![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
+
