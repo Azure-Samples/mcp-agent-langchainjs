@@ -18,19 +18,18 @@
   "license": "MIT",
   "template": "functions",
   "dependencies": {
-    "@azure/cosmos": "^4.3.0",
-    "@azure/functions": "^4.7.0",
+    "@azure/cosmos": "^4.9.3",
+    "@azure/functions": "^4.16.1",
     "@azure/identity": "^4.8.0",
-    "@azure/monitor-opentelemetry": "^1.14.0",
-    "@azure/storage-blob": "^12.27.0",
-    "js-yaml": "^4.1.1"
+    "@azure/monitor-opentelemetry": "^1.18.2",
+    "@azure/storage-blob": "^12.33.0",
+    "js-yaml": "^5.2.1"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22",
     "azure-functions-core-tools": "^4",
     "azurite": "^3",
-    "dotenv": "^17.0.0",
+    "dotenv": "^17.4.2",
     "typescript": "^6"
   }
 }

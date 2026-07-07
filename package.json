@@ -45,13 +45,13 @@
     "packages/*"
   ],
   "devDependencies": {
-    "concurrently": "^9",
-    "dotenv": "^17.2.2",
+    "concurrently": "^10",
+    "dotenv": "^17.4.2",
     "prettier": "^3",
     "rimraf": "^6",
     "run-on-output": "^1.0.1",
     "typescript": "^6",
-    "xo": "^2"
+    "xo": "^3"
   },
   "engines": {
     "node": ">=22",
@@ -64,13 +64,18 @@
         "**/*.genai.js",
         "**/vite.config.ts",
         "**/slides/**/*.*",
-        "packages/beer-mcp/scripts/*.ts"
+        "packages/beer-mcp/scripts/*.ts",
+        "**/*.html",
+        "**/*.md"
       ]
     },
     {
+      "files": [
+        "**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"
+      ],
       "space": true,
       "semicolon": true,
-      "prettier": true,
+      "prettier": "compat",
       "rules": {
         "unicorn/no-abusive-eslint-disable": "off",
         "@typescript-eslint/triple-slash-reference": "off",
@@ -108,6 +113,46 @@
         "unicorn/prefer-module": "off",
         "unicorn/no-new-array": "off",
         "unicorn/no-array-callback-reference": "off",
+        "curly": "off",
+        "arrow-body-style": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-unnecessary-type-assertion": "off",
+        "@typescript-eslint/no-shadow": "off",
+        "@stylistic/quotes": "off",
+        "@stylistic/no-mixed-operators": "off",
+        "jsdoc/require-asterisk-prefix": "off",
+        "jsdoc/no-multi-asterisks": "off",
+        "jsdoc/check-tag-names": "off",
+        "jsdoc/informative-docs": "off",
+        "regexp/prefer-named-capture-group": "off",
+        "regexp/sort-character-class-elements": "off",
+        "regexp/prefer-regexp-exec": "off",
+        "regexp/no-super-linear-move": "off",
+        "unicorn/consistent-class-member-order": "off",
+        "unicorn/max-nested-calls": "off",
+        "unicorn/class-reference-in-static-methods": "off",
+        "unicorn/no-top-level-side-effects": "off",
+        "unicorn/prefer-unicode-code-point-escapes": "off",
+        "unicorn/no-declarations-before-early-exit": "off",
+        "unicorn/no-break-in-nested-loop": "off",
+        "unicorn/prefer-url-href": "off",
+        "unicorn/prefer-object-iterable-methods": "off",
+        "unicorn/prefer-location-assign": "off",
+        "unicorn/prefer-iterator-to-array": "off",
+        "unicorn/no-computed-property-existence-check": "off",
+        "unicorn/require-css-escape": "off",
+        "unicorn/prefer-ternary": "off",
+        "unicorn/prefer-split-limit": "off",
+        "unicorn/prefer-number-is-safe-integer": "off",
+        "unicorn/prefer-number-coercion": "off",
+        "unicorn/prefer-includes-over-repeated-comparisons": "off",
+        "unicorn/prefer-else-if": "off",
+        "unicorn/prefer-early-return": "off",
+        "unicorn/no-useless-fallback-in-spread": "off",
+        "unicorn/no-unsafe-string-replacement": "off",
+        "unicorn/no-non-function-verb-prefix": "off",
+        "unicorn/no-negated-array-predicate": "off",
+        "unicorn/prefer-uint8array-base64": "off",
         "unicorn/prevent-abbreviations": [
           "error",
           {
@@ -124,6 +169,17 @@
             }
           }
         ]
+      }
+    },
+    {
+      "files": [
+        "**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"
+      ],
+      "rules": {
+        "curly": "off",
+        "arrow-body-style": "off",
+        "@stylistic/quotes": "off",
+        "@stylistic/no-mixed-operators": "off"
       }
     }
   ],

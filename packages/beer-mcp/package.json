@@ -18,16 +18,16 @@
   "license": "MIT",
   "dependencies": {
     "@azure/arm-cosmosdb": "^16.4.0",
-    "@azure/cosmos": "^4.3.0",
+    "@azure/cosmos": "^4.9.3",
     "@azure/identity": "^4.9.1",
     "@langchain/azure-cosmosdb": "^1.2.0",
-    "@langchain/core": "^1.1.36",
-    "@langchain/openai": "^1.1.2",
+    "@langchain/core": "^1.2.1",
+    "@langchain/openai": "^1.5.3",
     "@modelcontextprotocol/sdk": "^1.10.2",
-    "dotenv": "^17.0.1",
+    "dotenv": "^17.4.2",
     "express": "^5.0.1",
-    "langchain": "^1.0.0",
-    "zod": "^4.1.13"
+    "langchain": "^1.5.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

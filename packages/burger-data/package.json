@@ -14,6 +14,6 @@
   "devDependencies": {
     "@genaiscript/runtime": "^2",
     "genaiscript": "^2",
-    "sharp": "^0.34.1"
+    "sharp": "^0.35.3"
   }
 }
